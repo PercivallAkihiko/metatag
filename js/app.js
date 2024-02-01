@@ -9,13 +9,19 @@
 
 // EXPIRED
 
+
+
+//1 MTG = 0.005 ETH
+var ethxmtg = 0.005;
+
+
 var videoDB = [
     {
-        hash_id: "yRkdHFdiuaI",            
+        hash_id: "xxxr4J1fzvc",            
         title: "Bitcoin On-Chain Analysis: Value Days Destroyed Multiple",
         company: "Youtube",
         link: "www.google.it",            
-        status: "START_VOTE",
+        status: 1,
         reward: "-"
     },
     {
@@ -23,90 +29,116 @@ var videoDB = [
         company: "Youtube",
         title: "Bitcoin: Watching the Weekly Close",
         link: "www.google.it",
-        status: "START_VOTE",
+        status: 1,
         reward: "0.3 MTG"
-    },
-    {
-        hash_id: "rUWpziOMk-4",
-        company: "Youtube",
-        title: "Cryptocurrencies: What if they had the marketcap of...",
-        link: "www.google.it",
-        status: "WAITING_VOTE",
-        reward: "-0.41 MTG"
-    },
-    {
-        hash_id: "XE4s0guHI9Y",
-        company: "Youtube",
-        title: "Bitcoin: Dubious Speculation",
-        link: "www.google.it",
-        status: "WAITING_VOTE",
-        reward: "-0.41 MTG"
-    },
-    {
-        hash_id: "1231256263245234",
-        company: "Youtube",
-        title: "Stablecoin Dominance",
-        link: "www.google.it",
-        status: "START_REVEAL",
-        reward: "-0.41 MTG"
-    },
-    {
-        hash_id: "s3fWLaD7Zok",
-        company: "Youtube",
-        title: "Bitcoin: Early Halving Year Pattern (Update)",
-        link: "www.google.it",
-        status: "WAITING_REVEAL",
-        reward: "-0.41 MTG"
     },
     {
         hash_id: "xxxr4J1fzvc",
         company: "Youtube",
         title: "Bitcoin: Watching the Weekly Close",
         link: "www.google.it",
-        status: "CLAIM",
+        status: 2,
         reward: "0.3 MTG"
     },
     {
-        hash_id: "rUWpziOMk-4",
+        hash_id: "xxxr4J1fzvc",
         company: "Youtube",
-        title: "Cryptocurrencies: What if they had the marketcap of...",
+        title: "Bitcoin: Watching the Weekly Close",
         link: "www.google.it",
-        status: "COMPLETED",
-        reward: "-0.41 MTG"
+        status: 3,
+        reward: "0.3 MTG"
     },
     {
-        hash_id: "XE4s0guHI9Y",
+        hash_id: "xxxr4J1fzvc",
         company: "Youtube",
-        title: "Bitcoin: Dubious Speculation",
+        title: "Bitcoin: Watching the Weekly Close",
         link: "www.google.it",
-        status: "COMPLETED",
-        reward: "-0.41 MTG"
+        status: 4,
+        reward: "0.3 MTG"
     },
     {
-        hash_id: "1231256263245234",
+        hash_id: "xxxr4J1fzvc",
         company: "Youtube",
-        title: "Stablecoin Dominance",
+        title: "Bitcoin: Watching the Weekly Close",
         link: "www.google.it",
-        status: "COMPLETED",
-        reward: "-0.41 MTG"
+        status: 5,
+        reward: "0.3 MTG"
     },
     {
-        hash_id: "1231256263245234",
+        hash_id: "xxxr4J1fzvc",
         company: "Youtube",
-        title: "Stablecoin Dominance",
+        title: "Bitcoin: Watching the Weekly Close",
         link: "www.google.it",
-        status: "EXPIRED",
-        reward: "-0.41 MTG"
+        status: 6,
+        reward: "0.3 MTG"
     },
     {
-        hash_id: "1231256263245234",
+        hash_id: "xxxr4J1fzvc",
         company: "Youtube",
-        title: "Stablecoin Dominance",
+        title: "Bitcoin: Watching the Weekly Close",
         link: "www.google.it",
-        status: "EXPIRED",
-        reward: "-0.41 MTG"
+        status: 7,
+        reward: "0.3 MTG"
+    },
+    {
+        hash_id: "95Bbjmwlnss",
+        company: "Youtube",
+        title: "Bitcoin: Watching the Weekly Close",
+        link: "www.google.it",
+        status: 1,
+        reward: "0.3 MTG"
+    },
+    {
+        hash_id: "95Bbjmwlnss",
+        company: "Youtube",
+        title: "Bitcoin: Watching the Weekly Close",
+        link: "www.google.it",
+        status: 2,
+        reward: "0.3 MTG"
+    },
+    {
+        hash_id: "95Bbjmwlnss",
+        company: "Youtube",
+        title: "Bitcoin: Watching the Weekly Close",
+        link: "www.google.it",
+        status: 3,
+        reward: "0.3 MTG"
+    },
+    {
+        hash_id: "95Bbjmwlnss",
+        company: "Youtube",
+        title: "Bitcoin: Watching the Weekly Close",
+        link: "www.google.it",
+        status: 4,
+        reward: "0.3 MTG"
+    },
+    {
+        hash_id: "95Bbjmwlnss",
+        company: "Youtube",
+        title: "Bitcoin: Watching the Weekly Close",
+        link: "www.google.it",
+        status: 5,
+        reward: "0.3 MTG"
+    },
+    {
+        hash_id: "95Bbjmwlnss",
+        company: "Youtube",
+        title: "Bitcoin: Watching the Weekly Close",
+        link: "www.google.it",
+        status: 6,
+        reward: "0.3 MTG"
+    },
+    {
+        hash_id: "95Bbjmwlnss",
+        company: "Youtube",
+        title: "Bitcoin: Watching the Weekly Close",
+        link: "www.google.it",
+        status: 7,
+        reward: "0.3 MTG"
     }
 ];
+
+var ethereumPrice = 1;
 
 document.addEventListener("DOMContentLoaded", function() {
     // menu script
@@ -116,7 +148,8 @@ document.addEventListener("DOMContentLoaded", function() {
     var dashboard = document.querySelector(".dashboard"); 
     var vote = document.querySelector(".vote"); 
     var stake = document.querySelector(".stake"); 
-    var swap = document.querySelector(".swap"); 
+    var buy = document.querySelector(".buy"); 
+    var sell = document.querySelector(".sell"); 
     var explorer = document.querySelector(".explorer"); 
 
     var container_title = document.querySelector('.container_title');
@@ -124,7 +157,8 @@ document.addEventListener("DOMContentLoaded", function() {
     var dashboard_wrapper = document.querySelector('.dashboard_wrapper');
     var vote_wrapper = document.querySelector('.vote_wrapper');
     var stake_wrapper = document.querySelector('.stake_wrapper');
-    var swap_wrapper = document.querySelector('.swap_wrapper');
+    var buy_wrapper = document.querySelector('.buy_wrapper');
+    var sell_wrapper = document.querySelector('.sell_wrapper');
     var explorer_wrapper = document.querySelector('.explorer_wrapper');    
     
     menu_button.addEventListener("click" , () => {
@@ -148,13 +182,15 @@ document.addEventListener("DOMContentLoaded", function() {
         dashboard_wrapper.style.display = 'block';
         vote_wrapper.style.display = 'none';
         stake_wrapper.style.display = 'none';
-        swap_wrapper.style.display = 'none';
+        buy_wrapper.style.display = 'none';
+        sell_wrapper.style.display = 'none';
         explorer_wrapper.style.display = 'none';        
 
         dashboard.classList.add("active");
         vote.classList.remove("active");
         stake.classList.remove("active");
-        swap.classList.remove("active");
+        buy.classList.remove("active");
+        sell.classList.remove("active");
         explorer.classList.remove("active");
     });
 
@@ -164,14 +200,16 @@ document.addEventListener("DOMContentLoaded", function() {
         dashboard_wrapper.style.display = 'none';
         vote_wrapper.style.display = 'block';
         stake_wrapper.style.display = 'none';
-        swap_wrapper.style.display = 'none';
-        explorer_wrapper.style.display = 'none';     
+        buy_wrapper.style.display = 'none';
+        sell_wrapper.style.display = 'none';
+        explorer_wrapper.style.display = 'none';        
 
         dashboard.classList.remove("active");
         vote.classList.add("active");
         stake.classList.remove("active");
-        swap.classList.remove("active");
-        explorer.classList.remove("active");        
+        buy.classList.remove("active");
+        sell.classList.remove("active");
+        explorer.classList.remove("active");     
     });
 
     stake.addEventListener("click" , () => {
@@ -180,30 +218,52 @@ document.addEventListener("DOMContentLoaded", function() {
         dashboard_wrapper.style.display = 'none';
         vote_wrapper.style.display = 'none';
         stake_wrapper.style.display = 'block';
-        swap_wrapper.style.display = 'none';
-        explorer_wrapper.style.display = 'none';     
+        buy_wrapper.style.display = 'none';
+        sell_wrapper.style.display = 'none';
+        explorer_wrapper.style.display = 'none';        
 
         dashboard.classList.remove("active");
         vote.classList.remove("active");
         stake.classList.add("active");
-        swap.classList.remove("active");
-        explorer.classList.remove("active");        
+        buy.classList.remove("active");
+        sell.classList.remove("active");
+        explorer.classList.remove("active");      
     });
 
-    swap.addEventListener("click" , () => {
-        container_title.textContent = 'Swap';
+    buy.addEventListener("click" , () => {
+        container_title.textContent = 'Buy';
 
         dashboard_wrapper.style.display = 'none';
         vote_wrapper.style.display = 'none';
         stake_wrapper.style.display = 'none';
-        swap_wrapper.style.display = 'block';
-        explorer_wrapper.style.display = 'none';     
+        buy_wrapper.style.display = 'block';
+        sell_wrapper.style.display = 'none';
+        explorer_wrapper.style.display = 'none';        
 
         dashboard.classList.remove("active");
         vote.classList.remove("active");
         stake.classList.remove("active");
-        swap.classList.add("active");
-        explorer.classList.remove("active");        
+        buy.classList.add("active");
+        sell.classList.remove("active");
+        explorer.classList.remove("active");      
+    });
+
+    sell.addEventListener("click" , () => {
+        container_title.textContent = 'Sell';
+
+        dashboard_wrapper.style.display = 'none';
+        vote_wrapper.style.display = 'none';
+        stake_wrapper.style.display = 'none';
+        buy_wrapper.style.display = 'none';
+        sell_wrapper.style.display = 'block';
+        explorer_wrapper.style.display = 'none';        
+
+        dashboard.classList.remove("active");
+        vote.classList.remove("active");
+        stake.classList.remove("active");
+        buy.classList.remove("active");
+        sell.classList.add("active");
+        explorer.classList.remove("active");      
     });
 
     explorer.addEventListener("click" , () => {
@@ -212,22 +272,21 @@ document.addEventListener("DOMContentLoaded", function() {
         dashboard_wrapper.style.display = 'none';
         vote_wrapper.style.display = 'none';
         stake_wrapper.style.display = 'none';
-        swap_wrapper.style.display = 'none';
-        explorer_wrapper.style.display = 'block';     
+        buy_wrapper.style.display = 'none';
+        sell_wrapper.style.display = 'none';
+        explorer_wrapper.style.display = 'block';        
 
         dashboard.classList.remove("active");
         vote.classList.remove("active");
         stake.classList.remove("active");
-        swap.classList.remove("active");
-        explorer.classList.add("active");        
+        buy.classList.remove("active");
+        sell.classList.remove("active");
+        explorer.classList.add("active");         
     });
     
     // voting page script
     var videolistDiv = document.querySelector('.video_list');
-
-    var overlay = document.querySelector(".overlay");
-    var tags_container = document.querySelector(".tags_container");
-    var inputElement = document.querySelector(".tags_insert");
+    var overlay = document.querySelector(".overlay");    
 
     videoDB.forEach(function(video) {                
         var elementDiv = document.createElement('div');  
@@ -248,39 +307,46 @@ document.addEventListener("DOMContentLoaded", function() {
         titleDiv.classList.add('title');    
         rewardDiv.classList.add('reward');    
         
-        // START_VOTE
-        // WAITING_VOTE
+        // 1    START_VOTE
+        // 2    WAITING_VOTE
 
-        // START_REVEAL
-        // WAITING_REVEAL
+        // 3    START_REVEAL
+        // 4    WAITING_REVEAL
 
-        // CLAIM
-        // COMPLETED
+        // 5    CLAIM
+        // 6    COMPLETED
 
-        // EXPIRED
+        // 7    EXPIRED
 
-        if (video.status == 'START_VOTE') {
-            pendingDiv.classList.add('START_VOTE');
-            pendingDiv.innerHTML = 'START VOTE';
-        } else if (video.status == 'WAITING_VOTE') {
-            pendingDiv.classList.add('WAITING_VOTE');
-            pendingDiv.innerHTML = 'WAITING VOTE';
-        } else if (video.status == 'START_REVEAL') {
-            pendingDiv.classList.add('START_REVEAL');
-            pendingDiv.innerHTML = 'START REVEAL';
-        } else if (video.status == 'WAITING_REVEAL') {
-            pendingDiv.classList.add('WAITING_REVEAL');
-            pendingDiv.innerHTML = 'WAITING REVEAL';
-        } else if (video.status == 'CLAIM') {
-            pendingDiv.classList.add('CLAIM');
-            pendingDiv.innerHTML = 'CLAIM';
-        } else if (video.status == 'COMPLETED') {
-            pendingDiv.classList.add('COMPLETED');
-            pendingDiv.innerHTML = 'COMPLETED';
-        } else {
-            pendingDiv.classList.add('EXPIRED');
-            pendingDiv.innerHTML = 'EXPIRED';
-        }
+        switch (video.status) {
+            case 1:
+                pendingDiv.classList.add('START_VOTE');
+                pendingDiv.innerHTML = 'START VOTE';
+                break;
+            case 2:
+                pendingDiv.classList.add('WAITING_VOTE');
+                pendingDiv.innerHTML = 'WAITING VOTE';
+                break;
+            case 3:
+                pendingDiv.classList.add('START_REVEAL');
+                pendingDiv.innerHTML = 'START REVEAL';
+                break;
+            case 4:
+                pendingDiv.classList.add('WAITING_REVEAL');
+                pendingDiv.innerHTML = 'WAITING REVEAL';
+                break;
+            case 5:
+                pendingDiv.classList.add('CLAIM');
+                pendingDiv.innerHTML = 'CLAIM';
+                break;
+            case 6:
+                pendingDiv.classList.add('COMPLETED');
+                pendingDiv.innerHTML = 'COMPLETED';
+                break;                                              
+            default:
+                pendingDiv.classList.add('EXPIRED');
+                pendingDiv.innerHTML = 'EXPIRED';
+          }
         
         elementDiv.appendChild(idDiv); 
         elementDiv.appendChild(companyDiv); 
@@ -290,11 +356,7 @@ document.addEventListener("DOMContentLoaded", function() {
         videolistDiv.appendChild(elementDiv);       
         
         elementDiv.addEventListener('click', function () {                        
-            changeVideoSource(video.hash_id);
-            //document.getElementById('youtubeVideo').src = "https://www.youtube.com/embed/" + id + "?si==t8ONwp4s-zO5XMyJ";
-            tags_container.innerHTML = "";
-            inputElement.value = "";
-            overlay.classList.toggle("active");            
+            generateDiv(video.hash_id, video.status);                   
         });             
     });    
     setGridRows(videoDB.length);
@@ -304,6 +366,17 @@ document.addEventListener("DOMContentLoaded", function() {
             overlay.classList.toggle("active");
         }
     });
+
+    // Buy-sell script
+    fetch(`https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd`)
+    .then(response => response.json())
+    .then(data => {
+        ethereumPrice = data["ethereum"].usd;
+        console.log("Actual etherium price: " + ethereumPrice);
+    })
+    .catch(error => {
+        console.error('Error fetching cryptocurrency price:', error);
+    });
 });
 
 function setGridRows(number) {
@@ -311,8 +384,131 @@ function setGridRows(number) {
     gridContainer.style.gridTemplateRows = 'repeat(' + number + ', 80px)';
 }
 
-function changeVideoSource(id) {            
-    document.getElementById('youtubeVideo').src = "https://www.youtube.com/embed/" + id + "?si==t8ONwp4s-zO5XMyJ";
+function generateAlphanumericSeed() {
+    const alphanumericChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const seedLength = 11;
+    let seed = '';
+  
+    for (let i = 0; i < seedLength; i++) {
+      const randomIndex = Math.floor(Math.random() * alphanumericChars.length);
+      seed += alphanumericChars.charAt(randomIndex);
+    }
+  
+    return seed;
+}
+
+function setCookie(name, dataObject, daysToExpire) {
+    const expirationDate = new Date();
+    expirationDate.setDate(expirationDate.getDate() + daysToExpire);
+  
+    const cookieValue = encodeURIComponent(name) + '=' + encodeURIComponent(JSON.stringify(dataObject)) + '; expires=' + expirationDate.toUTCString() + '; path=/';
+  
+    document.cookie = cookieValue;
+}
+  
+function getCookie(name) {
+    const decodedCookie = decodeURIComponent(document.cookie);
+    const cookieArray = decodedCookie.split(';');
+  
+    for (let i = 0; i < cookieArray.length; i++) {
+        let cookie = cookieArray[i];
+        while (cookie.charAt(0) === ' ') {
+            cookie = cookie.substring(1);
+        }
+        if (cookie.indexOf(name + '=') === 0) {
+             const cookieValue = cookie.substring(name.length + 1);
+            return JSON.parse(decodeURIComponent(cookieValue));
+        }
+    }
+    return null;
+}
+
+function getTagPositions() {
+    const tagNames = document.querySelectorAll('.tags_container .tag_name');
+    const tagPositions = [];
+  
+    tagNames.forEach(tagName => {
+        const tagIndex = validTags.indexOf(tagName.textContent.toLowerCase()) + 1;
+        tagPositions.push(tagIndex);
+    });    
+    return tagPositions;
+}
+
+function resetListeners(element){
+    var element = document.querySelector(element);
+    var new_element = element.cloneNode(true);
+    element.parentNode.replaceChild(new_element, element);
+}
+
+function generateDiv(videoId, status) {   
+    resetListeners(".tag_button");
+
+    var overlay = document.querySelector(".overlay");
+    var tags_container = document.querySelector(".tags_container");
+    var tag_button = document.querySelector(".tag_button");
+    var inputElement = document.querySelector(".tags_insert");  
+    var suggestions_container = document.querySelector(".suggestions_container");  
+
+    suggestions_container.innerHTML = "";
+    tags_container.innerHTML = "";
+    inputElement.value = "";     
+        
+    switch (status) {
+        case 1:
+            tag_button.addEventListener('click', function () {   
+                var seed = generateAlphanumericSeed() 
+                var tagList = getTagPositions();  
+                suggestions_container.innerHTML = "<grey>Seed: </grey>" + seed;        
+                setCookie(videoId, { list: tagList, seed: seed } , 1);                        
+            });  
+            addTagFromCookie(videoId);
+            inputElement.disabled = false;
+            tags_container.classList.remove("disabled")
+            tag_button.classList.remove("disabled");
+            tag_button.innerHTML = "SEND VOTE";  
+            break;
+        case 2:        
+            disableDiv(videoId);
+            tag_button.innerHTML = "WAITING VOTE";  
+            break;
+        case 3:
+            disableDiv(videoId, true);
+            tag_button.innerHTML = "REVEAL";  
+            break;
+        case 4:
+            disableDiv(videoId);
+            tag_button.innerHTML = "WAITING REVEAL";  
+            break;
+        case 5:
+            disableDiv(videoId, true);
+            tag_button.innerHTML = "CLAIM";  
+            break;
+        case 6:
+            disableDiv(videoId);
+            tag_button.innerHTML = "COMPLITED";  
+            break;                                              
+        default:         
+            disableDiv(videoId);
+            tag_button.innerHTML = "EXPIRED";               
+      }
+                  
+    document.getElementById('youtubeVideo').src = "https://www.youtube.com/embed/" + videoId + "?si=EwWUd-wd4mxodglK"
+    overlay.classList.toggle("active");  
+}
+
+function disableDiv(videoId, confirm=false){
+    var tags_container = document.querySelector(".tags_container");
+    var tag_button = document.querySelector(".tag_button");
+    var inputElement = document.querySelector(".tags_insert");  
+
+    addTagFromCookie(videoId, true);
+    inputElement.disabled = true;
+    tags_container.classList.add("disabled")
+    if(confirm){
+        tag_button.classList.remove("disabled");   
+    }else{
+        tag_button.classList.add("disabled");   
+    }
 }
 
 const validTags = [
@@ -454,10 +650,8 @@ function suggestTag(event) {
     var suggestions_container = document.querySelector(".suggestions_container");
     clearSuggestions(suggestions_container);
 
-    // Check if the entered tag matches any valid tags
     const matchingTags = validTags.filter(tag => tag.toLowerCase().includes(inputValue));
 
-    // Display suggestions within available space
     const availableSpace = suggestions_container.offsetWidth;
     let totalWidth = 0;
 
@@ -466,9 +660,9 @@ function suggestTag(event) {
         if (totalWidth + suggestionWidth <= availableSpace) {
             createSuggestion(suggestions_container, tag);
             totalWidth += suggestionWidth;
-            return false; // Continue iterating
+            return false; 
         }
-        return true; // Stop iterating
+        return true; 
     });
 }
 
@@ -488,7 +682,28 @@ function createSuggestion(container, tag) {
     container.appendChild(suggestionDiv);
 }
 
-function addTagFromSuggestion(tag) {
+function addTagFromCookie(videoId, disabled = false){
+    var cookieValue = getCookie(videoId);
+    var suggestions_container = document.querySelector(".suggestions_container");  
+    var tags_container = document.querySelector(".tags_container");  
+
+    if (cookieValue === null){
+        suggestions_container.innerHTML = "<grey>Seed: </grey> <cursive>not available</cursive>";
+        tags_container.innerHTML = "<cursive>not available</cursive>";
+        return
+    }
+
+    var integers = cookieValue.list;
+    var seed = cookieValue.seed;        
+
+    suggestions_container.innerHTML = "<grey>Seed: </grey>" + seed;
+    var tagList = integers.map(index => validTags[index - 1]);
+    tagList.forEach(tag => {
+        addTagFromSuggestion(tag, disabled);
+      });    
+}
+
+function addTagFromSuggestion(tag, disabled=false) {
     var tags_container = document.querySelector(".tags_container");
     var tagElement = document.createElement("div");
     var tag_name = document.createElement("div");
@@ -500,9 +715,11 @@ function addTagFromSuggestion(tag) {
 
     tag_name.textContent = tag;
 
-    tagElement.addEventListener("click", function () {
-        tags_container.removeChild(tagElement);
-    });
+    if(!disabled){
+        tagElement.addEventListener("click", function () {
+            tags_container.removeChild(tagElement);
+        });
+    }
 
     tagElement.appendChild(tag_name);
     tagElement.appendChild(icon);
@@ -522,4 +739,52 @@ function calculateTextWidth(text) {
     const width = span.offsetWidth;
     document.body.removeChild(span);
     return width;
+}
+
+function validateInput(input, crypto) {    
+    var dollar_value = document.querySelectorAll(".dollar_value");
+    var eth_input = document.querySelectorAll(".eth_input");
+    var mtg_input = document.querySelectorAll(".mtg_input");
+
+    var eth_sell = document.querySelector(".eth_sell");
+    var mtg_sell = document.querySelector(".mtg_sell");
+
+    input.value = input.value.replace(/[^0-9.]/g, '');
+
+    let result = 0;
+    let formattedResult = 0;
+    let numericResult = 0;
+      
+    if (input.value.split('.').length > 2) {
+      input.value = input.value.slice(0, -1);
+    }    
+
+    let floatValue = parseFloat(input.value);
+    if(crypto == "ethereum"){
+        result = floatValue * ethereumPrice;
+        formattedResult = result.toFixed(4);
+        numericResult = parseFloat(formattedResult);
+
+        eth_sell.value = floatValue;
+
+        mtg_input.forEach(element => {
+            element.value = floatValue / ethxmtg;
+        }); 
+    }
+    else{
+        result = floatValue * ethereumPrice  * ethxmtg;
+        formattedResult = result.toFixed(4);
+        numericResult = parseFloat(formattedResult);
+
+        mtg_sell.value = floatValue;
+
+        eth_input.forEach(element => {
+            element.value = floatValue * ethxmtg;
+        }); 
+    }
+
+
+    dollar_value.forEach(element => {        
+        element.innerHTML = numericResult + " $";
+    });    
 }

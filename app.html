@@ -24,10 +24,14 @@
                 <div class="icon"><i class="fa-solid fa-vault"></i></div>
                 <div class="title">Stake</div>
             </div>     
-            <div class="item_container swap">
-                <div class="icon"><i class="fa-solid fa-rotate"></i></div>
-                <div class="title">Swap</div>
+            <div class="item_container buy">
+                <div class="icon"><i class="fa-solid fa-plus"></i></div>
+                <div class="title">Buy</div>
             </div>     
+            <div class="item_container sell">
+                <div class="icon"><i class="fa-solid fa-minus"></i></div>
+                <div class="title">Sell</div>
+            </div> 
             <div class="item_container explorer">
                 <div class="icon"><i class="fa-brands fa-wpexplorer"></i></i></div>
                 <div class="title">Explorer</div>
@@ -8818,32 +8822,62 @@
                 Lorem Ipsum 3 è un testo segnaposto utilizzato nel settore della tipografia e della stampa. Lorem Ipsum è considerato il testo segnaposto standard sin dal sedicesimo secolo, quando un anonimo tipografo prese una cassetta di caratteri e li assemblò per preparare un testo campione. È sopravvissuto non solo a più di cinque secoli, ma anche al passaggio alla videoimpaginazione, pervenendoci sostanzialmente inalterato. Fu reso popolare, negli anni ’60, con la diffusione dei fogli di caratteri trasferibili “Letraset”, che contenevano passaggi del Lorem Ipsum, e più recentemente da software di impaginazione come Aldus PageMaker, che includeva versioni del Lorem Ipsum.                
             </div>
 
-            <div class="swap_wrapper">
+            <div class="buy_wrapper">
                 <div class="swapt_center">                                                             
                     <form action="action_page.php" method="post" class="swap_container" class="swap_container">                    
-                        <div class="etherium money">
+                        <div class="ethereum money">
                             <div class="first_line">
-                                <input type="text" placeholder="0.00" name="uname"> 
+                                <input class="eth_input" type="text" placeholder="0.00" name="uname" oninput="validateInput(this, 'ethereum')"> 
                                 <div class="crypto_icon"><i class="fa-brands fa-ethereum"></i></div>
                                 <div class="crypto_name">ETH</div>
                             </div>
                             <div class="second_line">
-                                <div class="dollar_value">13 $</div>
+                                <div class="dollar_value">0 $</div>
                                 <div class="total_balance">Balance 0.00</div>
                                 <div class="max">MAX</div>
                             </div>
                         </div>
                         <div class="mtg money">
                             <div class="first_line">
-                                <input type="text" placeholder="0.00" name="uname" readonly> 
+                                <input class="mtg_input mtg_sell" type="text" placeholder="0.00" name="uname" readonly> 
                                 <div class="crypto_icon"><i class="fa-brands fa-tiktok"></i></div>
                                 <div class="crypto_name">MTG</div>
                             </div>
                             <div class="second_line">
-                                <div class="dollar_value">13 $</div>
+                                <div class="dollar_value">0 $</div>
                             </div>                            
                         </div>                      
                         <button type="submit" class="buy_button">Buy</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="sell_wrapper">
+                <div class="swapt_center">                                                             
+                    <form action="action_page.php" method="post" class="swap_container" class="swap_container">                    
+                        <div class="ethereum money">
+                            <div class="first_line">
+                                <input class="mtg_input" type="text" placeholder="0.00" name="uname" oninput="validateInput(this, 'metatag')"> 
+                                <div class="crypto_icon"><i class="fa-brands fa-tiktok"></i></div>
+                                <div class="crypto_name">MTG</div>
+                            </div>
+                            <div class="second_line">
+                                <div class="dollar_value">0 $</div>
+                                <div class="total_balance">Balance 0.00</div>
+                                <div class="max">MAX</div>
+                            </div>
+                        </div>
+                        <div class="mtg money">
+                            <div class="first_line">
+                                <input class="eth_input eth_sell" type="text" placeholder="0.00" name="uname" readonly> 
+                                <div class="crypto_icon"><i class="fa-brands fa-ethereum"></i></div>
+                                <div class="crypto_name">ETH</div>
+                            </div>
+                            <div class="second_line">
+                                <div class="dollar_value">0 $</div>
+                            </div>                            
+                        </div>                      
+                        <button type="submit" class="sell_button">Sell</button>
                     </form>
                 </div>
             </div>
@@ -8856,18 +8890,18 @@
 
         <div class="overlay">
             <div class="overlay_wrapper">
-                <div class="overlay_content">
-                    <iframe class="youtubeVideo" id="youtubeVideo" width="560" height="360" src="https://www.youtube.com/embed/0e2Zjz3q0Ko?si=vM0ZQnutVfyoLVLT" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>                                                            
+                <div class="overlay_content">                    
+                    <iframe class="youtubeVideo" id="youtubeVideo" width="560" height="360" src="https://www.youtube.com/embed/vRG2kQDnpTc?si=EwWUd-wd4mxodglK" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                     <div class="tags_wrapper">                                                
                         <input class="tags_insert" type="text" placeholder="Insert tags" name="uname" onkeyup="tagInserted(event)" oninput="suggestTag(event)">
                         <div class="suggestions_container">                            
                         </div>
                         <div class="tags_container_back">
                             <div class="tags_container">
-
+                                
                             </div>                   
                         </div>
-                        <div class="submit_tag_button">SUBMIT</div>
+                        <div class="tag_button"></div>
                     </div>                
                 </div>
             </div>

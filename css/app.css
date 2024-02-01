@@ -53,7 +53,7 @@ html{
     transition: max-width 0.4s ease-in-out;
     display: grid;
 
-    grid-template-rows: min-content auto min-content min-content min-content min-content min-content auto min-content;    
+    grid-template-rows: min-content auto min-content min-content min-content min-content min-content min-content auto min-content;    
 }
 
 
@@ -119,16 +119,20 @@ html{
     grid-row: 5;        
 }
 
-.swap{
+.buy{
     grid-row: 6;        
 }
 
-.explorer{
+.sell{
     grid-row: 7;        
 }
 
+.explorer{
+    grid-row: 8;        
+}
+
 .term_service{
-    grid-row: 9;    
+    grid-row: 10;    
 }
 
 .item_container{
@@ -458,6 +462,14 @@ EXPIRED */
     max-width: 100%;      
 }
 
+grey{
+    color: var(--text-color);
+}
+
+cursive{
+    font-style: italic;
+}
+
 .suggestion{
     cursor: pointer;
 }
@@ -504,11 +516,20 @@ EXPIRED */
     align-items: center;
 }
 
+.tag:hover{
+    background-color: rgb(53, 53, 53);
+    border: 2px solid rgb(53, 53, 53);
+}
+
+.tags_container.disabled .tag{
+    cursor: default;
+}
+
 .tag i{
     font-size: 10px;
 }
 
-.submit_tag_button{           
+.tag_button{           
     display: flex;
     justify-content: center; /* Center horizontally */
     align-items: center; /* Center vertically */
@@ -519,8 +540,13 @@ EXPIRED */
     cursor: pointer;
 }
 
-.submit_tag_button:hover{
+.tag_button:hover{
     background-color: rgb(21, 101, 192);
+}
+
+.tag_button.disabled, .tag_button.disabled:hover{
+    background-color: var(--text-color);
+    cursor: inherit;
 }
 
 /* !!!! ---- STAKE PART ---- !!!! */
@@ -557,7 +583,7 @@ EXPIRED */
     grid-template-rows: 60px auto 60px auto 44px;
 }
 
-.etherium{    
+.ethereum{    
     width: 100%;  
     grid-row: 1;        
 }
@@ -586,7 +612,7 @@ EXPIRED */
     align-items: center;    
 }
 
-.swap_wrapper input{
+.buy_wrapper input, .sell_wrapper input{
     background: transparent;
     border: none;
     outline: none;
@@ -621,7 +647,7 @@ EXPIRED */
     text-align: right;
 }
 
-.buy_button{    
+.buy_button, .sell_button{    
     background: none;
     border: none;
     color: inherit;
@@ -639,7 +665,7 @@ EXPIRED */
     color: white;
 }
 
-.buy_button:hover{
+.buy_button:hover, .sell_button{
     background-color: rgb(21, 101, 192);
 }
 
