@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Balance Graph</title>
+    <!-- Include Moment.js and Chart.js libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.8.0/chart.min.js"></script>
+</head>
+<body>
+
+<!-- Create a canvas element for the graph -->
+<canvas id="balanceChart" width="600" height="400"></canvas>
+
+<script>
+// Sample data (replace this with your actual data)
+const dates = ["2024-01-01", "2024-02-01", "2024-03-01", "2024-04-01"];
+const balances = [1000, 1200, 800, 1500];
+
+// Use moment.js to parse the dates
+const parsedDates = dates.map(date => moment(date));
+
+// Get the canvas element
+const ctx = document.getElementById('balanceChart').getContext('2d');
+
+// Create a new chart using Chart.js with the moment.js date adapter
+new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: parsedDates,
+        datasets: [{
+            label: 'Balance',
+            data: balances,
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 2,
+            fill: false,
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            x: {
+                type: 'time',
+                time: {
+                    unit: 'month'
+                }
+            },
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+</script>
+
+</body>
+</html>
