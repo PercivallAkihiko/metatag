@@ -461,7 +461,7 @@ function generateDiv(videoId, status) {
                 suggestions_container.innerHTML = "<grey>Seed: </grey>" + seed;        
                 setCookie(videoId, { list: tagList, seed: seed } , 1);                        
             });  
-            addTagFromCookie(videoId);
+            addTagFromCookie(videoId, false, true);
             inputElement.disabled = false;
             tags_container.classList.remove("disabled")
             tag_button.classList.remove("disabled");
@@ -682,14 +682,19 @@ function createSuggestion(container, tag) {
     container.appendChild(suggestionDiv);
 }
 
-function addTagFromCookie(videoId, disabled = false){
+function addTagFromCookie(videoId, disabled = false, first = false){
     var cookieValue = getCookie(videoId);
     var suggestions_container = document.querySelector(".suggestions_container");  
     var tags_container = document.querySelector(".tags_container");  
 
+    console.log("First: " + first);
+    if (cookieValue === null && first){
+        suggestions_container.innerHTML = "<grey>Seed: </grey> <cursive>submit to generate.</cursive>";        
+        return
+    }
     if (cookieValue === null){
-        suggestions_container.innerHTML = "<grey>Seed: </grey> <cursive>not available</cursive>";
-        tags_container.innerHTML = "<cursive>not available</cursive>";
+        suggestions_container.innerHTML = "<grey>Seed: </grey> <cursive>missing cookies.</cursive>";
+        tags_container.innerHTML = "<cursive>missing cookies.</cursive>";
         return
     }
 
