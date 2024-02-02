@@ -1,0 +1,392 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20; // Solidity version
+
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol"; // Library for ERC20
+
+contract MetaTag {
+
+// VARIABLES ####################################################################################################################################################################################
+ 
+    ERC20 public mtgToken; // MTG token to make correlation
+    address public mtgTeam; // "We"
+
+    mapping(address => bool) public wlCompanies; // Hash table for whitelisted companies
+    mapping(address => uint256) public balanceCompanies; // Hash table for companies' balances
+    mapping(address => uint256) public balanceValidators; // Hash table for validators' balances
+    mapping(address => mapping(uint256 => Video)) public videos; // Hash table Company -> video ID -> Video (video information). Different companies can have same video ID.
+    mapping(address => bool) public variableValidators; // Variable that validators have to turn on to work (it requires minimum 50 tokens)
+    address[] public readyValidators; // List of ready validators
+
+    // Structure for the video information given by the companies
+    struct Video {
+        uint256 id;
+        uint256 length;
+        address[] chosenValidators;
+        uint256 timestamp; // Timestamp when the video was added
+        mapping(address => string) hashedData; // Mapping from validator address to their encrypted data
+        mapping(address => uint256[]) tags; // Mapping from validator address to their tags
+        address[] tagsValidators;
+    }
+
+// MODIFIERS ####################################################################################################################################################################################
+
+    // Modifier to not duplicate
+    modifier onlyMTGTeam() {
+        require(msg.sender == mtgTeam, "Not MTG Team!");
+        _;
+    }
+
+// CONSTRUCTOR ####################################################################################################################################################################################
+
+    // In the constructor we save the sender and we choose as input the address of the MTG token
+    constructor(address _mtgToken) {
+        mtgToken = ERC20(_mtgToken);
+        mtgTeam = msg.sender;
+    }
+
+// MTG TEAM FUNCTIONS ####################################################################################################################################################################################
+
+    // Function that MTGTeam can use to whitelist companies so they can upload videos to tag
+    function whitelistCompany(address company) public onlyMTGTeam {
+        wlCompanies[company] = true;
+    }
+
+
+// VALIDATORS FUNCTIONS ####################################################################################################################################################################################
+
+    // Function for validators to announce their willing to partecipate in the DApp
+    function setVariable() public {
+        require(!wlCompanies[msg.sender], "You are a company!");
+        require(balanceValidators[msg.sender] >= 50 * 1e18, "You need to lock at least 50 tokens!");
+
+        if (variableValidators[msg.sender]){
+            removeValidator(msg.sender);
+            variableValidators[msg.sender] = false;
+        }
+        else {
+            addValidator(msg.sender);
+            variableValidators[msg.sender] = true;
+        }
+    }
+
+    function addValidator(address _validator) internal {
+        readyValidators.push(_validator);
+    }
+
+    function removeValidator(address _validator) internal {
+        int index = -1;
+        for (uint i = 0; i < readyValidators.length; i++) {
+            if (readyValidators[i] == _validator) {
+                index = int(i);
+                break;
+            }
+        }
+        if (index == -1) return; // Element not found
+        // Swap with the last element
+        readyValidators[uint(index)] = readyValidators[readyValidators.length - 1];
+        // Remove the last element
+        readyValidators.pop();
+    }
+
+    // Function for validators to send their tokens to the smart contract to partecipate in the DApp
+    function receiveTokensFromValidator(uint256 amount) public {
+        require(!wlCompanies[msg.sender], "You are a company!");
+        bool sent = mtgToken.transferFrom(msg.sender, address(this), amount); // Transfer tokens from the validator's address to this contract
+        require(sent, "Token transfer failed");
+        balanceValidators[msg.sender] += amount; // Update the validator's token balance in this contract
+    }
+
+    // Function for validators to submit a hash for a video
+    function submitHash(address company, uint256 videoId, string memory hash) public {
+        require(isValidatorChosenForVideo(company, videoId, msg.sender), "Not a chosen validator for this video");
+        require(block.number <= videos[company][videoId].timestamp + 7200, "Submission time exceeded");
+
+        // Check if the hash is 64 characters long (for SHA-256)
+        require(bytes(hash).length == 64, "Invalid hash length");
+
+        // Check if the hash contains only valid hexadecimal characters
+        for (uint i = 0; i < 64; i++) {
+            bytes1 char = bytes(hash)[i];
+            require(
+                (char >= 0x30 && char <= 0x39) || // 0-9
+                (char >= 0x61 && char <= 0x66) || // a-f
+                (char >= 0x41 && char <= 0x46),   // A-F
+                "Invalid hash character"
+            );
+        }
+
+        videos[company][videoId].hashedData[msg.sender] = hash;
+    }
+
+    // Helper function to check if a validator is chosen for a specific video
+    function isValidatorChosenForVideo(address company, uint256 videoId, address validator) private view returns (bool) {
+        for (uint i = 0; i < videos[company][videoId].chosenValidators.length; i++) {
+            if (videos[company][videoId].chosenValidators[i] == validator) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Function for validators to reveal their original value for a video
+    function revealHash(address company, uint256 videoId, string memory originalValue) public {
+        require(isValidatorChosenForVideo(company, videoId, msg.sender), "Not a chosen validator for this video");
+        require(block.number > videos[company][videoId].timestamp + 7200, "Reveal not yet allowed");
+        require(keccak256(abi.encodePacked(hashStringToString(originalValue))) == keccak256(abi.encodePacked(videos[company][videoId].hashedData[msg.sender])), "Hash mismatch");
+        require(block.number < videos[company][videoId].timestamp + 14400, "Reveal time exceeded");
+        // Split the originalValue into tags and seed
+        // Assuming the format "tag1 tag2 ... tagN seed"
+        bytes memory originalValueBytes = bytes(originalValue);
+        uint lastSpaceIndex = 0;
+        for (uint i = originalValueBytes.length - 1; i > 0; i--) {
+            if (originalValueBytes[i] == ' ') {
+                lastSpaceIndex = i;
+                break;
+            }
+        }
+        require(lastSpaceIndex > 0 && originalValueBytes.length - lastSpaceIndex - 1 == 11, "Invalid seed length");
+        // Re-hash the tags with the seed and compare with the stored hash
+        
+        bytes memory tagsBytes = slice(originalValueBytes, 0, lastSpaceIndex);
+        string memory tagsString = string(tagsBytes);
+        videos[company][videoId].tags[msg.sender] = extractTags(tagsString);
+        videos[company][videoId].tagsValidators.push(msg.sender);
+    }
+
+    function getRewards(address company, uint256 videoId) public{
+        require(block.number > videos[company][videoId].timestamp + 14400, "Withdraw not yet allowed");
+        require(isValidatorChosenForVideo(company, videoId, msg.sender), "Not a chosen validator for this video");
+
+        uint256 totalValidators = videos[company][videoId].tagsValidators.length;
+        uint256 totalConfirmedTags = 0;
+        uint256 totalAmbiguousTags = 0;
+        uint256 totalWrongTags = 0;
+        uint256 validatorConfirmedTags = 0;
+        uint256 validatorAmbiguousTags = 0;
+        uint256 validatorWrongTags = 0;
+        uint256 videoLength = videos[company][videoId].length;
+        uint256 constantMultiplier = 5; // 0.0005
+
+        // Arrays to keep track of tag counts
+        uint256[20] memory tagCounts; // There are 20 possible tags
+        uint256[20] memory tagStatus; // Status: 1 for confirmed, 2 for ambiguous, 3 for wrong
+
+        // Tally votes for each tag
+        for (uint i = 0; i < totalValidators; i++) {
+            uint256[] memory tags = videos[company][videoId].tags[videos[company][videoId].tagsValidators[i]];
+            for (uint j = 0; j < tags.length; j++) {
+                if (tags[j] < 20) { // Ensure the tag is within the allowed range
+                    tagCounts[tags[j]]++;
+                }
+            }
+        }
+
+        // Categorize tags and count totals for each category
+        for (uint i = 0; i < 20; i++) {
+            if (tagCounts[i] >= totalValidators * 80 / 100) {
+                tagStatus[i] = 1; // Confirmed
+                totalConfirmedTags++;
+            } else if (tagCounts[i] >= totalValidators * 30 / 100) {
+                tagStatus[i] = 2; // Ambiguous
+                totalAmbiguousTags++;
+            } else if (tagCounts[i] > 0) {
+                tagStatus[i] = 3; // Wrong
+                totalWrongTags++;
+            }
+        }
+
+        // Calculate the reward for msg.sender
+        uint256[] memory senderTags = videos[company][videoId].tags[msg.sender];
+        for (uint i = 0; i < senderTags.length; i++) {
+            uint256 tag = senderTags[i];
+            if (tagStatus[tag] == 1) {
+                validatorConfirmedTags++;
+            } else if (tagStatus[tag] == 2) {
+                validatorAmbiguousTags++;
+            } else if (tagStatus[tag] == 3) {
+                validatorWrongTags++;
+            }
+        }
+
+        uint256 reward = 1e8 * 1e18;
+        if (totalConfirmedTags > 0) {
+            reward += (validatorConfirmedTags * 1e18 / totalConfirmedTags) ;
+        }
+        if (totalAmbiguousTags > 0) {
+            reward -= (validatorAmbiguousTags  / totalAmbiguousTags * 100) * 75 / 100 * 1e18 / 100;
+        }
+        if (totalWrongTags > 0) {
+            reward -= (validatorWrongTags * 125) * (125* 1e18 / 100   - 1e18 * validatorConfirmedTags / totalConfirmedTags) / 100 ;
+        }
+
+        uint256 baseReward = 1e8 * 1e18;
+        uint256 rewardAmount;
+
+        if (reward > baseReward) {
+            rewardAmount = (reward - baseReward) * videoLength * constantMultiplier / 10000;
+            require(balanceCompanies[company] >= rewardAmount, "Company does not have enough tokens");
+            balanceCompanies[company] -= rewardAmount;
+            balanceValidators[msg.sender] += rewardAmount;
+        } else {
+            rewardAmount = (baseReward - reward) * videoLength * constantMultiplier / 10000;
+            require(balanceValidators[msg.sender] >= rewardAmount, "Validator does not have enough tokens");
+            balanceValidators[msg.sender] -= rewardAmount;
+            // Here, instead of transferring to 0xdEaD, we simply reduce the validator's balance.
+        }
+        //return (validatorConfirmedTags, validatorAmbiguousTags, validatorWrongTags);
+    }
+
+    // Function to exchange 100 tokens for a voucher. The implementation should be done on the website, it return only true
+    function MTGforVoucher(uint amount) public returns (bool) {
+        require(amount == 100 * 1e18, "The voucher costs 100 MTG!");
+        bool sent = mtgToken.transferFrom(msg.sender, mtgTeam, amount); // Transfer MTG tokens from the sender to the contract owner
+        require(sent, "Token transfer failed");
+        return true;
+    }
+
+// COMPANIES FUNCTIONS ####################################################################################################################################################################################
+  
+    // Function for companies to send their tokens to the smart contract to require the possibility to send video for tagging
+    function receiveTokensFromCompany(uint256 amount) public {
+        require(wlCompanies[msg.sender], "Company not whitelisted!");
+        bool sent = mtgToken.transferFrom(msg.sender, address(this), amount); // Transfer tokens from the company's address to this contract
+        require(sent, "Token transfer failed!");
+        balanceCompanies[msg.sender] += amount; // Update the company's token balance in this contract
+    }
+
+    // Function for companies to submit videos for tagging
+    function addVideo(uint256 videoId, uint256 videoLength) public {
+        require(wlCompanies[msg.sender], "Company not whitelisted!");
+        require(balanceCompanies[msg.sender] >= videoLength * 5e15, "You need to deposit at least '1/200 * video length' MTG!");
+        uint minimo = 14;
+        uint scelta = 10;
+        uint val = 0;
+        uint val2 = 0;
+        require(readyValidators.length > minimo, "There should be a minimum of 50 ready validators!");
+        
+        require(videos[msg.sender][videoId].id == 0, "Video ID already exists!");
+        address[] memory selectedValidators = new address[](scelta);
+
+
+        while (selectedValidators[selectedValidators.length-1] == address(0x0))
+        {
+            uint randomIndex = uint(keccak256(abi.encodePacked(block.prevrandao, msg.sender, val))) % minimo+1;
+            if (!isAddressInArray(selectedValidators, readyValidators[randomIndex]))
+            {
+                selectedValidators[val2] = readyValidators[randomIndex];
+                val2+=1;
+            }
+                val +=1;
+        }
+        Video storage newVideo = videos[msg.sender][videoId];
+        newVideo.id = videoId;
+        newVideo.length = videoLength;
+        newVideo.chosenValidators = selectedValidators;
+        newVideo.timestamp = block.number;
+    }
+
+// ADDITIONAL FUNCTIONS ####################################################################################################################################################################################
+
+    // Function to check if a specific address is in an array.
+    function isAddressInArray(address[] memory array, address value) internal pure returns (bool) {
+        for (uint i = 0; i < array.length; i++) {
+            if (array[i] == value) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Function to emit the entire array of validators for a specific video
+    function getVideoValidators(address a, uint256 b) public view returns (address[] memory) {
+        return videos[a][b].chosenValidators;
+    }
+
+    // Function to slice a bytes array
+    function slice(bytes memory data, uint start, uint end) internal pure returns (bytes memory) {
+            bytes memory result = new bytes(end - start);
+            for(uint i = start; i < end; i++) {
+                result[i - start] = data[i];
+            }
+            return result;
+        }
+
+    // Function to extract Tags from validator's revealHash phase
+    function extractTags(string memory tagsString) internal pure returns (uint256[] memory) {
+        uint256 count = countSpaces(tagsString) + 1;
+        uint256[] memory tags = new uint256[](count);
+        uint256 index = 0;
+        uint256 start = 0;
+        bytes memory stringBytes = bytes(tagsString);
+
+        for (uint256 i = 0; i < stringBytes.length; i++) {
+            if (stringBytes[i] == " ") {
+                tags[index] = parseUint(stringBytes, start, i);
+                index++;
+                start = i + 1;
+            }
+        }
+
+        if (start < stringBytes.length) {
+            tags[index] = parseUint(stringBytes, start, stringBytes.length);
+        }
+
+        return tags;
+    }
+
+    // Function to count spaces in a string
+    function countSpaces(string memory str) internal pure returns (uint256) {
+        bytes memory strBytes = bytes(str);
+        uint256 spaceCount = 0;
+        for (uint256 i = 0; i < strBytes.length; i++) {
+            if (strBytes[i] == " ") {
+                spaceCount++;
+            }
+        }
+        return spaceCount;
+    }
+
+    // Function to convert substring of a byte array (representing a string) into uint256 
+    function parseUint(bytes memory strBytes, uint256 start, uint256 end) internal pure returns (uint256) {
+        uint256 res = 0;
+        for (uint256 i = start; i < end; i++) {
+            //require(strBytes[i] >= 48 && strBytes[i] <= 57, "Non-numeric character");
+            res = res * 10 + (uint256(uint8(strBytes[i])) - 48);
+        }
+        return res;
+    }
+
+    // Function to hash a string into hash in string format for comparison.
+    function hashStringToString(string memory input) internal pure returns (string memory) {
+        bytes32 hash = keccak256(abi.encodePacked(input));
+        return bytes32ToHexString(hash);
+    }
+
+    // Funtion to convert bytes32 into hex string (needed to compare hashedData and hashed revealedData)
+    function bytes32ToHexString(bytes32 _bytes) internal pure returns (string memory) {
+        bytes memory s = new bytes(64);
+        for (uint i = 0; i < 32; i++) {
+            bytes1 b = _bytes[i];
+            bytes1 hi = bytes1(uint8(b) / 16);
+            bytes1 lo = bytes1(uint8(b) % 16);
+            s[2 * i] = charMod(hi);
+            s[2 * i + 1] = charMod(lo);
+        }
+        return string(s);
+    }
+
+    // Function to convert bytes1 into hexadecimal character (process to converting into bytes32, needed to compare hashedData and hashed revealedData)
+    function charMod(bytes1 b) internal pure returns (bytes1 c) {
+        if (uint8(b) < 10) return bytes1(uint8(b) + 0x30);
+        else return bytes1(uint8(b) + 0x61 - 10);
+    }
+
+    // Getter function for validator chosen tags on a specific Video
+    function getVideoTags(address company, uint256 videoId, address validator) public view returns (uint256[] memory) {
+        return videos[company][videoId].tags[validator];
+    }
+
+    function schifo(address a, uint256 b) public {
+        videos[a][b].chosenValidators = [readyValidators[0], readyValidators[1], readyValidators[2],readyValidators[3],readyValidators[4],readyValidators[5],readyValidators[6],readyValidators[7],readyValidators[8],readyValidators[9]];
+    }
+}
