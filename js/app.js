@@ -156,7 +156,7 @@ document.addEventListener("DOMContentLoaded", function() {
     
     var dashboard_wrapper = document.querySelector('.dashboard_wrapper');
     var vote_wrapper = document.querySelector('.vote_wrapper');
-    var stake_wrapper = document.querySelector('.stake_wrapper');
+    var lock_wrapper = document.querySelector('.lock_wrapper');
     var buy_wrapper = document.querySelector('.buy_wrapper');
     var sell_wrapper = document.querySelector('.sell_wrapper');
     var explorer_wrapper = document.querySelector('.explorer_wrapper');    
@@ -181,7 +181,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         dashboard_wrapper.style.display = 'block';
         vote_wrapper.style.display = 'none';
-        stake_wrapper.style.display = 'none';
+        lock_wrapper.style.display = 'none';
         buy_wrapper.style.display = 'none';
         sell_wrapper.style.display = 'none';
         explorer_wrapper.style.display = 'none';        
@@ -199,7 +199,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         dashboard_wrapper.style.display = 'none';
         vote_wrapper.style.display = 'block';
-        stake_wrapper.style.display = 'none';
+        lock_wrapper.style.display = 'none';
         buy_wrapper.style.display = 'none';
         sell_wrapper.style.display = 'none';
         explorer_wrapper.style.display = 'none';        
@@ -217,7 +217,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         dashboard_wrapper.style.display = 'none';
         vote_wrapper.style.display = 'none';
-        stake_wrapper.style.display = 'block';
+        lock_wrapper.style.display = 'block';
         buy_wrapper.style.display = 'none';
         sell_wrapper.style.display = 'none';
         explorer_wrapper.style.display = 'none';        
@@ -235,7 +235,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         dashboard_wrapper.style.display = 'none';
         vote_wrapper.style.display = 'none';
-        stake_wrapper.style.display = 'none';
+        lock_wrapper.style.display = 'none';
         buy_wrapper.style.display = 'block';
         sell_wrapper.style.display = 'none';
         explorer_wrapper.style.display = 'none';        
@@ -253,7 +253,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         dashboard_wrapper.style.display = 'none';
         vote_wrapper.style.display = 'none';
-        stake_wrapper.style.display = 'none';
+        lock_wrapper.style.display = 'none';
         buy_wrapper.style.display = 'none';
         sell_wrapper.style.display = 'block';
         explorer_wrapper.style.display = 'none';        
@@ -271,7 +271,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         dashboard_wrapper.style.display = 'none';
         vote_wrapper.style.display = 'none';
-        stake_wrapper.style.display = 'none';
+        lock_wrapper.style.display = 'none';
         buy_wrapper.style.display = 'none';
         sell_wrapper.style.display = 'none';
         explorer_wrapper.style.display = 'block';        
@@ -754,7 +754,7 @@ function validateInput(input, crypto) {
     var eth_sell = document.querySelector(".eth_sell");
     var mtg_sell = document.querySelector(".mtg_sell");
 
-    input.value = input.value.replace(/[^0-9.]/g, '');
+    input.value = input.value.replace(/[^0-9.,]/g, '');
 
     let result = 0;
     let formattedResult = 0;

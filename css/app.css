@@ -199,7 +199,7 @@ html{
 
     display: grid;
 
-    grid-template-rows: 50px min-content;
+    grid-template-rows: 50px auto;
 }
 
 .container_top{
@@ -551,11 +551,78 @@ cursive{
 
 /* !!!! ---- STAKE PART ---- !!!! */
 
-.stake_wrapper{
+.lock_wrapper{
     display: none;
+}
+
+.lock_container{    
+    height: 100%;
+    width: 100%;
+
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    grid-template-rows: auto 100px 210px auto;
+
+    grid-row-gap: 37px;
+    grid-column-gap: 20px;
+}
+
+.lock_element{
+    background-color: var(--second-color);
+    border-radius: 15px;
+
+    padding: 25px 20px;
+
+    display: grid;
+    grid-template-rows: min-content auto min-content;
+    color: white;
+}
+
+.lock_element_title{
+
+}
+
+.lock_element_value{
+    grid-row: 3; 
+    font-size: 1.3rem;  
+}
+
+.liquid_wrapper, .locked_wrapper, .penalty_wrapper{
+    grid-row: 2;
+}
+
+.statistic_wrapper, .deposit_wrapper{
+    grid-row: 3;
+}
+
+.statistic_wrapper{
+    grid-column: 2 span;
+
+    display: grid;
+    grid-template-rows: repeat(3, auto);
+    grid-template-columns: repeat(3, auto);
+        
+}
+
+.static_container{
+    display: grid;
+    grid-template-rows: min-content auto;
+}
+
+.static_title{
+    color: var(--text-color);
+    font-size: 0.8rem;
+}
+
+.static_value{
+    font-size: 1rem;
+}
+
+.deposit_wrapper{
     width: 100%;
     height: 100%;
 }
+
 
 /* !!!! ---- BUY PART ---- !!!! */
 
@@ -567,16 +634,16 @@ cursive{
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 550px; /* Set the height as needed */    
+    height: 100%; /* Set the height as needed */    
 }
 
 .swap_container{
     background-color: var(--second-color);
-    border-radius: 12px;
+    border-radius: 15px;
     width: 375px;
     height: 190px;
 
-    padding: 24px;
+    padding: 25px 20px;
 
     display: grid;
 
@@ -594,13 +661,13 @@ cursive{
 }
 
 .money{
-    border-radius: 5px;
+    border-radius: 999px;
     border: 2px solid var(--second-color-hovered);
     box-sizing: border-box;
 
     display: grid;
     grid-template-rows: min-content auto min-content;
-    padding: 8px 12px;
+    padding: 8px 20px;
 }
 
 .first_line{
@@ -661,7 +728,7 @@ cursive{
     grid-row: 5;  
     
     background-color: var(--special);
-    border-radius: 5px;   
+    border-radius: 999px;   
     color: white;
 }
 
