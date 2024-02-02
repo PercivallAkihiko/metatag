@@ -20,9 +20,9 @@
                 <div class="icon"><i class="fa-solid fa-check-to-slot"></i></div>
                 <div class="title">Vote</div>
             </div>     
-            <div class="item_container stake">
+            <div class="item_container lock">
                 <div class="icon"><i class="fa-solid fa-vault"></i></div>
-                <div class="title">Stake</div>
+                <div class="title">Lock</div>
             </div>     
             <div class="item_container buy">
                 <div class="icon"><i class="fa-solid fa-plus"></i></div>
@@ -8861,7 +8861,25 @@
                             <div class="static_value">2%</div>
                         </div>
                     </div>
-                    <form action="action_page.php" method="post" class="deposit_wrapper lock_element">     
+                    <div class="deposit_wrapper lock_element">
+                        <div class="deposit_title">Lock</div>
+                        <div class="mtg_lock_wrapper mtg_input">
+                            <div class="mtg_first_line">                                
+                                <input class="mtg_input" type="text" placeholder="0.00" name="uname" oninput="validateInputLock(this)">                                 
+                                <div class="crypto_icon"><i class="fa-brands fa-tiktok"></i></div>
+                                <div class="crypto_name">MTG</div>
+                            </div>
+                            <div class="mtg_second_line">
+                                <div id="dollar_value_lock" class="dollar_value">0 $</div>
+                                <div class="total_balance">Balance 0.00</div>
+                                <div class="max">MAX</div>
+                            </div>                            
+                        </div>
+                        
+                        <div class="deposit_submit_wrapper">
+                            <div class="deposit_submit">Confirm</div>
+                        </div>
+                    </div>    
                     </form>
                 </div>
             </div>

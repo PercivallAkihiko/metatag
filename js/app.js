@@ -147,7 +147,7 @@ document.addEventListener("DOMContentLoaded", function() {
     
     var dashboard = document.querySelector(".dashboard"); 
     var vote = document.querySelector(".vote"); 
-    var stake = document.querySelector(".stake"); 
+    var lock = document.querySelector(".lock"); 
     var buy = document.querySelector(".buy"); 
     var sell = document.querySelector(".sell"); 
     var explorer = document.querySelector(".explorer"); 
@@ -188,7 +188,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         dashboard.classList.add("active");
         vote.classList.remove("active");
-        stake.classList.remove("active");
+        lock.classList.remove("active");
         buy.classList.remove("active");
         sell.classList.remove("active");
         explorer.classList.remove("active");
@@ -206,14 +206,14 @@ document.addEventListener("DOMContentLoaded", function() {
 
         dashboard.classList.remove("active");
         vote.classList.add("active");
-        stake.classList.remove("active");
+        lock.classList.remove("active");
         buy.classList.remove("active");
         sell.classList.remove("active");
         explorer.classList.remove("active");     
     });
 
-    stake.addEventListener("click" , () => {
-        container_title.textContent = 'Stake';
+    lock.addEventListener("click" , () => {
+        container_title.textContent = 'Lock';
 
         dashboard_wrapper.style.display = 'none';
         vote_wrapper.style.display = 'none';
@@ -224,7 +224,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         dashboard.classList.remove("active");
         vote.classList.remove("active");
-        stake.classList.add("active");
+        lock.classList.add("active");
         buy.classList.remove("active");
         sell.classList.remove("active");
         explorer.classList.remove("active");      
@@ -242,7 +242,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         dashboard.classList.remove("active");
         vote.classList.remove("active");
-        stake.classList.remove("active");
+        lock.classList.remove("active");
         buy.classList.add("active");
         sell.classList.remove("active");
         explorer.classList.remove("active");      
@@ -260,7 +260,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         dashboard.classList.remove("active");
         vote.classList.remove("active");
-        stake.classList.remove("active");
+        lock.classList.remove("active");
         buy.classList.remove("active");
         sell.classList.add("active");
         explorer.classList.remove("active");      
@@ -278,7 +278,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         dashboard.classList.remove("active");
         vote.classList.remove("active");
-        stake.classList.remove("active");
+        lock.classList.remove("active");
         buy.classList.remove("active");
         sell.classList.remove("active");
         explorer.classList.add("active");         
@@ -792,4 +792,16 @@ function validateInput(input, crypto) {
     dollar_value.forEach(element => {        
         element.innerHTML = numericResult + " $";
     });    
+}
+
+function validateInputLock(input) {    
+    var dollar_value_lock = document.getElementById("dollar_value_lock");
+    input.value = input.value.replace(/[^0-9.,]/g, '');
+      
+    let floatValue = parseFloat(input.value);
+    let result = floatValue * ethereumPrice  * ethxmtg;
+    let formattedResult = result.toFixed(4);
+    let numericResult = parseFloat(formattedResult);
+
+    dollar_value_lock.innerHTML = numericResult + " $";    
 }
