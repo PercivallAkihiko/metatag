@@ -142,7 +142,7 @@ var ethereumPrice = 1;
 
 document.addEventListener("DOMContentLoaded", function() {    
 
-    // menu script
+    // Menu script
     var menu_button = document.querySelector(".menu_button");    
     var titles = document.querySelectorAll(".title"); 
     
@@ -285,7 +285,7 @@ document.addEventListener("DOMContentLoaded", function() {
         explorer.classList.add("active");         
     });
     
-    // voting page script
+    // Voting page script
     var videolistDiv = document.querySelector('.video_list');
     var overlay = document.querySelector(".overlay");    
 
@@ -379,12 +379,24 @@ document.addEventListener("DOMContentLoaded", function() {
         console.error('Error fetching cryptocurrency price:', error);
     });
 
-    //chart scipt
-
+    // Chart scipt
     fetchEthereumPrices().then(monthxprice => {
         generateChart(monthxprice[0], monthxprice[1], [2.4, 2.5, 2.4, 2.7, 1,3,10,5,2.3,4.2, 15, 20, 13.4, 15,5.5, 19, 20, 21.2, 30, 24, 45, 45, 70]);
     });
 
+    // Profile script
+    var profile_button = document.querySelector('.profile_button');
+    var profileContent = document.querySelector('.profile_content_wrapper');
+    var computedStyle = window.getComputedStyle(profileContent);
+
+    profile_button.addEventListener("click" , () => {
+        if (computedStyle.display === 'none') {
+            profileContent.style.display = 'block';
+        } else {
+            profileContent.style.display = 'none';
+        }  
+    });
+    
 });
 
 function setGridRows(number) {
