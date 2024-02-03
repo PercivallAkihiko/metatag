@@ -10,8 +10,11 @@
     --special-menu-color: rgb(73, 108, 233);
 
     --completed-color: rgb(116, 196, 118);   
+    --completed-color-hover: rgb(85, 145, 87);
     --pending-color: rgb(253, 141, 60);
+    --pending-color-hover: rgb(202, 112, 47);
     --expired-color: rgb(251, 106, 74);
+    --expired-color-hover: rgb(199, 84, 58);
 }
 
 body {
@@ -248,21 +251,111 @@ html{
 
 .dashboard_container{
     display: grid;
-    grid-template-rows: 36px auto 30px auto;  
+    grid-template-rows: 36px auto 37px auto;  
 
 }
 
 .dashboard_first_line{
-    grid-row: 2;
-    background-color: green;
+    grid-row: 2;    
     height: 125px;
+
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); 
+    grid-column-gap: 20px; 
+}
+
+.dashboard_item{
+    background-color: var(--second-color);
+    padding: 25px 20px;
+    border-radius: 15px;
+
+    display: grid;
+    grid-template-columns: auto min-content;
+    grid-template-rows: auto min-content min-content auto;    
+
+    color: white;
+}
+
+.dashboard_item_title{
+    display: flex;    
+    align-items: first baseline;
+
+    grid-row: 2;
+}
+
+.dashboard_item_value{
+    color: white;
+    grid-row: 3;
+
+    display: flex;    
+    align-items: end;
+    height: 100%;
+
+    font-size: 1.5rem;
+}
+
+.dashboard_item_icon{
+    grid-column: 2;
+    grid-row: 2 / span 2;  
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+
+    font-size: 3.5rem;
+}
+
+.total_token_container{
+    background-color: var(--special);
+}
+
+.pending_container{
+    background-color: var(--pending-color);
+}
+
+.waiting_container{
+    background-color: var(--expired-color);
+}
+
+.completed_container{
+    background-color: var(--completed-color);
+}
+
+.total_token_container:hover{
+    background-color: var(--special-variant);
+}
+
+.pending_container:hover{
+    background-color: var(--pending-color-hover);
+}
+
+.waiting_container:hover{
+    background-color: var(--expired-color-hover);
+}
+
+.completed_container:hover{
+    background-color: var(--completed-color-hover);
 }
 
 .dashboard_second_line{
-    grid-row: 4;
-    background-color: rebeccapurple;
+    grid-row: 4;    
     height: 450px;
+
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    grid-column-gap: 20px; 
 }
+
+.dashboard_statistics, .dashboard_graph{
+    border-radius: 15px;
+    background-color: var(--second-color);
+
+    padding: 25px 20px;
+    border-radius: 15px;
+}
+
+
 
 /* !!!! ---- VOTE PART ---- !!!! */
 
