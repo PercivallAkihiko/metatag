@@ -355,6 +355,28 @@ html{
     border-radius: 15px;
 }
 
+.dashboard_statistics{
+    display: grid;
+    grid-template-rows: min-content 5px repeat(4, min-content) auto;
+
+    grid-row-gap: 20px;
+}
+
+white{
+    color: white;
+}
+
+.dashboard_statistics_title{
+    font-size: 1.5rem;
+}
+
+
+#balance_chart{
+    width: 100%;
+    height: 100%;    
+
+    color: white;
+}
 
 
 /* !!!! ---- VOTE PART ---- !!!! */

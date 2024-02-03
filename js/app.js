@@ -140,7 +140,8 @@ var videoDB = [
 
 var ethereumPrice = 1;
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function() {    
+
     // menu script
     var menu_button = document.querySelector(".menu_button");    
     var titles = document.querySelectorAll(".title"); 
@@ -377,6 +378,13 @@ document.addEventListener("DOMContentLoaded", function() {
     .catch(error => {
         console.error('Error fetching cryptocurrency price:', error);
     });
+
+    //chart scipt
+
+    fetchEthereumPrices().then(monthxprice => {
+        generateChart(monthxprice[0], monthxprice[1], [2.4, 2.5, 2.4, 2.7, 1,3,10,5,2.3,4.2, 15, 20, 13.4, 15,5.5, 19, 20, 21.2, 30, 24, 45, 45, 70]);
+    });
+
 });
 
 function setGridRows(number) {
@@ -805,3 +813,121 @@ function validateInputLock(input) {
 
     dollar_value_lock.innerHTML = numericResult + " $";    
 }
+
+function generateChart(days, ethprice, tokens){
+
+    var fill = Array.from({ length: Math.max(30 - tokens.length, 0) }, () => 0).concat(tokens);
+    var values = ethprice.map((price, index) => fill[index] * price * 0.005);
+
+    var maxValueFloat = Math.max.apply(null, values)
+    var maxValueInt = Math.ceil(maxValueFloat / 100) * 100 + 100;
+
+    // console.log("OUTSIDE");
+    // console.log(days);
+    // console.log(ethprice);
+    // console.log(fill);
+
+    new Chart("balance_chart", {
+    type: "line",
+    data: {
+        labels: days,
+        datasets: [
+            {    
+                label: "USD",
+                fill: true,                               
+                lineTension: 0.3,
+                backgroundColor: "rgba(3, 125, 214, 0.25)", // Red color with 0.3 opacity
+                borderColor: "rgba(3, 125, 214, 1)",
+                pointBackgroundColor: "rgb(3, 125, 214)", 
+                data: values                          
+            },
+            {    
+                label: "Tokens",
+                fill: true,                               
+                lineTension: 0.3,
+                backgroundColor: "rgba(116, 196, 118, 0.25)",
+                borderColor: "rgba(116, 196, 118, 1)",
+                pointBackgroundColor: "rgb(116, 196, 118)", 
+                data: fill                          
+            },
+        ]
+    },
+    options: {
+        legend: { display: true },
+        scales: {
+            yAxes: [{
+                ticks: {
+                    min: 0,
+                    max: maxValueInt,
+                    fontColor: 'rgb(134, 163, 184)' // Set the Y-axis tick label color to white
+                },       
+                gridLines: {
+                    color: 'rgba(134, 163, 184, 0.25)' // Set the color of the Y-axis grid lines
+                }            
+            }],
+            xAxes: [{
+                ticks: {
+                    fontColor: 'rgb(134, 163, 184)' // Set the X-axis tick label color to white
+                },
+                gridLines: { display: false }
+            }]
+        },
+        tooltips: {
+            mode: 'x', // Display tooltips only when hovering over the Y-axis
+            intersect: false,
+            callbacks: {
+                label: function(tooltipItem, data) {
+                    return tooltipItem.yLabel;
+                }
+            }
+        }
+    }
+    });
+}
+
+var fetchEthereumPrices = async () => {
+    const endDate = new Date(); // Today's date
+    const startDate = new Date();
+    startDate.setDate(endDate.getDate() - 91); // Date from 30 days ago
+
+    const endTimestamp = Math.floor(endDate.getTime() / 1000);
+    const startTimestamp = Math.floor(startDate.getTime() / 1000);
+
+
+    const apiUrl = `https://api.coingecko.com/api/v3/coins/ethereum/market_chart/range?vs_currency=usd&from=${startTimestamp}&to=${endTimestamp}&interval`;
+
+    console.log(endTimestamp);
+    console.log(startTimestamp);
+    console.log(apiUrl);
+
+    try {
+        var response = await fetch(apiUrl);
+        var data = await response.json();
+
+        if (data.prices) {
+
+            var startIndex = Math.max(0, data.prices.length - 30);
+            var dataSliced = data.prices.slice(startIndex);
+            
+            var datePricePairs = dataSliced.map(([timestamp, price]) => {
+                var date = new Date(timestamp);
+                var day = String(date.getDate()).padStart(2, '0'); // Add leading zero if needed
+                var month = String(date.getMonth() + 1).padStart(2, '0'); 
+            
+                return {
+                    date: `${day}/${month}`,
+                    price: price
+                };
+            });
+
+            var months = datePricePairs.map(entry => entry.date);
+            var prices = datePricePairs.map(entry => entry.price);
+            return [months, prices];
+
+        } else {
+            console.error('Unable to fetch Ethereum prices.');
+        }
+    } catch (error) {
+        console.error('Error fetching Ethereum prices:', error);
+    }
+};

@@ -5,6 +5,7 @@
         <link href="https://fonts.cdnfonts.com/css/euclid-circular-b" rel="stylesheet">
         <script src="https://kit.fontawesome.com/0a2c0a85f0.js" crossorigin="anonymous"></script>
         <script src="js/app.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
     </head>
     <body>
         <div class="menu">
@@ -69,8 +70,18 @@
                         </div>
                     </div>
                     <div class="dashboard_second_line">
-                        <div class="dashboard_statistics">Statistics</div>
-                        <div class="dashboard_graph">Graph</div>
+                        <div class="dashboard_statistics">
+                            <div class="dashboard_statistics_title">Statistics</div>
+                            <div class="empty"></div>
+                            <div class="dashboard_statistics_list">Claimed token: <white>32.2</white></div>
+                            <div class="dashboard_statistics_list">Slashed token: <white>12.52</white></div>
+                            <div class="dashboard_statistics_list">Percentage earn: <white>15%</white></div>                            
+                            <div class="dashboard_statistics_list">AVG completed per day: <white>2.4 video/day</white></div>
+                            <div class="dashboard_statistics_list">Expired: <white>15</white></div>                            
+                        </div>
+                        <div class="dashboard_graph">
+                            <canvas id="balance_chart"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -108,14 +119,14 @@
                             <div class="static_title">Total token</div>
                             <div class="static_value">14.5 MTG</div>
                         </div>
-                        <div class="static_container">
+                        <!-- <div class="static_container">
                             <div class="static_title">Total earn</div>
                             <div class="static_value">4.1 MTG</div>
                         </div>
                         <div class="static_container">
                             <div class="static_title">Total loss</div>
                             <div class="static_value">0 MTG</div>
-                        </div>
+                        </div> -->
                         <div class="static_container">
                             <div class="static_title">Starting date</div>
                             <div class="static_value">26, Jan 2023</div>
@@ -124,10 +135,10 @@
                             <div class="static_title">Days locked</div>
                             <div class="static_value">5 days</div>
                         </div>
-                        <div class="static_container">
+                        <!-- <div class="static_container">
                             <div class="static_title">Percentage earn</div>
                             <div class="static_value">5.2%</div>
-                        </div>
+                        </div> -->
                         <div class="static_container">
                             <div class="static_title">Lock fees</div>
                             <div class="static_value">2%</div>
