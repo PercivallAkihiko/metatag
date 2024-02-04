@@ -10,8 +10,11 @@
     --special-menu-color: rgb(73, 108, 233);
 
     --completed-color: rgb(116, 196, 118);   
+    --completed-color-hover: rgb(85, 145, 87);
     --pending-color: rgb(253, 141, 60);
+    --pending-color-hover: rgb(202, 112, 47);
     --expired-color: rgb(251, 106, 74);
+    --expired-color-hover: rgb(199, 84, 58);
 }
 
 body {
@@ -115,7 +118,7 @@ html{
     grid-row: 4;
 }
 
-.stake{
+.lock{
     grid-row: 5;        
 }
 
@@ -205,6 +208,8 @@ html{
 .container_top{
     display: grid;
     grid-template-columns: auto 55px 55px;
+
+    position: relative;
 }
 
 .container_title, .notification_button, .profile_button{
@@ -239,71 +244,181 @@ html{
     border: 0.1px solid var(--text-color);
 }
 
+.profile_content_wrapper{
+    position: absolute;
+    top: 100%; 
+    right: 0;
+    display: none; 
+    background-color: var(--second-color);        
+    z-index: 2; 
+
+    margin-top: 5px;
+    width: 216px;
+    height: 53px;
+
+    border-radius: 15px;    
+    box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.5);
+}
+
+.profile_content_container{
+    display: grid;
+    grid-template-columns: 55px auto 55px;
+    height: 100%;
+}
+
+.profile_button_second{
+    display: flex;
+    align-items: center;    
+    justify-content: center;
+}
+
+.address , .logout{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logout{
+    color: rgb(224, 100, 104);
+    cursor: pointer;
+}
+
 /* !!!! ---- DASHBOARD PART ---- !!!! */
 
 .dashboard_wrapper{    
     width: 100%;
     height: 100%;
-
-    margin-top: 36px;    
-    display: grid;
-    grid-template-rows: min-content 56px min-content min-content;    
 }
 
-.value{
-    font-weight: bolder;
-    font-size: 2.5rem;
-    line-height: 3.5rem;
-
+.dashboard_container{
     display: grid;
-    grid-template-columns: min-content min-content min-content;
+    grid-template-rows: 36px auto 37px auto;  
+
 }
 
-.integer{
+.dashboard_first_line{
+    grid-row: 2;    
+    height: 125px;
+
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); 
+    grid-column-gap: 20px; 
+}
+
+.dashboard_item{
+    background-color: var(--second-color);
+    padding: 25px 20px;
+    border-radius: 15px;
+
+    display: grid;
+    grid-template-columns: auto min-content;
+    grid-template-rows: auto min-content min-content auto;    
+
     color: white;
 }
 
-.button_see_wrapper{
+.dashboard_item_title{
+    display: flex;    
+    align-items: first baseline;
+
+    grid-row: 2;
+}
+
+.dashboard_item_value{
+    color: white;
+    grid-row: 3;
+
+    display: flex;    
+    align-items: end;
+    height: 100%;
+
+    font-size: 1.5rem;
+}
+
+.dashboard_item_icon{
+    grid-column: 2;
+    grid-row: 2 / span 2;  
+
     display: flex;
     justify-content: center;
     align-items: center;
+    height: 100%;
 
-    margin-left: 16px;    
+    font-size: 3.5rem;
 }
 
-.button_see_content{
+.total_token_container{
+    background-color: var(--special);
+}
+
+.pending_container{
+    background-color: var(--pending-color);
+}
+
+.waiting_container{
+    background-color: var(--expired-color);
+}
+
+.completed_container{
+    background-color: var(--completed-color);
+}
+
+.total_token_container:hover{
+    background-color: var(--special-variant);
+}
+
+.pending_container:hover{
+    background-color: var(--pending-color-hover);
+}
+
+.waiting_container:hover{
+    background-color: var(--expired-color-hover);
+}
+
+.completed_container:hover{
+    background-color: var(--completed-color-hover);
+}
+
+.dashboard_second_line{
+    grid-row: 4;    
+    height: 450px;
+
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    grid-column-gap: 20px; 
+}
+
+.dashboard_statistics, .dashboard_graph{
+    border-radius: 15px;
     background-color: var(--second-color);
-    border-radius: 25%;
 
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    width: 40px;
-    height: 40px;
+    padding: 25px 20px;
+    border-radius: 15px;
 }
 
-.button_see_content:hover{
-    background-color: var(--second-color-hovered);
+.dashboard_statistics{
+    display: grid;
+    grid-template-rows: min-content 5px repeat(4, min-content) auto;
+
+    grid-row-gap: 20px;
 }
 
-.see , .not_see{
-    font-size: 20px;
+white{
+    color: white;
 }
 
-.see{
-    display: none;
+.dashboard_statistics_title{
+    font-size: 1.5rem;
 }
 
-.percentage{
-    color: rgb(100, 219, 90);
-    font-size: .875rem;
-    line-height: 1.25rem;
+
+#balance_chart{
+    width: 100%;
+    height: 100%;    
+
+    color: white;
 }
 
-.dashboard_content{
-    margin-top: 32px;
-}
 
 /* !!!! ---- VOTE PART ---- !!!! */
 
@@ -560,7 +675,7 @@ cursive{
     width: 100%;
 
     display: grid;
-    grid-template-columns: repeat(3, auto);
+    grid-template-columns: repeat(3, 1fr);
     grid-template-rows: auto 100px 210px auto;
 
     grid-row-gap: 37px;
@@ -600,8 +715,7 @@ cursive{
 
     display: grid;
     grid-template-rows: repeat(3, auto);
-    grid-template-columns: repeat(3, auto);
-        
+    grid-template-columns: repeat(3, auto);        
 }
 
 .static_container{
@@ -619,14 +733,89 @@ cursive{
 }
 
 .deposit_wrapper{
-    width: 100%;
+    display: grid;
+    grid-template-rows: min-content auto min-content;
+
+    grid-row-gap: 15px; 
+}
+
+.deposit_title{
+    font-size: 1.2rem;
+
+}
+
+.mtg_lock_wrapper{
+    display: grid;
+    grid-template-rows: auto min-content;
+}
+
+.mtg_first_line{    
+    font-size: 20px;
+
+    display: grid;
+    grid-template-columns: auto min-content min-content;
+    align-items: center;
+    
+    border: 2px solid var(--second-color-hovered);
+    border-radius: 999px;
+    padding: 0px 10px;
+}
+
+.mtg_second_line{            
+    font-size: 0.7rem;
+    padding: 0px 10px;
+
+    display: grid;
+    grid-template-columns: auto auto min-content;
+    align-items: center;
+
+    height: 25px;
+}
+
+.deposit_wrapper input{
+    background: transparent;
+    border: none;
+    outline: none;
+
+    color: var(--text-color);    
+}
+
+
+.deposit_wrapper .crypto_name, .deposit_wrapper .crypto_icon{
+    font-size: 1rem;
+}
+
+.deposit_submit_wrapper{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
     height: 100%;
+}
+
+.deposit_submit{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    height: 40px;
+    width: 100%;
+
+    border-radius: 999px;
+
+    background-color: var(--special);
+    cursor: pointer;
+}
+
+.deposit_submit:hover{
+    background-color: var(--special-variant);
 }
 
 
 /* !!!! ---- BUY PART ---- !!!! */
 
-.swap_wrapper{
+
+.buy_wrapper, .sell_wrapper{
     display: none;
 }
 
