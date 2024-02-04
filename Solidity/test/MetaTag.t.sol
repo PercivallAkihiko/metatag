@@ -17,6 +17,7 @@ contract MetaTagTest is DSTest {
     address private user;
     Vm private vm = Vm(HEVM_ADDRESS); // Initialize the vm for tests
 
+
     // Function called to setup the environment for tests, all the functions under it can access these values
     function setUp() public {
         team = address(0xB005); // Owner created
@@ -29,22 +30,8 @@ contract MetaTagTest is DSTest {
         vm.stopPrank(); // After this action the team will not perform anymore the actions
     }
 
-    // Function to check if the company can be whitelisted by the team
-    function testCompanyWhitelist() public {
-        vm.startPrank(user); // Next action will be executed as user
-        vm.expectRevert("Not MTG Team!"); // This function expects a revert and catches it
-        tag.whitelistCompany(company);
-        vm.stopPrank(); // The actions will not anymore be executed as user
-        vm.startPrank(team); // Next action will be executed as team
-        tag.whitelistCompany(company);
-        vm.stopPrank(); // The actions will not anymore be executed as team
-    }
-
     // Function to check the company depositing tokens
     function testTokenCompany() public {
-        vm.startPrank(team); // Next action will be executed as team
-        tag.whitelistCompany(company);
-        vm.stopPrank(); // The actions will not anymore be executed as team
         uint256 amountEth = 1 ether;
         vm.deal(company, amountEth); // In the virtualized environment, company receives the amountEth
         vm.startPrank(company); // Next action will be executed as company
@@ -58,9 +45,6 @@ contract MetaTagTest is DSTest {
 
     // Function to check the depositing of companies and normal transfer
     function testActions() public {
-        vm.startPrank(team); // Next action will be executed as team
-        tag.whitelistCompany(company);
-        vm.stopPrank(); // The actions will not anymore be executed as team
         uint256 amountEth = 1 ether;
         vm.deal(company, amountEth); // In the virtualized environment, company receives the amountEth
         vm.startPrank(company); // Next action will be executed as company
@@ -80,9 +64,6 @@ contract MetaTagTest is DSTest {
 
     // Function to check the adding of videos by companies
     function testAddVideo() public {
-        vm.startPrank(team); // Next action will be executed as team
-        tag.whitelistCompany(company);
-        vm.stopPrank(); // The actions will not anymore be executed as team
         address user1 = address(0x41);
         address user2 = address(0x42);
         address user3 = address(0x43);
@@ -226,15 +207,16 @@ contract MetaTagTest is DSTest {
         vm.startPrank(company); // Next action will be executed as company
         token.buyTokens{value: amountEth}();
         token.approve(address(tag), 5000 * 1e18); // Before the token transfer we need to approve it
-        tag.receiveTokensFromCompany(1e18 * 600);
+        tag.receiveTokensFromCompany(1e18 * 120);
         tag.addVideo(12, 12000);
+        tag.addVideo(13, 12000);
         vm.stopPrank(); // The actions will not anymore be executed as company
         
 
-        tag.schifo(company,12);
+        //tag.schifo(company,12);
         address[] memory rValidators = tag.getVideoValidators(company, 12);
         for (uint i = 0; i < rValidators.length; i++) {
-            console.log(rValidators[i]);
+            //console.log(rValidators[i]);
         }
 
         vm.startPrank(user1);
@@ -242,11 +224,11 @@ contract MetaTagTest is DSTest {
         vm.stopPrank();
 
         vm.startPrank(user2);
-        tag.submitHash(company, 12, "0e985ee5657a9b5986e24eae213457571c0cfbec2dbee2f417efa4f7a9f6d512");
+        tag.submitHash(company, 12, "4be25c88e0160a8688ff9c2a951cd73ab31292a83640699111cbba817894947f");
         vm.stopPrank();
 
         vm.startPrank(user3);
-        tag.submitHash(company, 12, "bfe42a83947a214a89e026a16cedb3e3203ff13bf35fe44fccc87279f2843486");
+        tag.submitHash(company, 12, "2ba50801c924fbcaa5759d1ee855727a5f141d90ec29de667683082bcf3fbe25");
         vm.stopPrank();
 
         vm.startPrank(user4);
@@ -254,7 +236,7 @@ contract MetaTagTest is DSTest {
         vm.stopPrank();
 
         vm.startPrank(user5);
-        tag.submitHash(company, 12, "a7bde8d58e53a16feaa5dd854668d2cb678aedfa47de5a74f9719c1d764e595d");
+        tag.submitHash(company, 12, "f4b77ec457b3179d88e24558e81d6119960e66df8f49ee862468b927e04ce4d4");
         vm.stopPrank();
 
         vm.startPrank(user6);
@@ -262,33 +244,33 @@ contract MetaTagTest is DSTest {
         vm.stopPrank();
 
         vm.startPrank(user7);
-        tag.submitHash(company, 12, "f64931f9fbeb2c556a04516dd06c08ef38463b1fed5aeaeae68a41585afb45fd");
+        tag.submitHash(company, 12, "e0b138bc2090e0a2c65f9e7fd84a841ae1f5341dfd731fc8d73a8db902587b3e");
         vm.stopPrank();
 
         vm.startPrank(user8);
-        tag.submitHash(company, 12, "a20faac46d6e1f887fce0bb94eb56e521f2d86e212c5de6a6bf65bed958fcad1");
+        tag.submitHash(company, 12, "abdb1ca529b15bc26f5fd868a27e15e375dd3c9c23e32bc21bf3532a03ad64b0");
         vm.stopPrank();
 
         vm.startPrank(user9);
-        tag.submitHash(company, 12, "7a052941ae57ebabddb2fae410428cadc2511ee3b6ec992328cb674ec15ae062");
+        tag.submitHash(company, 12, "46d3ccc5685fc4c14269a8cbbf01f00e39e03c8090b44c197757411e8c720969");
         vm.stopPrank();
 
         vm.startPrank(user10);
         tag.submitHash(company, 12, "f0d097a87446c4a503c6517e7d22e9a72f6c1ead42a24d30c7529ecec115b9a8");
         vm.stopPrank();
         
-        vm.roll(7304);
+        //vm.roll(7304);
 
         vm.startPrank(user1);
         tag.revealHash(company, 12, "8 10 Ok2pHe0M2Ke");
         vm.stopPrank();
 
         vm.startPrank(user2);
-        tag.revealHash(company, 12, "4 6 7 8 9 FkDxZc7HavN");
+        tag.revealHash(company, 12, "1 2 3 4 6 7 9 FkDxZc7HavN");
         vm.stopPrank();
 
         vm.startPrank(user3);
-        tag.revealHash(company, 12, "10 HFubBhe3qc7");
+        tag.revealHash(company, 12, "4 10 HFubBhe3qc7");
         vm.stopPrank();
 
         vm.startPrank(user4);
@@ -296,7 +278,7 @@ contract MetaTagTest is DSTest {
         vm.stopPrank();
 
         vm.startPrank(user5);
-        tag.revealHash(company, 12, "8 10 kbg0TyZZdUR");
+        tag.revealHash(company, 12, "8 9 10 kbg0TyZZdUR");
         vm.stopPrank();
 
         vm.startPrank(user6);
@@ -304,15 +286,15 @@ contract MetaTagTest is DSTest {
         vm.stopPrank();
 
         vm.startPrank(user7);
-        tag.revealHash(company, 12, "4 KS4i4EgV9oX");
+        tag.revealHash(company, 12, "5 KS4i4EgV9oX");
         vm.stopPrank();
 
         vm.startPrank(user8);
-        tag.revealHash(company, 12, "1 10 Uh3Lgv3s2sk");
+        tag.revealHash(company, 12, "1 Uh3Lgv3s2sk");
         vm.stopPrank();
 
         vm.startPrank(user9);
-        tag.revealHash(company, 12, "8 10 yknpiR51XXh");
+        tag.revealHash(company, 12, "7 8 yknpiR51XXh");
         vm.stopPrank();
 
         vm.startPrank(user10);
@@ -320,24 +302,49 @@ contract MetaTagTest is DSTest {
         vm.stopPrank();
 
         vm.startPrank(user8);
-        console.log(tag.balanceValidators(user8));
-        vm.roll(15000);
-        //(uint256 aba, uint256 abaa, uint256 abaaa) = tag.getRewards(company, 12);
+        //vm.roll(15000);
         tag.getRewards(company,12);
-        //console.log(aba, abaa, abaaa);
-        console.log(tag.balanceValidators(user8));
         vm.stopPrank();
-        //uint256[] memory best = tag.getVideoTags(company, 12, user5);
-        //console.log(best[2]);
-        //console.log(tag.hashStringToString("ciao"));
-        //console.log(tag.bytes32ToString(0x3120342032203338667339336a66373368000000000000000000000000000000));
+
+        vm.startPrank(user3);
+        tag.getRewards(company,12);
+        vm.stopPrank();
+
+        vm.startPrank(user2);
+        //console.log(tag.balanceValidators(user2));
+        //
+        //console.log(a, b, c);
+        tag.getRewards(company,12);
+        //console.log(tag.balanceValidators(user2));
+        vm.stopPrank();
+
+        vm.startPrank(user1);
+        
+        //console.log(videos1);
+        //(address companyChosen, uint256 videoIdChosen) = tag.validatorVideos(user1, 0);
+        tag.getRewards(company,12);
+        //console.log(tag.balanceValidators(user1));
+        vm.stopPrank();
+
+        vm.startPrank(user7);
+        //console.log(tag.balanceValidators(user7));
+        //tag.getRewards(company, 12);
+        tag.setVariable();
+        tag.withdrawFundsValidators();
+        //tag.getRewards(company, 12);
+        //(uint256 a, uint256 b, uint256 c) = tag.getRewards(company,12);
+        //console.log(a, b, c);
+        //console.log(tag.balanceValidators(user7));
+        vm.stopPrank();
+
+        vm.startPrank(company);
+        vm.roll(73000);
+        tag.withdrawFundsCompany();
+        vm.stopPrank();
     }
 
     // Function to check the depositing for validators
     function testTokenValidator() public {
-        vm.startPrank(team); // Next action will be executed as team
-        tag.whitelistCompany(company);
-        vm.stopPrank(); // The actions will not anymore be executed as team
         uint256 amountEth = 1 ether;
         vm.deal(validator, amountEth); // In the virtualized environment, validator receives the amountEth
         vm.startPrank(validator); // Next action will be executed as validator
@@ -382,7 +389,5 @@ contract MetaTagTest is DSTest {
         tag.receiveTokensFromValidator(50 * 1e18);
         tag.setVariable();
         vm.stopPrank();
-
-        
     }
 }
