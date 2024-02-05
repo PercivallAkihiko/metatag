@@ -532,7 +532,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 
-
+    
     
 
     async function getAccount() {
@@ -549,8 +549,35 @@ document.addEventListener("DOMContentLoaded", function () {
         return null;
     }
 
+    
 
-    let lastNumberValue = null;
+    async function buyMetaTagTokens(ethAmount) {
+        if (!contract) {
+            console.error("Contract not initialized");
+            return;
+        }
+        const userAccount = await getAccount();
+        const transactionParameters = {
+            to: contractAddress,
+            from: userAccount,
+            value: web3.utils.toHex(web3.utils.toWei(ethAmount, 'ether')),
+            data: contract.methods.buyTokens().encodeABI() // Replace with the actual contract function
+        };
+    
+        try {
+            const txHash = await window.ethereum.request({
+                method: 'eth_sendTransaction',
+                params: [transactionParameters],
+            });
+            console.log("Transaction Hash:", txHash);
+            // Additional logic after successful transaction (if needed)
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+/* 
+    let lastNumberValue = null; */
 
     /* async function pollNumberValue() {
         try {
@@ -569,6 +596,20 @@ document.addEventListener("DOMContentLoaded", function () {
     // Start polling with a specified interval, e.g., every 3 seconds
     setInterval(pollNumberValue, 1000);
      */
+
+    const buyButton = document.getElementById('buy_button');
+    buyButton.addEventListener('click', function(event) {
+        event.preventDefault(); // Prevent the default form submission behavior
+
+        const ethInput = document.querySelector('.eth_input');
+        const ethAmount = ethInput.value; // Get the value from the input field
+
+        if (ethAmount) {
+            buyMetaTagTokens(ethAmount);
+        } else {
+            console.error("No Ethereum amount specified");
+        }
+    });
 
     const disconnectButton = document.getElementById("disconnectButton");
 
