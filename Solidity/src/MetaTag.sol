@@ -306,7 +306,8 @@ event eventWithdrawFundsCompany(address indexed company, uint256 amount);
         }
         uint256 _amount = balanceValidators[msg.sender];
         balanceValidators[msg.sender] -= _amount;
-        require(mtgToken.transfer(msg.sender, _amount), "Transfer failed!");
+        balanceValidators[mtgTeam] += _amount * 0.01;
+        require(mtgToken.transfer(msg.sender, _amount * 0.99), "Transfer failed!");
         emit eventWithdrawFundsValidators(msg.sender, _amount);
     }
 
@@ -391,7 +392,8 @@ event eventWithdrawFundsCompany(address indexed company, uint256 amount);
         require(block.number >= lastVideo[msg.sender] + 72000 , "You have to wait 10 days since adding the last video!");
         uint256 amount = balanceCompanies[msg.sender];
         balanceCompanies[msg.sender] -= amount;
-        require(mtgToken.transfer(msg.sender, amount), "Transfer failed!");
+        balanceValidators[mtgTeam] += amount * 0.01;
+        require(mtgToken.transfer(msg.sender, amount * 0.99), "Transfer failed!");
         emit eventWithdrawFundsCompany(msg.sender, amount);
     }
 
