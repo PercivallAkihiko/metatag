@@ -36,6 +36,21 @@ contract MetaTag {
         uint256 videoIdChosen;
     }
 
+// EVENTS ####################################################################################################################################################################################
+
+event eventAddVideo(address indexed emitter, uint256 videoId, address[] chosenValidators, uint256 timestamp);
+event eventSetVariable(address indexed validator);
+event eventReceiveTokensFromValidator(address indexed company, uint256 amount);
+event eventSubmitHash(address indexed validator, address indexed company, uint256 videoId, string hash);
+event eventRevealHash(address indexed validator, address indexed company, uint256 videoId, string originalValue);
+event eventGetRewards(address indexed validator, address indexed company, uint256 videoId, uint256 rewardAmount, bool positive);
+event eventMTGforVoucher(address indexed validator);
+event eventWithdrawFundsValidators(address indexed validator, uint256 amount);
+event eventReceiveTokensFromCompany(address indexed validator, uint256 amount);
+event eventWithdrawFundsCompany(address indexed company, uint256 amount);
+
+
+
 // CONSTRUCTOR ####################################################################################################################################################################################
 
     // In the constructor we save the sender and we choose as input the address of the MTG token
@@ -60,6 +75,7 @@ contract MetaTag {
             addValidator(msg.sender);
             variableValidators[msg.sender] = true;
         }
+    emit eventSetVariable(msg.sender);
     }
 
     function addValidator(address _validator) internal {
@@ -86,6 +102,7 @@ contract MetaTag {
         bool sent = mtgToken.transferFrom(msg.sender, address(this), amount); // Transfer tokens from the validator's address to this contract
         require(sent, "Token transfer failed");
         balanceValidators[msg.sender] += amount; // Update the validator's token balance in this contract
+        emit eventReceiveTokensFromValidator(msg.sender, amount);
     }
 
     // Function for validators to submit a hash for a video
@@ -109,6 +126,7 @@ contract MetaTag {
 
         videos[company][videoId].hashedData[msg.sender] = hash;
         videos[company][videoId].hashedCounter +=1;
+        emit eventSubmitHash(msg.sender, company, videoId, hash);
     }
 
     // Helper function to check if a validator is chosen for a specific video
@@ -144,6 +162,7 @@ contract MetaTag {
         string memory tagsString = string(tagsBytes);
         videos[company][videoId].revealedTags[msg.sender] = extractTags(tagsString);
         videos[company][videoId].revValidators.push(msg.sender);
+        emit eventRevealHash(msg.sender, company, videoId, originalValue);
     }
 
     function getRewards(address company, uint256 videoId) public {
@@ -245,6 +264,7 @@ contract MetaTag {
         
         uint256 baseReward = 1e8 * 1e18;
         uint256 rewardAmount;
+        bool positive = true;
 
         if (reward > baseReward) {
             rewardAmount = (reward - baseReward) * videoLength * constantMultiplier / 10000;
@@ -253,11 +273,19 @@ contract MetaTag {
             balanceValidators[msg.sender] += rewardAmount;
         } else {
             rewardAmount = (baseReward - reward) * videoLength * constantMultiplier / 10000;
-            require(balanceValidators[msg.sender] >= rewardAmount, "Validator does not have enough tokens");
-            balanceValidators[msg.sender] -= rewardAmount;
-            // Here, instead of transferring to 0xdEaD, we simply reduce the validator's balance.
+            uint256 bln = balanceValidators[msg.sender];
+            if (bln < rewardAmount)
+            {
+                balanceValidators[msg.sender] = 0;
+            }
+            else
+            {
+                balanceValidators[msg.sender] -= rewardAmount;
+            }
+            positive = false;
         }
         //return (reward, reward, reward);
+        emit eventGetRewards(msg.sender, company, videoId, rewardAmount, positive);
     }
 
     // Function to exchange 100 tokens for a voucher. The implementation should be done on the website, it return only true
@@ -266,6 +294,7 @@ contract MetaTag {
         bool sent = mtgToken.transferFrom(msg.sender, mtgTeam, amount); // Transfer MTG tokens from the sender to the contract owner
         require(sent, "Token transfer failed");
         return true;
+        emit eventMTGforVoucher(msg.sender);
     }
 
     function withdrawFundsValidators() public {
@@ -278,6 +307,7 @@ contract MetaTag {
         uint256 _amount = balanceValidators[msg.sender];
         balanceValidators[msg.sender] -= _amount;
         require(mtgToken.transfer(msg.sender, _amount), "Transfer failed!");
+        emit eventWithdrawFundsValidators(msg.sender, _amount);
     }
 
 // COMPANIES FUNCTIONS ####################################################################################################################################################################################
@@ -289,6 +319,7 @@ contract MetaTag {
         bool sent = mtgToken.transferFrom(msg.sender, address(this), amount); // Transfer tokens from the company's address to this contract
         require(sent, "Token transfer failed!");
         balanceCompanies[msg.sender] += amount; // Update the company's token balance in this contract
+        emit eventReceiveTokensFromCompany(msg.sender, amount);
     }
 
     // Function for companies to submit videos for tagging
@@ -303,6 +334,7 @@ contract MetaTag {
         newVideo.timestamp = block.number;
         lastVideo[msg.sender] = block.number;
         require(balanceCompanies[msg.sender] >= calculateNeededTokens(), "Not enough MTG tokens in the smart contract, deposit the right amount!");
+        emit eventAddVideo(msg.sender, videoId, newVideo.chosenValidators, block.number);
     }
 
     function randomChooseValidators(uint256 videoId) internal returns ( address[] memory) {
@@ -360,6 +392,7 @@ contract MetaTag {
         uint256 amount = balanceCompanies[msg.sender];
         balanceCompanies[msg.sender] -= amount;
         require(mtgToken.transfer(msg.sender, amount), "Transfer failed!");
+        emit eventWithdrawFundsCompany(msg.sender, amount);
     }
 
 
@@ -463,5 +496,11 @@ contract MetaTag {
     // Getter function for validator chosen tags on a specific Video
     function getVideoTags(address company, uint256 videoId, address validator) public view returns (uint256[] memory) {
         return videos[company][videoId].revealedTags[validator];
+    }
+
+    // Function that terminate the smart contract
+    function terminate() public {
+        require(msg.sender == mtgTeam, "Only the owner can terminate the smart contract!");
+        selfdestruct(payable(mtgTeam)); // This is deprecated but I do not see alternatives in this moment
     }
 }
