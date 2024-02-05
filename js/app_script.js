@@ -494,7 +494,7 @@ document.addEventListener("DOMContentLoaded", function () {
     
 
     // Assuming you have a conversion rate from ETH to MTG
-    const ethToMtgRate = 0.005; // Replace with the actual conversion rate
+    const ethToMtgRate = 0.001; // Replace with the actual conversion rate
 
     // Add functionality for "Max" button
     document.querySelectorAll('.max').forEach(maxButton => {

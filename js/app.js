@@ -11,8 +11,8 @@
 
 
 
-//1 MTG = 0.005 ETH
-var ethxmtg = 0.005;
+//1 MTG = 0.001 ETH
+var ethxmtg = 0.001;
 
 
 var videoDB = [
@@ -829,7 +829,7 @@ function validateInputLock(input) {
 function generateChart(days, ethprice, tokens){
 
     var fill = Array.from({ length: Math.max(30 - tokens.length, 0) }, () => 0).concat(tokens);
-    var values = ethprice.map((price, index) => fill[index] * price * 0.005);
+    var values = ethprice.map((price, index) => fill[index] * price * 0.001);
 
     var maxValueFloat = Math.max.apply(null, values)
     var maxValueInt = Math.ceil(maxValueFloat / 100) * 100 + 100;
