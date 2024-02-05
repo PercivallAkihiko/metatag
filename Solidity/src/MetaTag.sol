@@ -65,7 +65,7 @@ event eventRemoveWhitelistCompany(address indexed company);
 // MODIFIERS ####################################################################################################################################################################################
 
     modifier onlyWhitelist() {
-        require(wlCompanies[msg.sender] = true, "You are not a whitelisted company!");
+        require(wlCompanies[msg.sender] == true, "You are not a whitelisted company!");
         _;
     }
 

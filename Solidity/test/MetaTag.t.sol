@@ -32,6 +32,9 @@ contract MetaTagTest is DSTest {
 
     // Function to check the company depositing tokens
     function testTokenCompany() public {
+        vm.startPrank(team);
+        tag.whitelistCompany(company);
+        vm.stopPrank();
         uint256 amountEth = 1 ether;
         vm.deal(company, amountEth); // In the virtualized environment, company receives the amountEth
         vm.startPrank(company); // Next action will be executed as company
@@ -45,6 +48,9 @@ contract MetaTagTest is DSTest {
 
     // Function to check the depositing of companies and normal transfer
     function testActions() public {
+        vm.startPrank(team);
+        tag.whitelistCompany(company);
+        vm.stopPrank();
         uint256 amountEth = 1 ether;
         vm.deal(company, amountEth); // In the virtualized environment, company receives the amountEth
         vm.startPrank(company); // Next action will be executed as company
@@ -203,6 +209,11 @@ contract MetaTagTest is DSTest {
         vm.stopPrank();
 
         vm.roll(10);
+
+        vm.startPrank(team);
+        tag.whitelistCompany(company);
+        vm.stopPrank();
+
         vm.deal(company, amountEth); // In the virtualized environment, company receives the amountEth
         vm.startPrank(company); // Next action will be executed as company
         token.buyTokens{value: amountEth}();
