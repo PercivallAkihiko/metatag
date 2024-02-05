@@ -619,7 +619,8 @@ document.addEventListener("DOMContentLoaded", function () {
         // Reset the DApp state
         contract = null;
         // Reload the page to reset the state of the DApp or perform additional state cleanup as needed
-        window.location.reload();
+        window.location.href = 'index.html';
+        //window.location.reload();
     });
 
     /* initializeWeb3().then(() => {
