@@ -12,6 +12,7 @@ contract MetaTag {
 
     mapping(address => uint256) public balanceCompanies; // Hash table for companies' balances
     mapping(address => uint256) public balanceValidators; // Hash table for validators' balances
+    mapping(address => bool) public wlCompanies;
     mapping(address => mapping(uint256 => Video)) public videos; // Hash table Company -> video ID -> Video (video information). Different companies can have same video ID.
     mapping(address => bool) public variableValidators; // Variable that validators have to turn on to work (it requires minimum 50 tokens)
     address[] public readyValidators; // List of ready validators
@@ -48,6 +49,8 @@ event eventMTGforVoucher(address indexed validator);
 event eventWithdrawFundsValidators(address indexed validator, uint256 amount);
 event eventReceiveTokensFromCompany(address indexed validator, uint256 amount);
 event eventWithdrawFundsCompany(address indexed company, uint256 amount);
+event eventWhitelistCompany(address indexed company);
+event eventRemoveWhitelistCompany(address indexed company);
 
 
 
@@ -59,6 +62,26 @@ event eventWithdrawFundsCompany(address indexed company, uint256 amount);
         mtgTeam = msg.sender;
     }
 
+// MODIFIERS ####################################################################################################################################################################################
+
+    modifier onlyWhitelist() {
+        require(wlCompanies[msg.sender] = true, "You are not a whitelisted company!");
+        _;
+    }
+
+// MTGTEAM FUNCTION ####################################################################################################################################################################################
+
+    function whitelistCompany(address company) public {
+        require(msg.sender == mtgTeam, "You are not MtgTeam!");
+        wlCompanies[company] = true;
+        emit eventWhitelistCompany(company);
+    }
+
+    function removeWhitelistCompany(address company) public {
+        require(msg.sender == mtgTeam, "You are not MtgTeam!");
+        wlCompanies[company] = false;
+        emit eventRemoveWhitelistCompany(company);
+    }
 
 // VALIDATORS FUNCTIONS ####################################################################################################################################################################################
 
@@ -314,7 +337,7 @@ event eventWithdrawFundsCompany(address indexed company, uint256 amount);
 // COMPANIES FUNCTIONS ####################################################################################################################################################################################
   
     // Function for companies to send their tokens to the smart contract to have the possibility to send video for tagging
-    function receiveTokensFromCompany(uint256 amount) public {
+    function receiveTokensFromCompany(uint256 amount) public onlyWhitelist {
         require(!variableValidators[msg.sender], "You cannot be both validator and company");
         require(balanceValidators[msg.sender] == 0, "You need to withdraw all your validator tokens!");
         bool sent = mtgToken.transferFrom(msg.sender, address(this), amount); // Transfer tokens from the company's address to this contract
@@ -324,7 +347,7 @@ event eventWithdrawFundsCompany(address indexed company, uint256 amount);
     }
 
     // Function for companies to submit videos for tagging
-    function addVideo(uint256 videoId, uint256 videoLength) public {
+    function addVideo(uint256 videoId, uint256 videoLength) public onlyWhitelist {
         companyVideos[msg.sender].push(videoId);
         require(readyValidators.length > 14, "There should be a minimum of 15 ready validators!");
         require(videos[msg.sender][videoId].id == 0, "Video ID already exists for this company!");
@@ -387,8 +410,8 @@ event eventWithdrawFundsCompany(address indexed company, uint256 amount);
         return neededTokens;
     }
 
-    function withdrawFundsCompany() public {
-        require(balanceCompanies[msg.sender] > 0, "You are not a company!");
+    function withdrawFundsCompany() public onlyWhitelist{
+        require(balanceCompanies[msg.sender] > 0, "Nothing to withdraw!");
         require(block.number >= lastVideo[msg.sender] + 72000 , "You have to wait 10 days since adding the last video!");
         uint256 amount = balanceCompanies[msg.sender];
         balanceCompanies[msg.sender] -= amount;
