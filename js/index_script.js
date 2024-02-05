@@ -3,12 +3,7 @@ document.addEventListener("DOMContentLoaded", function () {
     //const numberValueSpan = document.getElementById("numberValue");
     /* const connectButton = document.getElementById("app_button"); */
     //const connectedAccountSpan = document.getElementById("connectedAccount");
-    /* const appButton = document.getElementById("app_button"); */
-    const addressElement = document.getElementById('userAddress');
-
-
-
-
+    const appButton = document.getElementById("app_button");
 
     // Replace with the address of your deployed contract
     const contractAddress = '0xd3255346b2ed5bc623708c334b1d56da1ad9d63a';
@@ -438,102 +433,62 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    /* function formatString(str) {
-        return str.slice(0, 5) + "..." + str.slice(-4);
-    } */
-
-    function updateUserAddress(account) {
+    /* function updateUserAddress(account) {
         // Assuming you have an HTML element to display the address
+        const addressElement = document.getElementById('userAddress');
         if (addressElement) {
-            addressElement.textContent = account.slice(0, 5) + "..." + account.slice(-4);;
+            addressElement.textContent = account;
         }
-    }
-
-    async function getEthereumPrice() {
-        try {
-            const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
-            const data = await response.json();
-            return data.ethereum.usd;
-        } catch (error) {
-            console.error('Error fetching Ethereum price:', error);
-            return null;
-        }
-    }
+    } */
     
-    async function updateEthBalance() {
-        const account = await getAccount();
-        if (account) {
-            const ethereumPrice = await getEthereumPrice();
-            if (!ethereumPrice) {
-                console.log("Failed to fetch Ethereum price.");
-                return;
-            }
-    
-            web3.eth.getBalance(account, function(err, result) {
-                if (err) {
-                    console.error(err);
-                } else {
-                    const balanceInEther = web3.utils.fromWei(result, "ether");
-                    
-                    // Update Ethereum balance in the buy section
-                    const ethBalanceElement = document.querySelector(".ethereum .total_balance");
-                    if (ethBalanceElement) {
-                        ethBalanceElement.textContent = `Balance  ${balanceInEther}`;
-                    }
-    
-                    /* // Update the dollar value in the buy section
-                    const dollarValueElement = document.querySelector(".ethereum .dollar_value");
-                    if (dollarValueElement) {
-                        const dollarValue = (balanceInEther * ethereumPrice).toFixed(2);
-                        dollarValueElement.textContent = `${dollarValue} $`;
-                    } */
-                }
-            });
-        }
-    }
-    
-
-    // Assuming you have a conversion rate from ETH to MTG
-    const ethToMtgRate = 0.005; // Replace with the actual conversion rate
-
-    // Add functionality for "Max" button
-    document.querySelectorAll('.max').forEach(maxButton => {
-        maxButton.addEventListener('click', async function() {
-            const ethBalanceDisplay = maxButton.closest('.money').querySelector('.total_balance').innerText;
-            const ethBalance = ethBalanceDisplay.split(" ")[1]; // Assuming format "Balance X ETH"
-
-            // Fetch Ethereum price
-            const ethereumPrice = await getEthereumPrice();
-            if (!ethereumPrice) {
-                console.log("Failed to fetch Ethereum price.");
-                return;
-            }
-
-            // Update the input field with the maximum ETH balance
-            maxButton.closest('.money').querySelector('.eth_input').value = ethBalance;
-            const ethDollarValue = (parseFloat(ethBalance) * ethereumPrice).toFixed(2);
-
-            // Calculate and update the dollar value for ETH
-            const ethDollarValueElement = maxButton.closest('.money').querySelector('.dollar_value');
-            if (ethDollarValueElement) {
-                ethDollarValueElement.textContent = `${ethDollarValue} $`;
-            }
-
-            // Calculate and update the MTG amount and dollar value
-            const mtgAmount = parseFloat(ethBalance) / ethToMtgRate;
-            const mtgInput = document.querySelector('.mtg_input.mtg_sell');
-            const mtgDollarValueElement = document.querySelector('.mtg.money .dollar_value');
-
-            if (mtgInput && mtgDollarValueElement) {
-                mtgInput.value = mtgAmount.toFixed(2);
-                mtgDollarValueElement.textContent = `${ethDollarValue} $`; // Same dollar value as ETH
+/*     // Function to listen for contract events
+    function listenForContractEvents() {
+        contract.events.Transfer({ fromBlock: 'latest' }, function(error, event) { 
+            if (error) {
+                console.error(error);
+            } else {
+                // Handle the event data
+                console.log(event);
+                // Update your UI based on event data
             }
         });
-    });
-
-
+        // Add similar listeners for other events like Approval, etc.
+    } */
 
     
+   /*  async function buyTokens() {
+        const account = await getAccount();
+        if (!account) {
+            alert("Please connect to MetaMask.");
+            return;
+        }
+    
+        const ethAmount = document.querySelector(".eth_input").value; // Replace with your actual input field selector
+        if (!ethAmount) {
+            alert("Please enter an amount of ETH.");
+            return;
+        }
+    
+        const weiAmount = web3.utils.toWei(ethAmount, "ether");
+    
+        try {
+            await contract.methods.buyTokens().send({ from: account, value: weiAmount });
+            alert("Tokens purchased successfully!");
+        } catch (error) {
+            console.error("Error purchasing tokens:", error);
+            alert("There was an error purchasing tokens.");
+        }
+    } */
+
+   /*  async function updateNumberValue() {
+        try {
+            const numberValue = await contract.methods.number().call();
+            numberValueSpan.innerText = numberValue;
+        } catch (error) {
+            console.error("Error fetching the number value:", error);
+            numberValueSpan.innerText = 'Unavailable';
+        }
+    } */
 
     async function getAccount() {
         if (window.ethereum) {
@@ -549,10 +504,24 @@ document.addEventListener("DOMContentLoaded", function () {
         return null;
     }
 
+    appButton.addEventListener("click", async function () {
+        if (window.ethereum) {
+            try {
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                window.location.href = 'app.html'; // Redirect to app.html after successful connection
+            } catch (error) {
+                console.error("Error connecting to MetaMask:", error);
+                alert("Please connect to MetaMask to continue.");
+            }
+        } else {
+            alert("MetaMask not detected. Please install MetaMask.");
+        }
+    });
 
-    let lastNumberValue = null;
 
-    /* async function pollNumberValue() {
+    /* let lastNumberValue = null;
+
+    async function pollNumberValue() {
         try {
             const numberValue = await contract.methods.number().call();
             // Update the displayed value only if it has changed
@@ -564,37 +533,60 @@ document.addEventListener("DOMContentLoaded", function () {
             console.error("Error fetching the number value:", error);
             numberValueSpan.innerText = 'Unavailable';
         }
-    }
+    } */
 
     // Start polling with a specified interval, e.g., every 3 seconds
-    setInterval(pollNumberValue, 1000);
-     */
+   /*  setInterval(pollNumberValue, 1000);
+    
+    incrementButton.addEventListener("click", async function () {
+        try {
+            const account = await getAccount();
+            if (account && contract) {
+                await contract.methods.increment().send({ from: account });
 
-    const disconnectButton = document.getElementById("disconnectButton");
+                const updatedNumber = await contract.methods.number().call();
+                numberValueSpan.innerText = updatedNumber;
+            }
+        } catch (error) {
+            console.error("Error in transaction:", error);
+        }
+    }); */
+
+    /* connectButton.addEventListener("click", async function () {
+        const account = await getAccount();
+        if (account) {
+            //connectedAccountSpan.innerText = account;
+            console.log(account);
+            initializeWeb3();
+        }
+    }); */
+
+    
+
+    /* const disconnectButton = document.getElementById("disconnectButton");
 
     disconnectButton.addEventListener("click", function () {
         // Reset the connected account display
-        addressElement.textContent = 'Not connected';
+        connectedAccountSpan.innerText = 'Not connected';
         // Reset the DApp state
         contract = null;
         // Reload the page to reset the state of the DApp or perform additional state cleanup as needed
         window.location.reload();
-    });
-
-    /* initializeWeb3().then(() => {
-        console.log("Web3 initialized, starting polling...");
-        //startPolling(); // Start polling when Web3 is initialized
     }); */
 
-    initializeWeb3().then(async () => {
+    initializeWeb3().then(() => {
+        console.log("Web3 initialized, starting polling...");
+        //startPolling(); // Start polling when Web3 is initialized
+    });
+
+   /*  initializeWeb3().then(async () => {
         console.log("Web3 initialized");
         const account = await getAccount();
         if (account) {
             console.log(account);
             updateUserAddress(account);  // Update the user address in the UI
-            updateEthBalance(); // Update the Ethereum balance
             listenForContractEvents();  // Start listening for contract events
         }
-    });
+    }); */
     
 });

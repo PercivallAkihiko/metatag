@@ -8,6 +8,8 @@ contract MetaTagToken is ERC20 {
     uint256 public constant MAX_SUPPLY = 1e9 * 1e18;  // 1 billion tokens (1e18 decimals)
     uint256 public constant TOKEN_PRICE_ETH = 0.001 ether; // Variable to calculate how many tokens from ETH 
 
+    event TokensPurchased(address indexed purchaser, uint256 amount);
+
     constructor() ERC20("MetaTag", "MTG") {
         owner = msg.sender;
         _mint(owner, MAX_SUPPLY);
@@ -20,6 +22,7 @@ contract MetaTagToken is ERC20 {
         uint256 tokensToBuy = msg.value / TOKEN_PRICE_ETH * 1e18;
         require(tokensToBuy <= balanceOf(owner), "Not enough ETH to buy!");
         _transfer(owner, msg.sender, tokensToBuy); // Internal ERC20 function
+        emit TokensPurchased(msg.sender, tokensToBuy);
     }
 
     // Function that the owner can use to withdraw the ETH from the smart contract
