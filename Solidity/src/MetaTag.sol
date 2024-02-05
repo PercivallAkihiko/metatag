@@ -293,8 +293,8 @@ event eventWithdrawFundsCompany(address indexed company, uint256 amount);
         require(amount == 100 * 1e18, "The voucher costs 100 MTG!");
         bool sent = mtgToken.transferFrom(msg.sender, mtgTeam, amount); // Transfer MTG tokens from the sender to the contract owner
         require(sent, "Token transfer failed");
-        return true;
         emit eventMTGforVoucher(msg.sender);
+        return true;   
     }
 
     function withdrawFundsValidators() public {
@@ -306,8 +306,8 @@ event eventWithdrawFundsCompany(address indexed company, uint256 amount);
         }
         uint256 _amount = balanceValidators[msg.sender];
         balanceValidators[msg.sender] -= _amount;
-        balanceValidators[mtgTeam] += _amount * 0.01;
-        require(mtgToken.transfer(msg.sender, _amount * 0.99), "Transfer failed!");
+        balanceValidators[mtgTeam] += _amount * 1/100;
+        require(mtgToken.transfer(msg.sender, _amount * 99/100), "Transfer failed!");
         emit eventWithdrawFundsValidators(msg.sender, _amount);
     }
 
@@ -392,8 +392,8 @@ event eventWithdrawFundsCompany(address indexed company, uint256 amount);
         require(block.number >= lastVideo[msg.sender] + 72000 , "You have to wait 10 days since adding the last video!");
         uint256 amount = balanceCompanies[msg.sender];
         balanceCompanies[msg.sender] -= amount;
-        balanceValidators[mtgTeam] += amount * 0.01;
-        require(mtgToken.transfer(msg.sender, amount * 0.99), "Transfer failed!");
+        balanceValidators[mtgTeam] += amount * 1/100;
+        require(mtgToken.transfer(msg.sender, amount * 99/100), "Transfer failed!");
         emit eventWithdrawFundsCompany(msg.sender, amount);
     }
 
