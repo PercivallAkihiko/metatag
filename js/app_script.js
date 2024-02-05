@@ -417,7 +417,14 @@ document.addEventListener("DOMContentLoaded", function () {
                  "internalType":"address"
               }
            ]
-        }
+        },
+        {
+            "anonymous": false,
+            "inputs": [{"indexed": true, "internalType": "address", "name": "purchaser", "type": "address"},
+                       {"indexed": false, "internalType": "uint256", "amount": "purchaser", "type": "uint256"}],
+            "name": "TokensPurchased",
+            "type": "event"
+        }// event TokensPurchased(address indexed purchaser, uint256 amount);
      ];
 
    
@@ -490,6 +497,20 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             });
         }
+    }
+
+    async function updateMtgBalance(account) {
+        contract.methods.balanceOf(account).call({from: account}, function(err, result) {
+            if (err) {
+                console.error(err);
+            } else {
+                const balanceInMtg = web3.utils.fromWei(result, "ether"); // Adjust if your token uses different decimals
+                const mtgBalanceElement = document.querySelector(".dashboard_item.total_token_container .dashboard_item_value");
+                if (mtgBalanceElement) {
+                    mtgBalanceElement.textContent = `${balanceInMtg} MTG`;
+                }
+            }
+        });
     }
     
 
@@ -571,22 +592,29 @@ document.addEventListener("DOMContentLoaded", function () {
             });
             console.log("Transaction Hash:", txHash);
             // Additional logic after successful transaction (if needed)
+            updateEthBalance();
+            updateMtgBalance(account);
         } catch (error) {
             console.error(error);
         }
     }
 
+    const buyTitleDiv = Array.from(document.querySelectorAll('.title')).find(el => el.textContent === 'Buy');
+
+    // Add an event listener to this div
+    buyTitleDiv.addEventListener('click', function() {
+        // Call the function to update the Ethereum balance
+        updateEthBalance();
+    });
+
 /* 
     let lastNumberValue = null; */
 
-    /* async function pollNumberValue() {
+    async function pollNumberValue() {
         try {
-            const numberValue = await contract.methods.number().call();
-            // Update the displayed value only if it has changed
-            if (numberValue !== lastNumberValue) {
-                numberValueSpan.innerText = numberValue;
-                lastNumberValue = numberValue;
-            }
+            const account = await getAccount();
+            updateEthBalance();
+            updateMtgBalance(account);
         } catch (error) {
             console.error("Error fetching the number value:", error);
             numberValueSpan.innerText = 'Unavailable';
@@ -595,7 +623,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Start polling with a specified interval, e.g., every 3 seconds
     setInterval(pollNumberValue, 1000);
-     */
+    
+
+    /* function listenForTokenPurchase() {
+        contract.events.TokensPurchased({
+            filter: { purchaser: userAccount },
+            fromBlock: 'latest'
+        })
+        .on('data', async (event) => {
+            console.log("TokensPurchased event detected:", event);
+            await updateEthBalance();
+            await updateMtgBalance(userAccount);
+        })
+        .on('error', console.error);
+    } */
 
     const buyButton = document.getElementById('buy_button');
     buyButton.addEventListener('click', function(event) {
@@ -635,7 +676,9 @@ document.addEventListener("DOMContentLoaded", function () {
             console.log(account);
             updateUserAddress(account);  // Update the user address in the UI
             updateEthBalance(); // Update the Ethereum balance
-            listenForContractEvents();  // Start listening for contract events
+            updateMtgBalance(account);
+            //listenForTokenPurchase();  // Start listening for contract events
+            startPolling();
         }
     });
     
