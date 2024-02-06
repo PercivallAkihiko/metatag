@@ -457,14 +457,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     async function getEthereumPrice() {
-        try {
-            const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
-            const data = await response.json();
-            return data.ethereum.usd;
-        } catch (error) {
-            console.error('Error fetching Ethereum price:', error);
-            return null;
-        }
+        return 2500.0;
     }
     
     async function updateEthBalance() {
@@ -502,12 +495,21 @@ document.addEventListener("DOMContentLoaded", function () {
     async function updateMtgBalance(account) {
         contract.methods.balanceOf(account).call({from: account}, function(err, result) {
             if (err) {
-                console.error(err);
+               console.error(err);
             } else {
-                const balanceInMtg = web3.utils.fromWei(result, "ether"); // Adjust if your token uses different decimals
-                const mtgBalanceElement = document.querySelector(".dashboard_item.total_token_container .dashboard_item_value");
-                if (mtgBalanceElement) {
-                    mtgBalanceElement.textContent = `${balanceInMtg} MTG`;
+               const balanceInMtg = web3.utils.fromWei(result, "ether"); // Adjust if your token uses different decimals
+               const mtgBalanceElement = document.querySelector(".dashboard_item.total_token_container .dashboard_item_value");
+               const mtgBalanceElement2 = document.querySelector(".liquid_wrapper.lock_element .lock_element_value");
+               const mtgBalanceElement3 = document.querySelector(".total_balance.total_balance_mtg_lock");
+               
+               if (mtgBalanceElement) {
+                   mtgBalanceElement.textContent = `${balanceInMtg} MTG`;
+               }
+               if (mtgBalanceElement2) {
+                 mtgBalanceElement2.textContent = `${balanceInMtg} MTG`;
+               }
+               if (mtgBalanceElement3) {
+                  mtgBalanceElement3.textContent = `Balance ${balanceInMtg}`;
                 }
             }
         });
@@ -518,7 +520,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const ethToMtgRate = 0.001; // Replace with the actual conversion rate
 
     // Add functionality for "Max" button
-    document.querySelectorAll('.max').forEach(maxButton => {
+    document.querySelectorAll('.max_eth').forEach(maxButton => {
         maxButton.addEventListener('click', async function() {
             const ethBalanceDisplay = maxButton.closest('.money').querySelector('.total_balance').innerText;
             const ethBalance = ethBalanceDisplay.split(" ")[1]; // Assuming format "Balance X ETH"
@@ -678,7 +680,7 @@ document.addEventListener("DOMContentLoaded", function () {
             updateEthBalance(); // Update the Ethereum balance
             updateMtgBalance(account);
             //listenForTokenPurchase();  // Start listening for contract events
-            startPolling();
+            //startPolling();
         }
     });
     

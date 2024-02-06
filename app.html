@@ -36,7 +36,7 @@
             <div class="item_container explorer">
                 <div class="icon"><i class="fa-brands fa-wpexplorer"></i></i></div>
                 <div class="title">Explorer</div>
-            </div>                 
+            </div>                                
             <div class="term_service">Term of service</div>
         </div>
         <div class="container">
@@ -121,7 +121,7 @@
                     </div>
                     <div class="locked_wrapper lock_element">
                         <div class="lock_element_title">Locked tokens</div>
-                        <div class="lock_element_value">10.3 MTG</div>
+                        <div class="lock_element_value lock_element_value_locked">10.3 MTG</div>
                     </div>
                     <div class="penalty_wrapper lock_element">
                         <div class="lock_element_title">Your penalty</div>
@@ -167,8 +167,8 @@
                             </div>
                             <div class="mtg_second_line">
                                 <div id="dollar_value_lock" class="dollar_value">0 $</div>
-                                <div class="total_balance">Balance 0.00</div>
-                                <div class="max">MAX</div>
+                                <div class="total_balance total_balance_mtg_lock">Balance 0.00</div>
+                                <div class="max max_mtg">MAX</div>
                             </div>                            
                         </div>
                         
@@ -192,7 +192,7 @@
                             <div class="second_line">
                                 <div class="dollar_value">0 $</div>
                                 <div class="total_balance">Balance 0.00</div>
-                                <div class="max">MAX</div>
+                                <div class="max max_eth">MAX</div>
                             </div>
                         </div>
                         <div class="mtg money">
@@ -241,8 +241,10 @@
             </div>
 
             <div class="explorer_wrapper">
-                Ciao sono il explorer
-                Lorem Ipsum 5 è un testo segnaposto utilizzato nel settore della tipografia e della stampa. Lorem Ipsum è considerato il testo segnaposto standard sin dal sedicesimo secolo, quando un anonimo tipografo prese una cassetta di caratteri e li assemblò per preparare un testo campione. È sopravvissuto non solo a più di cinque secoli, ma anche al passaggio alla videoimpaginazione, pervenendoci sostanzialmente inalterato. Fu reso popolare, negli anni ’60, con la diffusione dei fogli di caratteri trasferibili “Letraset”, che contenevano passaggi del Lorem Ipsum, e più recentemente da software di impaginazione come Aldus PageMaker, che includeva versioni del Lorem Ipsum.                
+                <input  class="searchAddress" type="text" placeholder="Search address" name="searchAddress"></input>
+                <button id="whitelist_button">bruno</button>
+                <button id="ridi_button">ridi</button>
+                <div class="prova"> Some text</div>
             </div>
         </div>
 
@@ -266,6 +268,7 @@
         </div>
         <script src="https://cdn.jsdelivr.net/npm/web3@1.5.3/dist/web3.min.js"></script>
         <script src="js/app_script.js"></script> 
+        <script src="js/app_script_not_token.js"></script> 
     </body>
 </html>
 
