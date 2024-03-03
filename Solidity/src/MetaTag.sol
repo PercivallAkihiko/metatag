@@ -13,54 +13,59 @@ contract MetaTag {
     address public mtgTeam; // "We"
 
     mapping(address => bool) public wlCompanies;
-    mapping(address => uint256) public balanceCompanies; // Hash table for companies' balances
-    mapping(address => uint256[]) public companyVideos;
+    mapping(address => uint) public balanceCompanies; // Hash table for companies' balances
+    mapping(address => uint[]) public companyVideos;
 
     mapping(address => bool) public variableValidators; // Variable that validators have to turn on to work (it requires minimum 50 tokens)
-    mapping(address => uint256) public balanceValidators; // Hash table for validators' balances
+    mapping(address => uint) public balanceValidators; // Hash table for validators' balances
     address[] public readyValidators; // List of ready validators
     mapping(address => ValidatorVideo[]) public validatorVideos;
     
-    mapping(address => mapping(uint256 => Video)) public videos; // Hash table Company -> video ID -> Video (video information). Different companies can have same video ID.
-    mapping(address => uint256) public lastVideo; // Hash table to know the block in which the last block was added (for companies withdraw)
+    mapping(address => mapping(uint => Video)) public videos; // Hash table Company -> video ID -> Video (video information). Different companies can have same video ID.
+    mapping(address => uint) public lastVideo; // Hash table to know the block in which the last block was added (for companies withdraw)
     
     // Structure for the video information given by the companies
     struct Video {
-        uint256 id;
-        uint256 length;
+        uint id;
+        uint length;
         address[] chosenValidators;
-        uint256 timestamp; // Timestamp when the video was added
+        uint timestamp; // Timestamp when the video was added
         mapping(address => bytes32) hashedData; // Mapping from validator address to their encrypted data
-        mapping(address => uint256[]) revealedTags; // Mapping from validator address to their tags
-        uint256 hashedCounter;
+        mapping(address => uint[]) revealedTags; // Mapping from validator address to their tags
+        uint hashedCounter;
         address[] revValidators; // Array to keep track of the validators that revealed their tags
     }
 
     struct ValidatorVideo {
         address companyChosen;
-        uint256 videoIdChosen;
+        uint videoIdChosen;
     }
 
     uint constant tagsNumber = 20;
-    uint constant confirmedTags = 80;
-    uint constant ambiguousTags = 30;
+    uint constant confirmedTags = 80; // In percentage
+    uint constant ambiguousTags = 30; // In percentage
+    uint constant minimumReadyValidators = 15;
+    uint constant validatorsQuantity = 10;
+    uint constant rewardVariable = 2000; // Lower more rewards
+    uint constant noConfirmedOrNoRevealedTagSlash = 15;
 
 // EVENTS ####################################################################################################################################################################################
 
-event eventAddVideo(address indexed emitter, uint256 videoId, address[] chosenValidators, uint256 timestamp);
-event eventSetVariable(address indexed validator);
-event eventReceiveTokensFromValidator(address indexed company, uint256 amount);
-event eventSubmitHash(address indexed validator, address indexed company, uint256 videoId, bytes32 hash);
-event eventRevealHash(address indexed validator, address indexed company, uint videoId, uint[] tags, bytes11 seed);
-event eventGetRewards(address indexed validator, address indexed company, uint256 videoId, uint256 rewardAmount, bool positive);
 event eventMTGforVoucher(address indexed validator);
-event eventWithdrawFundsValidators(address indexed validator, uint256 amount);
-event eventReceiveTokensFromCompany(address indexed company, uint256 amount);
-event eventWithdrawFundsCompany(address indexed company, uint256 amount);
+
 event eventWhitelistCompany(address indexed company);
 event eventRemoveWhitelistCompany(address indexed company);
 
+event eventReceiveTokensFromValidator(address indexed company, uint amount);
+event eventSetVariable(address indexed validator);
+event eventSubmitHash(address indexed validator, address indexed company, uint videoId, bytes32 hash);
+event eventRevealHash(address indexed validator, address indexed company, uint videoId, uint[] tags, bytes11 seed);
+event eventGetRewards(address indexed validator, address indexed company, uint videoId, uint rewardAmount, bool positive);
+event eventWithdrawFundsValidator(address indexed validator, uint amount);
 
+event eventReceiveTokensFromCompany(address indexed company, uint amount);
+event eventAddVideo(address indexed emitter, uint videoId, address[] chosenValidators, uint timestamp);
+event eventWithdrawFundsCompany(address indexed company, uint amount);
 
 // CONSTRUCTOR ####################################################################################################################################################################################
 
@@ -106,7 +111,7 @@ event eventRemoveWhitelistCompany(address indexed company);
     function setVariable() public notCompany {
         require(balanceValidators[msg.sender] >= 50 * 1e18, "You need to lock at least 50 tokens!");
 
-        if (variableValidators[msg.sender]){
+        if (variableValidators[msg.sender]) {
             removeValidator(msg.sender);
             variableValidators[msg.sender] = false;
         }
@@ -134,7 +139,7 @@ event eventRemoveWhitelistCompany(address indexed company);
     }
 
     // Function for validators to send their tokens to the smart contract to partecipate in the DApp
-    function receiveTokensFromValidator(uint256 amount) public notCompany {
+    function receiveTokensFromValidator(uint amount) public notCompany {
         bool sent = mtgToken.transferFrom(msg.sender, address(this), amount); // Transfer tokens from the validator's address to this contract
         require(sent, "Token transfer failed");
         balanceValidators[msg.sender] += amount; // Update the validator's token balance in this contract
@@ -142,7 +147,7 @@ event eventRemoveWhitelistCompany(address indexed company);
     }
 
     // Function for validators to submit a hash for a video
-    function submitHash(address company, uint256 videoId, bytes32 hash) public {
+    function submitHash(address company, uint videoId, bytes32 hash) public {
         require(isValidatorChosenForVideo(company, videoId, msg.sender), "Not a chosen validator for this video");
         require(block.number <= videos[company][videoId].timestamp + 7200, "Submission time exceeded");
         require((videos[company][videoId].hashedData[msg.sender]) == "","You cannot submit the hash twice!");
@@ -153,7 +158,7 @@ event eventRemoveWhitelistCompany(address indexed company);
     }
 
     // Helper function to check if a validator is chosen for a specific video
-    function isValidatorChosenForVideo(address company, uint256 videoId, address validator) private view returns (bool) {
+    function isValidatorChosenForVideo(address company, uint videoId, address validator) private view returns (bool) {
         for (uint i = 0; i < videos[company][videoId].chosenValidators.length; i++) {
             if (videos[company][videoId].chosenValidators[i] == validator) {
                 return true;
@@ -171,7 +176,7 @@ event eventRemoveWhitelistCompany(address indexed company);
             require(tags[i] < tagsNumber, "Illegal tag!");
         }
         require(videos[company][videoId].hashedData[msg.sender] == keccak256(abi.encodePacked(result, " ", seed)), "Hash mismatch!");
-        require((block.number > videos[company][videoId].timestamp + 7200) || (videos[company][videoId].hashedCounter == 10), "Reveal not yet allowed!");
+        require((block.number > videos[company][videoId].timestamp + 7200) || (videos[company][videoId].hashedCounter == validatorsQuantity), "Reveal not yet allowed!");
         require(block.number < videos[company][videoId].timestamp + 14400, "Reveal time exceeded!");
         require(videos[company][videoId].revealedTags[msg.sender].length == 0,"You cannot submit the reveal twice!");
         videos[company][videoId].revealedTags[msg.sender] = tags;
@@ -179,16 +184,14 @@ event eventRemoveWhitelistCompany(address indexed company);
         emit eventRevealHash(msg.sender, company, videoId, tags, seed);
     }
 
-    //function getRewards(address company, uint256 videoId) public returns (uint) {
-    function getRewards(address company, uint256 videoId) public {
-        require((block.number > videos[company][videoId].timestamp + 14400) || (videos[company][videoId].revValidators.length == 10), "Withdraw not yet allowed!");
+    //function getRewards(address company, uint videoId) public returns (uint) {
+    function getRewards(address company, uint videoId) public {
+        require((block.number > videos[company][videoId].timestamp + 14400) || (videos[company][videoId].revValidators.length == validatorsQuantity), "Withdraw not yet allowed!");
         require(isValidatorChosenForVideo(company, videoId, msg.sender), "Not a chosen validator for this video!");
         bool check = false;
-        for (uint i = 0; i < validatorVideos[msg.sender].length; i++)
-        {
-            if (validatorVideos[msg.sender][i].companyChosen == company && validatorVideos[msg.sender][i].videoIdChosen == videoId)
-            {
-                uint256 lastIndex = validatorVideos[msg.sender].length - 1;
+        for (uint i = 0; i < validatorVideos[msg.sender].length; i++) {
+            if (validatorVideos[msg.sender][i].companyChosen == company && validatorVideos[msg.sender][i].videoIdChosen == videoId) {
+                uint lastIndex = validatorVideos[msg.sender].length - 1;
                 validatorVideos[msg.sender][i] = validatorVideos[msg.sender][lastIndex];
                 validatorVideos[msg.sender].pop();
                 check = true;
@@ -197,23 +200,23 @@ event eventRemoveWhitelistCompany(address indexed company);
         }
         require(check, "You cannot withdraw twice!");
 
-        uint256 totalValidators = videos[company][videoId].revValidators.length;
-        uint256 totalConfirmedTags = 0;
-        uint256 totalAmbiguousTags = 0;
-        uint256 totalWrongTags = 0;
-        uint256 validatorConfirmedTags = 0;
-        uint256 validatorAmbiguousTags = 0;
-        uint256 validatorWrongTags = 0;
-        uint256 videoLength = videos[company][videoId].length;
-        uint256 constantMultiplier = 5; // 0.0005
+        uint totalValidators = videos[company][videoId].revValidators.length;
+        uint totalConfirmedTags = 0;
+        uint totalAmbiguousTags = 0;
+        uint totalWrongTags = 0;
+        uint validatorConfirmedTags = 0;
+        uint validatorAmbiguousTags = 0;
+        uint validatorWrongTags = 0;
+        uint videoLength = videos[company][videoId].length;
+        uint constantMultiplier = 5; // 0.0005
 
         // Arrays to keep track of tag counts
-        uint256[tagsNumber] memory tagCounts; // There are 20 possible tags
-        uint256[tagsNumber] memory tagStatus; // Status: 1 for confirmed, 2 for ambiguous, 3 for wrong
+        uint[tagsNumber] memory tagCounts; // There are 20 possible tags
+        uint[tagsNumber] memory tagStatus; // Status: 1 for confirmed, 2 for ambiguous, 3 for wrong
 
         // Tally votes for each tag
         for (uint i = 0; i < totalValidators; i++) {
-            uint256[] memory tags = videos[company][videoId].revealedTags[videos[company][videoId].revValidators[i]];
+            uint[] memory tags = videos[company][videoId].revealedTags[videos[company][videoId].revValidators[i]];
             for (uint j = 0; j < tags.length; j++) {
                 tagCounts[tags[j]]++;
             }
@@ -236,9 +239,9 @@ event eventRemoveWhitelistCompany(address indexed company);
         }
 
         // Calculate the reward for msg.sender
-        uint256[] memory senderTags = videos[company][videoId].revealedTags[msg.sender];
+        uint[] memory senderTags = videos[company][videoId].revealedTags[msg.sender];
         for (uint i = 0; i < senderTags.length; i++) {
-            uint256 tag = senderTags[i];
+            uint tag = senderTags[i];
             if (tagStatus[tag] == 1) {
                 validatorConfirmedTags++;
             } 
@@ -252,19 +255,19 @@ event eventRemoveWhitelistCompany(address indexed company);
         
         if (senderTags.length == 0 || totalConfirmedTags == 0)
         {
-            uint256 bln = balanceValidators[msg.sender];
-            if (bln < 15 * 1e18) {
+            uint bln = balanceValidators[msg.sender];
+            if (bln < noConfirmedOrNoRevealedTagSlash * 1e18) {
                 balanceValidators[msg.sender] = 0;
                 variableValidators[msg.sender] = false;
             }
             else {
-                balanceValidators[msg.sender] -= 15 * 1e18;
+                balanceValidators[msg.sender] -= noConfirmedOrNoRevealedTagSlash * 1e18;
             }
             //return balanceValidators[msg.sender];
             return;
         }
 
-        uint256 reward = 1e8 * 1e18;
+        uint reward = 1e8 * 1e18;
         if (totalConfirmedTags > 0) {
             reward += (validatorConfirmedTags * 1e18 / totalConfirmedTags) ;
         }
@@ -275,7 +278,7 @@ event eventRemoveWhitelistCompany(address indexed company);
             reward -= (validatorWrongTags * 125) * (125 * 1e18 / 100 - 1e18 * validatorConfirmedTags / totalConfirmedTags) / 100 ;
         }
         
-        uint256 rewardAmount;
+        uint rewardAmount;
         bool positive = true;
 
         if (reward > 1e26) {
@@ -285,7 +288,7 @@ event eventRemoveWhitelistCompany(address indexed company);
         } 
         else {
             rewardAmount = (1e26 - reward) * videoLength * constantMultiplier / 10000;
-            uint256 bln = balanceValidators[msg.sender];
+            uint bln = balanceValidators[msg.sender];
             if (bln < rewardAmount) {
                 balanceValidators[msg.sender] = 0;
                 variableValidators[msg.sender] = false;
@@ -308,31 +311,31 @@ event eventRemoveWhitelistCompany(address indexed company);
         return true;   
     }
 
-    function withdrawFundsValidators() public notCompany {
+    function withdrawFundsValidator() public notCompany {
         require(!variableValidators[msg.sender], "You have to turn off the variable!");
         uint val = 0;
         while (val < validatorVideos[msg.sender].length)
         {   
             address company = validatorVideos[msg.sender][val].companyChosen;
             uint videoId = validatorVideos[msg.sender][val].videoIdChosen;
-            if ((block.number > videos[company][videoId].timestamp + 7200) || (videos[company][videoId].hashedCounter == 10)) {
+            if ((block.number > videos[company][videoId].timestamp + 7200) || (videos[company][videoId].hashedCounter == validatorsQuantity)) {
                 getRewards(company, videoId);
             }
             else {
                 val++;
             }
         }
-        uint256 _amount = balanceValidators[msg.sender];
+        uint _amount = balanceValidators[msg.sender];
         balanceValidators[msg.sender] -= _amount;
         balanceValidators[mtgTeam] += _amount * 1/100;
         require(mtgToken.transfer(msg.sender, _amount * 99/100), "Transfer failed!");
-        emit eventWithdrawFundsValidators(msg.sender, _amount);
+        emit eventWithdrawFundsValidator(msg.sender, _amount);
     }
 
 // COMPANIES FUNCTIONS ####################################################################################################################################################################################
   
     // Function for companies to send their tokens to the smart contract to have the possibility to send video for tagging
-    function receiveTokensFromCompany(uint256 amount) public onlyWhitelist {
+    function receiveTokensFromCompany(uint amount) public onlyWhitelist {
         require(!variableValidators[msg.sender], "You cannot be both a validator and a company!");
         bool sent = mtgToken.transferFrom(msg.sender, address(this), amount); // Transfer tokens from the company's address to this contract
         require(sent, "Token transfer failed!");
@@ -341,8 +344,8 @@ event eventRemoveWhitelistCompany(address indexed company);
     }
 
     // Function for companies to submit videos for tagging
-    function addVideo(uint256 videoId, uint256 videoLength) public onlyWhitelist {
-        require(readyValidators.length > 14, "There should be a minimum of 15 ready validators!");
+    function addVideo(uint videoId, uint videoLength) public onlyWhitelist {
+        require(readyValidators.length >= minimumReadyValidators, "There should be a minimum of 15 ready validators!");
         require(videos[msg.sender][videoId].id == 0, "Video ID already exists for this company!");
         companyVideos[msg.sender].push(videoId);
         Video storage newVideo = videos[msg.sender][videoId];
@@ -355,17 +358,15 @@ event eventRemoveWhitelistCompany(address indexed company);
         emit eventAddVideo(msg.sender, videoId, newVideo.chosenValidators, block.number);
     }
     
-    function randomChooseValidators(uint256 videoId) internal returns ( address[] memory) {
-        uint howMany = 10;
-        address[] memory selectedValidators = new address[](howMany);
+    function randomChooseValidators(uint videoId) internal returns (address[] memory) {
+        address[] memory selectedValidators = new address[](validatorsQuantity);
 
         address[] memory readyFinal = readyValidators;
         uint length = readyFinal.length;
 
         uint indexo = 0;
         
-        while (indexo != howMany)
-        {
+        while (indexo != validatorsQuantity) {
             uint randomIndex = uint(keccak256(abi.encodePacked(block.prevrandao, msg.sender, indexo))) % length;
             selectedValidators[indexo] = readyFinal[randomIndex];
             readyFinal[randomIndex] = readyFinal[length-1];
@@ -375,7 +376,7 @@ event eventRemoveWhitelistCompany(address indexed company);
         }
 
         //DELETE IT!
-        for (uint i = 0; i < 10; i++) {
+        for (uint i = 0; i < validatorsQuantity; i++) {
             selectedValidators[i] = readyValidators[i];
             validatorVideos[selectedValidators[i]].push(ValidatorVideo(msg.sender,videoId));
         }
@@ -384,19 +385,16 @@ event eventRemoveWhitelistCompany(address indexed company);
         return selectedValidators;
     }
 
-    function calculateNeededTokens() internal returns (uint256) {
-        uint256 neededTokens = 0;
-        uint256 last = companyVideos[msg.sender].length;
-        uint256 e = 0;
-        while (e < last)
-        {
-            if (block.number < videos[msg.sender][companyVideos[msg.sender][e]].timestamp + 72000)
-            {
-                neededTokens += 1e18 * videos[msg.sender][companyVideos[msg.sender][e]].length * 10 * 1/2000;
+    function calculateNeededTokens() internal returns (uint) {
+        uint neededTokens = 0;
+        uint last = companyVideos[msg.sender].length;
+        uint e = 0;
+        while (e < last) {
+            if (block.number < videos[msg.sender][companyVideos[msg.sender][e]].timestamp + 72000) {
+                neededTokens += 1e18 * videos[msg.sender][companyVideos[msg.sender][e]].length * validatorsQuantity * 1/rewardVariable;
                 e += 1;
             }
-            else
-            {
+            else {
                 companyVideos[msg.sender][e] = companyVideos[msg.sender][last - 1];
                 companyVideos[msg.sender].pop();
             }
@@ -406,14 +404,12 @@ event eventRemoveWhitelistCompany(address indexed company);
 
     function withdrawFundsCompany() public onlyWhitelist {
         require(block.number >= lastVideo[msg.sender] + 72000 , "You have to wait 10 days since adding the last video!");
-        uint256 amount = balanceCompanies[msg.sender];
+        uint amount = balanceCompanies[msg.sender];
         balanceCompanies[msg.sender] -= amount;
         balanceValidators[mtgTeam] += amount * 1/100;
         require(mtgToken.transfer(msg.sender, amount * 99/100), "Transfer failed!");
         emit eventWithdrawFundsCompany(msg.sender, amount);
     }
-
-
 
 // ADDITIONAL FUNCTIONS ####################################################################################################################################################################################
 

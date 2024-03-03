@@ -381,7 +381,7 @@ contract MetaTagTest is DSTest {
         //console.log(tag.balanceValidators(user7));
         tag.getRewards(company, 12);
         tag.setVariable();
-        tag.withdrawFundsValidators();
+        tag.withdrawFundsValidator();
         //tag.getRewards(company, 12);
         //(uint256 a, uint256 b, uint256 c) = tag.getRewards(company,12);
         //console.log(a, b, c);
