@@ -304,6 +304,7 @@ event eventWithdrawFundsCompany(address indexed company, uint amount);
 
     // Function to exchange 100 tokens for a voucher. The implementation should be done on the website, it return only true
     function MTGforVoucher(uint amount) public returns (bool) {
+        require(msg.sender != mtgTeam, "You cannot be the team!");
         require(amount == 100 * 1e18, "The voucher costs 100 MTG!");
         bool sent = mtgToken.transferFrom(msg.sender, mtgTeam, amount); // Transfer MTG tokens from the sender to the contract owner
         require(sent, "Token transfer failed");
