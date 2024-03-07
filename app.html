@@ -26,17 +26,17 @@
                 <div class="title">Lock</div>
             </div>     
             <div class="item_container buy">
-                <div class="icon"><i class="fa-solid fa-plus"></i></div>
+                <div class="icon"><i class="fa-solid fa-sack-dollar"></i>   </div>
                 <div class="title">Buy</div>
             </div>     
             <div class="item_container sell">
-                <div class="icon"><i class="fa-solid fa-minus"></i></div>
-                <div class="title">Sell</div>
+                <div class="icon"><i class="fa-solid fa-bell"></i></div>
+                <div class="title">Events</div>
             </div> 
-            <div class="item_container explorer">
-                <div class="icon"><i class="fa-brands fa-wpexplorer"></i></i></div>
-                <div class="title">Explorer</div>
-            </div>                                
+            <div class="item_container voucher">
+                <div class="icon"><i class="fa-solid fa-ticket"></i></div>
+                <div class="title">Voucher</div>
+            </div>                 
             <div class="term_service">Term of service</div>
         </div>
         <div class="container">
@@ -101,6 +101,13 @@
             <div class="vote_wrapper">
                 <div class="vote_container">                    
                     <div class="vote_container_title">Videos</div>
+                    <div class="filters">
+                        <div class="filter_element filter_all filter_element_active">All</div>
+                        <div class="filter_element filter_pending">Pending</div>
+                        <div class="filter_element filter_action">Action</div>         
+                        <div class="filter_element filter_completed">Completed</div>   
+                        <div class="filter_element"></div>    
+                    </div>
                     <div class="headers">
                         <div>Id</div>
                         <div>Company</div>
@@ -240,11 +247,11 @@
                 </div>
             </div>
 
-            <div class="explorer_wrapper">
+            <div class="voucher_wrapper">
                 <input  class="searchAddress" type="text" placeholder="Search address" name="searchAddress"></input>
                 <button id="whitelist_button">bruno</button>
                 <button id="ridi_button">ridi</button>
-                <div class="prova"> Some text</div>
+                <div class="prova"> Some text</div>    
             </div>
         </div>
 
@@ -268,7 +275,7 @@
         </div>
         <script src="https://cdn.jsdelivr.net/npm/web3@1.5.3/dist/web3.min.js"></script>
         <script src="js/app_script.js"></script> 
-        <script src="js/app_script_not_token.js"></script> 
+        <script src="js/app_script_not_token.js"></script>
     </body>
 </html>
 

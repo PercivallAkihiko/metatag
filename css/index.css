@@ -38,7 +38,7 @@ html{
 .header_wrapper {       
     grid-area: 1/2/1/2;
     display: grid;
-    grid-template-columns: 210px auto 80px 80px 80px 80px 130px;
+    grid-template-columns: 210px auto 70px 70px 70px 70px 130px;
     grid-template-rows: 46px;
     grid-column-gap: 0px;
     grid-row-gap: 0px;
@@ -55,7 +55,8 @@ html{
 .explanation,
 .company,
 .explorer,
-.app_button {
+.app_button,
+.contact {
     display: flex;
     justify-content: center;
     align-items: center;    
@@ -69,7 +70,7 @@ html{
     grid-area: 1 / 4 / 2 / 5;     
 }
 
-.company {
+.contact {
     grid-area: 1 / 6 / 2 / 7; 
 }
 
