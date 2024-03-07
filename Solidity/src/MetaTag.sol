@@ -15,18 +15,18 @@ contract MetaTag {
     address public mtgTeam;
     /// @notice Mapping of whitelisted companies
     mapping(address => bool) public wlCompanies;
-    /// @notice Mapping of balances for companies
-    mapping(address => uint) public balanceCompanies;
-    /// @notice Mapping of videos submitted by companies
-    mapping(address => uint[]) public companyVideos;
-    /// @notice Mapping of variable validators
-    mapping(address => bool) public variableValidators;
     /// @notice Mapping of balances for validators
     mapping(address => uint) public balanceValidators;
+    /// @notice Mapping of the variable for validators
+    mapping(address => bool) public variableValidators;
     /// @notice List of ready validators
     address[] public readyValidators;
     /// @notice Mapping of validators' videos
     mapping(address => ValidatorVideo[]) public validatorVideos;
+    /// @notice Mapping of balances for companies
+    mapping(address => uint) public balanceCompanies;
+    /// @notice Mapping of videos submitted by companies
+    mapping(address => uint[]) public companyVideos;
     /// @notice Mapping of videos submitted by companies and their details
     mapping(address => mapping(uint => Video)) public videos;
     /// @notice Mapping of the last block number when a video was added by a company
@@ -38,16 +38,16 @@ contract MetaTag {
         uint id;
         /// @notice Video length
         uint length;
-        /// @notice Validators chosen for the video
-        address[] chosenValidators;
         /// @notice Timestamp when the video was added
         uint timestamp;
+        /// @notice Validators chosen for the video
+        address[] chosenValidators;
         /// @notice Hashed data submitted by validators
         mapping(address => bytes32) hashedData;
-        /// @notice Tags revealed by validators
-        mapping(address => uint[]) revealedTags;
         /// @notice Counter for hashed data submitted
         uint hashedCounter;
+        /// @notice Tags revealed by validators
+        mapping(address => uint[]) revealedTags;
         /// @notice Validators who revealed their tags
         address[] revValidators;
     }
@@ -71,11 +71,9 @@ contract MetaTag {
     uint constant validatorsQuantity = 10;
     /// @notice Predefined value to calculate rewards for validators
     uint constant rewardVariable = 2000;
-    /// @notice Slashing quantity x * 1e18 for not submitting the tag in time (for a single validator) or not a single confirmed tag for all validators (no agreement)
+    /// @notice Slashing quantity x * 1e18 tokens for not submitting the tag in time (for a single validator) or not a single confirmed tag for all validators (no agreement)
     uint constant noConfirmedOrNoRevealedTagSlash = 15;
-    
-    /// @notice Event emitted when tokens are exchanged for a voucher
-    event eventMTGforVoucher(address indexed validator);
+
     /// @notice Event emitted when a company is whitelisted
     event eventWhitelistCompany(address indexed company);
     /// @notice Event emitted when a company is removed from the whitelist
@@ -98,6 +96,8 @@ contract MetaTag {
     event eventAddVideo(address indexed emitter, uint videoId, address[] chosenValidators, uint timestamp);
     /// @notice Event emitted when a company withdraws their funds from the contract
     event eventWithdrawFundsCompany(address indexed company, uint amount);
+    /// @notice Event emitted when tokens are exchanged for a voucher
+    event eventMTGforVoucher(address indexed validator);
 
     /// @notice Constructor function to initialize the MetaTag contract
     /// @param _mtgToken The address of the MTG token contract
@@ -106,14 +106,14 @@ contract MetaTag {
         mtgTeam = msg.sender; // Save the contract deployer's address as the team address
     }
 
-    /// @notice Modifier to restrict access to whitelisted companies
-    modifier onlyWhitelist() {
-        require(wlCompanies[msg.sender] == true, "You are not a whitelisted company!");
-        _;
-    }
     /// @notice Modifier to restrict access to MetaTag team
     modifier onlyTeam() {
         require(msg.sender == mtgTeam, "You are not MtgTeam!");
+        _;
+    }
+    /// @notice Modifier to restrict access to whitelisted companies
+    modifier onlyWhitelist() {
+        require(wlCompanies[msg.sender] == true, "You are not a whitelisted company!");
         _;
     }
     /// @notice Modifier to restrict access to non-companies
@@ -138,6 +138,17 @@ contract MetaTag {
         wlCompanies[company] = false;
         // Emit an event indicating the company was removed from the whitelist
         emit eventRemoveWhitelistCompany(company);
+    }
+
+    /// @notice Function for validators to send their tokens to the smart contract to participate in the DApp
+    /// @param amount The amount of tokens to be sent by the validator
+    function receiveTokensFromValidator(uint amount) public notCompany {
+        // Transfer tokens from the validator's address to this contract and ensure the token transfer was successful
+        require(mtgToken.transferFrom(msg.sender, address(this), amount), "Token transfer failed!"); // 
+        // Update the validator's token balance in this contract
+        balanceValidators[msg.sender] += amount;
+        // Emit an event indicating tokens were received from the validator
+        emit eventReceiveTokensFromValidator(msg.sender, amount);
     }
 
     /// @notice Function for validators to announce their willingness to participate in the DApp.
@@ -170,15 +181,20 @@ contract MetaTag {
         emit eventSetVariable(msg.sender, variableValidators[msg.sender]);
     }
 
-    /// @notice Function for validators to send their tokens to the smart contract to participate in the DApp
-    /// @param amount The amount of tokens to be sent by the validator
-    function receiveTokensFromValidator(uint amount) public notCompany {
-        // Transfer tokens from the validator's address to this contract and ensure the token transfer was successful
-        require(mtgToken.transferFrom(msg.sender, address(this), amount), "Token transfer failed!"); // 
-        // Update the validator's token balance in this contract
-        balanceValidators[msg.sender] += amount;
-        // Emit an event indicating tokens were received from the validator
-        emit eventReceiveTokensFromValidator(msg.sender, amount);
+    /// @notice Helper function to check if a validator is chosen for a specific video
+    /// @param company The address of the company uploading the video
+    /// @param videoId The ID of the video to check
+    /// @param validator The address of the validator to check
+    /// @return Whether the validator is chosen for the specified video
+    function isValidatorChosenForVideo(address company, uint videoId, address validator) private view returns (bool) {
+        // Iterate through the list of chosen validators for the video
+        for (uint i = 0; i < videos[company][videoId].chosenValidators.length; i++) {
+            // Check if the validator is in the list of chosen validators
+            if (videos[company][videoId].chosenValidators[i] == validator) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /// @notice Function for validators to submit a hash for a video.
@@ -197,22 +213,6 @@ contract MetaTag {
         videos[company][videoId].hashedCounter +=1;
         // Emit an event indicating the hash submission
         emit eventSubmitHash(msg.sender, company, videoId, hash);
-    }
-
-    /// @notice Helper function to check if a validator is chosen for a specific video
-    /// @param company The address of the company uploading the video
-    /// @param videoId The ID of the video to check
-    /// @param validator The address of the validator to check
-    /// @return Whether the validator is chosen for the specified video
-    function isValidatorChosenForVideo(address company, uint videoId, address validator) private view returns (bool) {
-        // Iterate through the list of chosen validators for the video
-        for (uint i = 0; i < videos[company][videoId].chosenValidators.length; i++) {
-            // Check if the validator is in the list of chosen validators
-            if (videos[company][videoId].chosenValidators[i] == validator) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /// @notice Function for validators to reveal their original value for a video
@@ -438,29 +438,6 @@ contract MetaTag {
         emit eventReceiveTokensFromCompany(msg.sender, amount);
     }
 
-    /// @notice Allows companies to submit videos for tagging by selecting pseudo randomly validators and depositing the required tokens to reward the validators.
-    /// @param videoId The unique ID of the video being submitted
-    /// @param videoLength The length of the video in seconds
-    function addVideo(uint videoId, uint videoLength) public onlyWhitelist {
-        // Require that there are at least the minimum required number of ready validators
-        require(readyValidators.length >= minimumReadyValidators, "There should be a minimum of 15 ready validators!");
-        // Require that the video ID does not already exist for this company
-        require(videos[msg.sender][videoId].id == 0, "Video ID already exists for this company!");
-        // Add the video ID to the list of company's videos (needed for calculateNeededTokens function)
-        companyVideos[msg.sender].push(videoId);
-        // Create a new video object and initialize its properties
-        Video storage newVideo = videos[msg.sender][videoId];
-        newVideo.length = videoLength;
-        newVideo.chosenValidators = randomChooseValidators(videoId);
-        newVideo.timestamp = block.number;
-        // Update the timestamp of the last submitted video for the company (needed for withdrawFundsCompany function)
-        lastVideo[msg.sender] = block.number;
-        // Require that the company has enough tokens deposited for the video tagging process
-        require(balanceCompanies[msg.sender] >= calculateNeededTokens(), "Not enough MTG tokens in the smart contract, deposit the right amount!");
-        // Emit an event to signal the addition of the video
-        emit eventAddVideo(msg.sender, videoId, newVideo.chosenValidators, block.number);
-    }
-    
     /// @notice Pseudo randomly selects validators for a video
     /// @param videoId The ID of the video for which validators are being selected
     /// @return An array of addresses representing the selected validators for the video
@@ -498,7 +475,7 @@ contract MetaTag {
         return selectedValidators;
     }
 
-    /// @notice Calculates the total number of tokens that a company needs to have before adding a new video
+        /// @notice Calculates the total number of tokens that a company needs to have before adding a new video
     /// @return The total number of tokens needed by the company
     function calculateNeededTokens() internal returns (uint) {
         // Initialize the variable to store the total needed tokens
@@ -524,6 +501,29 @@ contract MetaTag {
         }
         // Return the total needed tokens for pending videos
         return neededTokens;
+    }
+
+    /// @notice Allows companies to submit videos for tagging by selecting pseudo randomly validators and depositing the required tokens to reward the validators.
+    /// @param videoId The unique ID of the video being submitted
+    /// @param videoLength The length of the video in seconds
+    function addVideo(uint videoId, uint videoLength) public onlyWhitelist {
+        // Require that there are at least the minimum required number of ready validators
+        require(readyValidators.length >= minimumReadyValidators, "There should be a minimum of 15 ready validators!");
+        // Require that the video ID does not already exist for this company
+        require(videos[msg.sender][videoId].id == 0, "Video ID already exists for this company!");
+        // Add the video ID to the list of company's videos (needed for calculateNeededTokens function)
+        companyVideos[msg.sender].push(videoId);
+        // Create a new video object and initialize its properties
+        Video storage newVideo = videos[msg.sender][videoId];
+        newVideo.length = videoLength;
+        newVideo.chosenValidators = randomChooseValidators(videoId);
+        newVideo.timestamp = block.number;
+        // Update the timestamp of the last submitted video for the company (needed for withdrawFundsCompany function)
+        lastVideo[msg.sender] = block.number;
+        // Require that the company has enough tokens deposited for the video tagging process
+        require(balanceCompanies[msg.sender] >= calculateNeededTokens(), "Not enough MTG tokens in the smart contract, deposit the right amount!");
+        // Emit an event to signal the addition of the video
+        emit eventAddVideo(msg.sender, videoId, newVideo.chosenValidators, block.number);
     }
 
     /// @notice Allows whitelisted companies to withdraw their funds from the smart contract
