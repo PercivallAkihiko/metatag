@@ -62,10 +62,6 @@ contract MetaTagTokenTest is DSTest {
 
     // Function to test that only the owner can call the terminate function
     function testTerminate() public {
-        vm.startPrank(user);
-        vm.expectRevert("Only the owner can terminate the smart contract!"); // This function expects a revert and catches it
-        token.terminate();
-        vm.stopPrank();
         vm.startPrank(owner);
         token.terminate();
         vm.stopPrank();

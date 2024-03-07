@@ -431,7 +431,7 @@ contract MetaTagTest is DSTest {
         vm.startPrank(validator);  // Next action will be executed as validator
         token.buyTokens{value: amountEth}();
         token.approve(address(tag), 5000 * 1e18); // Before the token transfer we need to approve it
-        tag.MTGforVoucher(100 * 1e18);
+        tag.MTGforVoucher();
         vm.stopPrank(); // The actions will not anymore be executed as validator
     }
 
