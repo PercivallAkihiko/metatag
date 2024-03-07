@@ -241,6 +241,74 @@ const validTags = [
     "michele"
 ];
 
+// BuyTokens(                  address indexed purchaser, 					uint amount) 
+// ReceiveTokensFromValidator( address indexed company, 					uint amount);
+// SetVariable(                address indexed validator, 					bool value);
+// SubmitHash(                 address indexed validator, 	address indexed company, 	bytes32 hash, 				uint videoId, 
+// RevealHash(                 address indexed validator, 	address indexed company, 	uint[] tags, bytes11 seed uint, 	uint videoId, 
+// GetRewards(                 address indexed validator, 	address indexed company, 	uint rewardAmount, bool positive, 	uint videoId, 
+// WithdrawFundsValidator(     address indexed validator, 					uint amount
+// MTGforVoucher(              address indexed validator);
+
+var events = [
+    // BuyTokens(                  address indexed purchaser, 					uint amount) 
+    {
+        name: "BuyTokens",            
+        addresses: "Purchaser: 0x9FC3da866e7DF3a1c57adE1a97c9f00a70f010c8",
+        values: "Amount: 5MTG",
+        additional: ""
+    },     
+    // ReceiveTokensFromValidator( address indexed company, 					uint amount);
+    {
+        name: "ReceiveTokensFromValidator",            
+        addresses: "Company: 0x9FC3da866e7DF3a1c57adE1a97c9f00a70f010c8",
+        values: "Amount: 20MTG",
+        additional: ""
+    },    
+    // SetVariable(                address indexed validator, 					bool value);
+    {
+        name: "SetVariable",            
+        addresses: "Validator: 0x9FC3da866e7DF3a1c57adE1a97c9f00a70f010c8",
+        values: "Bool: true",
+        additional: ""
+    },    
+    // SubmitHash(                 address indexed validator, 	address indexed company, 	bytes32 hash, 				uint videoId, 
+    {
+        name: "SubmitHash",            
+        addresses: "Validator: 0x9FC3da866e7DF3a1c57adE1a97c9f00a70f010c8 <br>Company: 0x9FC3da866e7DF3a1c57adE1a97c9f00a70f010c8",
+        values: "hash: XXXXXXXXXXXXXXXX",
+        additional: "3zLsnD6TIWo"
+    },    
+    // RevealHash(                 address indexed validator, 	address indexed company, 	uint[] tags, bytes11 seed uint, 	uint videoId, 
+    {
+        name: "RevealHash",            
+        addresses: "Validator: 0x9FC3da866e7DF3a1c57adE1a97c9f00a70f010c8 <br>Company: 0x9FC3da866e7DF3a1c57adE1a97c9f00a70f010c8",
+        values: "Tags: [1,2,3,4] <br>Seed: 0h34t3o4uthiou",
+        additional: "3zLsnD6TIWo"
+    },    
+    // GetRewards(                 address indexed validator, 	address indexed company, 	uint rewardAmount, bool positive, 	uint videoId, 
+    {
+        name: "GetRewards",            
+        addresses: "Validator: 0x9FC3da866e7DF3a1c57adE1a97c9f00a70f010c8 <br>Company: 0x9FC3da866e7DF3a1c57adE1a97c9f00a70f010c8",
+        values: "Reward: 5MTG <br>Positive: false",
+        additional: "3zLsnD6TIWo"
+    },    
+    // WithdrawFundsValidator(     address indexed validator, 					uint amount
+    {
+        name: "WithdrawFundsValidator",            
+        addresses: "Validator: 0x9FC3da866e7DF3a1c57adE1a97c9f00a70f010c8",
+        values: "Amount: 5MTG",
+        additional: ""
+    },    
+    // MTGforVoucher(              address indexed validator);
+    {
+        name: "MTGforVoucher",            
+        addresses: "Purchaser: 0x9FC3da866e7DF3a1c57adE1a97c9f00a70f010c8",
+        values: "",
+        additional: ""
+    }            
+]
+
 var ethereumPrice = 1;
 
 // OKEH
@@ -250,6 +318,8 @@ document.addEventListener("DOMContentLoaded", function() {
     initVoteList();
     initEthPrice();
     initProfile();
+
+    initEventList();
     
     //Generating chart
     fetchEthereumPrices().then(monthxprice => {
@@ -273,7 +343,7 @@ function initMenu(){
     var voteWrapper = document.querySelector('.vote_wrapper');
     var lockWrapper = document.querySelector('.lock_wrapper');
     var buyWrapper = document.querySelector('.buy_wrapper');
-    var sellWrapper = document.querySelector('.sell_wrapper');
+    var eventsWrapper = document.querySelector('.events_wrapper');
     var voucherWrapper = document.querySelector('.voucher_wrapper');    
     
     menuButton.addEventListener("click" , () => {
@@ -295,7 +365,7 @@ function initMenu(){
     setItemMenuListener(vote, voteWrapper, "Vote")
     setItemMenuListener(lock, lockWrapper, "Lock")
     setItemMenuListener(buy, buyWrapper, "Buy")
-    setItemMenuListener(sell, sellWrapper, "Sell")
+    setItemMenuListener(sell, eventsWrapper, "Events")
     setItemMenuListener(voucher, voucherWrapper, "Voucher")
 }
 
@@ -347,6 +417,43 @@ function initProfile(){
     });
 }
 
+function initEventList(){
+    var events_list = document.querySelector('.events_list');        
+
+    events_list.innerHTML = '';    
+
+    var eventCounter = 0;
+
+    events.forEach(function(event) {                
+        var elementDiv = document.createElement('div');  
+
+        var nameDiv = document.createElement('div');
+        var addressesDiv = document.createElement('div');
+        var valuesDiv = document.createElement('div');        
+        var additionalDiv = document.createElement('div');  
+        
+        nameDiv.innerHTML = event.name;
+        addressesDiv.innerHTML = event.addresses;
+        valuesDiv.innerHTML = event.values;        
+        additionalDiv.innerHTML = event.additional; 
+
+        elementDiv.classList.add('event_element');
+        nameDiv.classList.add('event_name');
+        addressesDiv.classList.add('event_addresses');
+        valuesDiv.classList.add('event_values');    
+        additionalDiv.classList.add('event_additional');       
+        
+        elementDiv.appendChild(nameDiv); 
+        elementDiv.appendChild(addressesDiv); 
+        elementDiv.appendChild(valuesDiv);         
+        elementDiv.appendChild(additionalDiv); 
+        events_list.appendChild(elementDiv);       
+        
+        eventCounter += 1;
+    });    
+    setGridRows(eventCounter, events_list, 100);
+}
+
 function setItemMenuListener(button, wrapper, title){
     var dashboard = document.querySelector(".dashboard"); 
     var vote = document.querySelector(".vote"); 
@@ -361,7 +468,7 @@ function setItemMenuListener(button, wrapper, title){
     var voteWrapper = document.querySelector('.vote_wrapper');
     var lockWrapper = document.querySelector('.lock_wrapper');
     var buyWrapper = document.querySelector('.buy_wrapper');
-    var sellWrapper = document.querySelector('.sell_wrapper');
+    var eventsWrapper = document.querySelector('.events_wrapper');
     var voucherWrapper = document.querySelector('.voucher_wrapper');  
 
     button.addEventListener("click" , () => {
@@ -369,7 +476,7 @@ function setItemMenuListener(button, wrapper, title){
         voteWrapper.style.display = 'none';
         lockWrapper.style.display = 'none';
         buyWrapper.style.display = 'none';
-        sellWrapper.style.display = 'none';
+        eventsWrapper.style.display = 'none';
         voucherWrapper.style.display = 'none'; 
     
         dashboard.classList.remove("active");
@@ -475,7 +582,7 @@ function loadVoteList(option){
 
         videoCounter += 1;
     });    
-    setGridRows(videoCounter);
+    setGridRows(videoCounter, videolistDiv, 80);
 }
 
 function setFilterListener(selectedFilter, option){
@@ -495,9 +602,8 @@ function setFilterListener(selectedFilter, option){
     });    
 }
 
-function setGridRows(number) {
-    var gridContainer = document.querySelector('.video_list');                    
-    gridContainer.style.gridTemplateRows = 'repeat(' + number + ', 80px)';
+function setGridRows(number, listDiv, height) {                  
+    listDiv.style.gridTemplateRows = 'repeat(' + number + ', ' + height + 'px)';
 }
 
 function generateAlphanumericSeed() {

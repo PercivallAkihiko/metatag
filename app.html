@@ -46,7 +46,7 @@
                 <div class="profile_button">
                     <div class="profile"></div>
                     <div class="profile_content_wrapper"> 
-                        <div class="profile_content_container"">
+                        <div class="profile_content_container"">                            
                             <div class="profile_button_second">
                                 <div class="profile"></div>
                             </div>
@@ -100,7 +100,17 @@
             </div>
             <div class="vote_wrapper">
                 <div class="vote_container">                    
-                    <div class="vote_container_title">Videos</div>
+                    <div class="vote_header">
+                        <div class="vote_container_title">
+                            Videos               
+                        </div>
+                        <div class="switch_container">
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
                     <div class="filters">
                         <div class="filter_element filter_all filter_element_active">All</div>
                         <div class="filter_element filter_pending">Pending</div>
@@ -217,34 +227,23 @@
                 </div>
             </div>
 
-            <div class="sell_wrapper">
-                <div class="swapt_center">                                                             
-                    <form action="action_page.php" method="post" class="swap_container" class="swap_container">                    
-                        <div class="ethereum money">
-                            <div class="first_line">
-                                <input class="mtg_input" type="text" placeholder="0.00" name="uname" oninput="validateInput(this, 'metatag')"> 
-                                <div class="crypto_icon"><i class="fa-solid fa-m"></i></div>
-                                <div class="crypto_name">MTG</div>
-                            </div>
-                            <div class="second_line">
-                                <div class="dollar_value">0 $</div>
-                                <div class="total_balance">Balance 0.00</div>
-                                <div class="max">MAX</div>
-                            </div>
+            <div class="events_wrapper">
+                <div class="events_container">                    
+                    <div class="events_header">
+                        <div class="vote_container_title">
+                            Events               
                         </div>
-                        <div class="mtg money">
-                            <div class="first_line">
-                                <input class="eth_input eth_sell" type="text" placeholder="0.00" name="uname" readonly> 
-                                <div class="crypto_icon"><i class="fa-brands fa-ethereum"></i></div>
-                                <div class="crypto_name">ETH</div>
-                            </div>
-                            <div class="second_line">
-                                <div class="dollar_value">0 $</div>
-                            </div>                            
-                        </div>                      
-                        <button type="submit" class="sell_button">Sell</button>
-                    </form>
-                </div>
+                    </div>
+                    <div class="events_headers">
+                        <div>Name</div>
+                        <div>Addresses</div>
+                        <div>Values</div>                        
+                        <div>Video ID</div>
+                    </div>
+                    <div class="events_list">
+                        
+                    </div>
+                </div> 
             </div>
 
             <div class="voucher_wrapper">
