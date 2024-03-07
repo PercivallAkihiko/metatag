@@ -305,6 +305,8 @@ function initVoteList(){
     var action = document.querySelector(".filter_action");
     var completed = document.querySelector(".filter_completed");
 
+    var overlay = document.querySelector(".overlay");
+
     loadVoteList(1);
 
     setFilterListener(all, 1);
@@ -474,12 +476,6 @@ function loadVoteList(option){
         videoCounter += 1;
     });    
     setGridRows(videoCounter);
-
-    overlay.addEventListener("click" , () => {
-        if (event.target === overlay) {
-            overlay.classList.toggle("active");
-        }
-    });
 }
 
 function setFilterListener(selectedFilter, option){
