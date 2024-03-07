@@ -1,0 +1,281 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="css/app.css">
+        <link href='https://unpkg.com/css.gg@2.0.0/icons/css/chevron-left.css' rel='stylesheet'>
+        <link href="https://fonts.cdnfonts.com/css/euclid-circular-b" rel="stylesheet">
+        <script src="https://kit.fontawesome.com/0a2c0a85f0.js" crossorigin="anonymous"></script>
+        <script src="js/app.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    </head>
+    <body>
+        <div class="menu">
+            <div class="top_menu">
+                <div class="logo">Metabid</div>
+                <div class="menu_button"><i class="fa-solid fa-chevron-left"></i></div>
+            </div>       
+            <div class="item_container dashboard active">
+                <div class="icon"><i class="fa-solid fa-chart-line"></i></div>
+                <div class="title">Dashboard</div>
+            </div>     
+            <div class="item_container vote">
+                <div class="icon"><i class="fa-solid fa-check-to-slot"></i></div>
+                <div class="title">Vote</div>
+            </div>     
+            <div class="item_container lock">
+                <div class="icon"><i class="fa-solid fa-vault"></i></div>
+                <div class="title">Lock</div>
+            </div>     
+            <div class="item_container buy">
+                <div class="icon"><i class="fa-solid fa-sack-dollar"></i>   </div>
+                <div class="title">Buy</div>
+            </div>     
+            <div class="item_container sell">
+                <div class="icon"><i class="fa-solid fa-bell"></i></div>
+                <div class="title">Events</div>
+            </div> 
+            <div class="item_container voucher">
+                <div class="icon"><i class="fa-solid fa-ticket"></i></div>
+                <div class="title">Voucher</div>
+            </div>                 
+            <div class="term_service">Term of service</div>
+        </div>
+        <div class="container">
+            <div class="container_top">
+                <div class="container_title">Dashboard</div>
+                <div class="notification_button"><i class="fa-regular fa-bell"></i></div>            
+                <div class="profile_button">
+                    <div class="profile"></div>
+                    <div class="profile_content_wrapper"> 
+                        <div class="profile_content_container"">
+                            <div class="profile_button_second">
+                                <div class="profile"></div>
+                            </div>
+                            <div class="address" id="userAddress">0x3b9...20bc</div>
+                            <div class="logout" id="disconnectButton">
+                                <i class="fa-solid fa-right-from-bracket"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="dashboard_wrapper">
+                <div class="dashboard_container">
+                    <div class="dashboard_first_line">
+                        <div class="dashboard_item total_token_container">
+                            <div class="dashboard_item_title">Total token</div>
+                            <div class="dashboard_item_value">0.045 MTG</div>
+                            <div class="dashboard_item_icon"><i class="fa-solid fa-m"></i></div>
+                        </div>
+                        <div class="dashboard_item pending_container">
+                            <div class="dashboard_item_title">Pending</div>
+                            <div class="dashboard_item_value">2 video</div>
+                            <div class="dashboard_item_icon"><i class="fa-solid fa-exclamation"></i></div>
+                        </div>
+                        <div class="dashboard_item waiting_container">
+                            <div class="dashboard_item_title">Waiting</div>
+                            <div class="dashboard_item_value">6 video</div>
+                            <div class="dashboard_item_icon"><i class="fa-regular fa-hourglass-half"></i></i></div>
+                        </div>
+                        <div class="dashboard_item completed_container">
+                            <div class="dashboard_item_title">Completed</div>
+                            <div class="dashboard_item_value">122 video</div>
+                            <div class="dashboard_item_icon"><i class="fa-regular fa-circle-check"></i></div>
+                        </div>
+                    </div>
+                    <div class="dashboard_second_line">
+                        <div class="dashboard_statistics">
+                            <div class="dashboard_statistics_title">Statistics</div>
+                            <div class="empty"></div>
+                            <div class="dashboard_statistics_list">Claimed token: <white>32.2</white></div>
+                            <div class="dashboard_statistics_list">Slashed token: <white>12.52</white></div>
+                            <div class="dashboard_statistics_list">Percentage earn: <white>15%</white></div>                            
+                            <div class="dashboard_statistics_list">AVG completed per day: <white>2.4 video/day</white></div>
+                            <div class="dashboard_statistics_list">Expired: <white>15</white></div>                            
+                        </div>
+                        <div class="dashboard_graph">
+                            <canvas id="balance_chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="vote_wrapper">
+                <div class="vote_container">                    
+                    <div class="vote_container_title">Videos</div>
+                    <div class="filters">
+                        <div class="filter_element filter_all filter_element_active">All</div>
+                        <div class="filter_element filter_pending">Pending</div>
+                        <div class="filter_element filter_action">Action</div>         
+                        <div class="filter_element filter_completed">Completed</div>   
+                        <div class="filter_element"></div>    
+                    </div>
+                    <div class="headers">
+                        <div>Id</div>
+                        <div>Company</div>
+                        <div>Title</div>                        
+                        <div>Pending</div>
+                        <div>Reward</div>
+                    </div>
+                    <div class="video_list">
+                        
+                    </div>
+                </div>    
+            </div>
+            <div class="lock_wrapper">
+                <div class="lock_container">
+                    <div class="liquid_wrapper lock_element">
+                        <div class="lock_element_title">Liquid tokens</div>
+                        <div class="lock_element_value">5 MTG</div>
+                    </div>
+                    <div class="locked_wrapper lock_element">
+                        <div class="lock_element_title">Locked tokens</div>
+                        <div class="lock_element_value lock_element_value_locked">10.3 MTG</div>
+                    </div>
+                    <div class="penalty_wrapper lock_element">
+                        <div class="lock_element_title">Your penalty</div>
+                        <div class="lock_element_value">5%</div>
+                    </div>
+                    <div class="statistic_wrapper lock_element">
+                        <div class="static_container">
+                            <div class="static_title">Total token</div>
+                            <div class="static_value">14.5 MTG</div>
+                        </div>
+                        <!-- <div class="static_container">
+                            <div class="static_title">Total earn</div>
+                            <div class="static_value">4.1 MTG</div>
+                        </div>
+                        <div class="static_container">
+                            <div class="static_title">Total loss</div>
+                            <div class="static_value">0 MTG</div>
+                        </div> -->
+                        <div class="static_container">
+                            <div class="static_title">Starting date</div>
+                            <div class="static_value">26, Jan 2023</div>
+                        </div>
+                        <div class="static_container">
+                            <div class="static_title">Days locked</div>
+                            <div class="static_value">5 days</div>
+                        </div>
+                        <!-- <div class="static_container">
+                            <div class="static_title">Percentage earn</div>
+                            <div class="static_value">5.2%</div>
+                        </div> -->
+                        <div class="static_container">
+                            <div class="static_title">Lock fees</div>
+                            <div class="static_value">2%</div>
+                        </div>
+                    </div>
+                    <div class="deposit_wrapper lock_element">
+                        <div class="deposit_title">Lock</div>
+                        <div class="mtg_lock_wrapper mtg_input">
+                            <div class="mtg_first_line">                                
+                                <input class="mtg_input" type="text" placeholder="0.00" name="uname" oninput="validateInputLock(this)">                                 
+                                <div class="crypto_icon"><i class="fa-solid fa-m"></i></div>
+                                <div class="crypto_name">MTG</div>
+                            </div>
+                            <div class="mtg_second_line">
+                                <div id="dollar_value_lock" class="dollar_value">0 $</div>
+                                <div class="total_balance total_balance_mtg_lock">Balance 0.00</div>
+                                <div class="max max_mtg">MAX</div>
+                            </div>                            
+                        </div>
+                        
+                        <div class="deposit_submit_wrapper">
+                            <div class="deposit_submit">Confirm</div>
+                        </div>
+                    </div>    
+                    </form>
+                </div>
+            </div>
+
+            <div class="buy_wrapper">
+                <div class="swapt_center">                                                             
+                    <form action="action_page.php" method="post" class="swap_container" class="swap_container">                    
+                        <div class="ethereum money">
+                            <div class="first_line">
+                                <input class="eth_input" type="text" placeholder="0.00" name="uname" oninput="validateInput(this, 'ethereum')"> 
+                                <div class="crypto_icon"><i class="fa-brands fa-ethereum"></i></div>
+                                <div class="crypto_name">ETH</div>
+                            </div>
+                            <div class="second_line">
+                                <div class="dollar_value">0 $</div>
+                                <div class="total_balance">Balance 0.00</div>
+                                <div class="max max_eth">MAX</div>
+                            </div>
+                        </div>
+                        <div class="mtg money">
+                            <div class="first_line">
+                                <input class="mtg_input mtg_sell" type="text" placeholder="0.00" name="uname" readonly> 
+                                <div class="crypto_icon"><i class="fa-solid fa-m"></i></div>
+                                <div class="crypto_name">MTG</div>
+                            </div>
+                            <div class="second_line">
+                                <div class="dollar_value">0 $</div>
+                            </div>                            
+                        </div>                      
+                        <button type="submit" class="buy_button" id="buy_button">Buy</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="sell_wrapper">
+                <div class="swapt_center">                                                             
+                    <form action="action_page.php" method="post" class="swap_container" class="swap_container">                    
+                        <div class="ethereum money">
+                            <div class="first_line">
+                                <input class="mtg_input" type="text" placeholder="0.00" name="uname" oninput="validateInput(this, 'metatag')"> 
+                                <div class="crypto_icon"><i class="fa-solid fa-m"></i></div>
+                                <div class="crypto_name">MTG</div>
+                            </div>
+                            <div class="second_line">
+                                <div class="dollar_value">0 $</div>
+                                <div class="total_balance">Balance 0.00</div>
+                                <div class="max">MAX</div>
+                            </div>
+                        </div>
+                        <div class="mtg money">
+                            <div class="first_line">
+                                <input class="eth_input eth_sell" type="text" placeholder="0.00" name="uname" readonly> 
+                                <div class="crypto_icon"><i class="fa-brands fa-ethereum"></i></div>
+                                <div class="crypto_name">ETH</div>
+                            </div>
+                            <div class="second_line">
+                                <div class="dollar_value">0 $</div>
+                            </div>                            
+                        </div>                      
+                        <button type="submit" class="sell_button">Sell</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="voucher_wrapper">
+                <input  class="searchAddress" type="text" placeholder="Search address" name="searchAddress"></input>
+                <button id="whitelist_button">bruno</button>
+                <button id="ridi_button">ridi</button>
+                <div class="prova"> Some text</div>    
+            </div>
+        </div>
+
+        <div class="overlay">
+            <div class="overlay_wrapper">
+                <div class="overlay_content">                    
+                    <iframe class="youtubeVideo" id="youtubeVideo" width="560" height="360" src="https://www.youtube.com/embed/vRG2kQDnpTc?si=EwWUd-wd4mxodglK" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                    <div class="tags_wrapper">                                                
+                        <input class="tags_insert" type="text" placeholder="Insert tags" name="uname" onkeyup="tagInserted(event)" oninput="suggestTag(event)">
+                        <div class="suggestions_container">                            
+                        </div>
+                        <div class="tags_container_back">
+                            <div class="tags_container">
+                                
+                            </div>                   
+                        </div>
+                        <div class="tag_button"></div>
+                    </div>                
+                </div>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/web3@1.5.3/dist/web3.min.js"></script>
+        <script src="js/app_script.js"></script> 
+        <script src="js/app_script_not_token.js"></script>
+    </body>
+</html>
+
