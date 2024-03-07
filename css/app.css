@@ -130,7 +130,7 @@ html{
     grid-row: 7;        
 }
 
-.explorer{
+.voucher{
     grid-row: 8;        
 }
 
@@ -433,7 +433,7 @@ white{
     padding: 20px 0px;
 
     display: grid;
-    grid-template-rows: 43px 55px auto;    
+    grid-template-rows: 43px 55px 55px auto;    
 }
 
 .vote_container_title{
@@ -444,6 +444,35 @@ white{
 
     padding-left: 1.5rem;
     align-items: center;
+}
+
+.filters{
+    display: grid;
+    grid-template-columns: 135px 135px 135px 135px auto;    
+
+    font-size: 1.1rem;
+    line-height: 1.25rem;
+    font-weight: bold;
+    color: white;
+
+    align-items: center;
+    padding: 0px 1.5rem;
+    border-bottom: 1px solid rgb(62, 63, 75);
+}
+
+.filter_element{
+    display: flex;
+    justify-content: center;
+    align-items: center;     
+    height: 100%;
+
+    border-bottom: 1px solid rgb(62, 63, 75);
+    cursor: pointer;
+}
+
+.filter_element_active{
+    color: var(--special-menu-color);
+    border-bottom: 2.5px solid var(--special-menu-color);
 }
 
 .headers{
@@ -458,8 +487,7 @@ white{
 
     align-items: center;
     padding: 0px 1.5rem;
-
-    border-top: 1px solid rgb(62, 63, 75);
+    
     border-bottom: 1px solid rgb(62, 63, 75);
 }
 
@@ -925,7 +953,7 @@ cursive{
     background-color: rgb(21, 101, 192);
 }
 
-.explorer_wrapper{
+.voucher_wrapper{
     display: none;    
 }
 
