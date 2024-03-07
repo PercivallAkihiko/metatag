@@ -99,8 +99,7 @@ event eventWithdrawFundsCompany(address indexed company, uint amount);
         emit eventWhitelistCompany(company);
     }
 
-    function removeWhitelistCompany(address company) public {
-        require(msg.sender == mtgTeam, "You are not MtgTeam!");
+    function removeWhitelistCompany(address company) public onlyTeam {
         wlCompanies[company] = false;
         emit eventRemoveWhitelistCompany(company);
     }
@@ -141,15 +140,15 @@ event eventWithdrawFundsCompany(address indexed company, uint amount);
     // Function for validators to send their tokens to the smart contract to partecipate in the DApp
     function receiveTokensFromValidator(uint amount) public notCompany {
         bool sent = mtgToken.transferFrom(msg.sender, address(this), amount); // Transfer tokens from the validator's address to this contract
-        require(sent, "Token transfer failed");
+        require(sent, "Token transfer failed!");
         balanceValidators[msg.sender] += amount; // Update the validator's token balance in this contract
         emit eventReceiveTokensFromValidator(msg.sender, amount);
     }
 
     // Function for validators to submit a hash for a video
     function submitHash(address company, uint videoId, bytes32 hash) public {
-        require(isValidatorChosenForVideo(company, videoId, msg.sender), "Not a chosen validator for this video");
-        require(block.number <= videos[company][videoId].timestamp + 7200, "Submission time exceeded");
+        require(isValidatorChosenForVideo(company, videoId, msg.sender), "Not a chosen validator for this video!");
+        require(block.number <= videos[company][videoId].timestamp + 7200, "Submission time exceeded!");
         require((videos[company][videoId].hashedData[msg.sender]) == "","You cannot submit the hash twice!");
 
         videos[company][videoId].hashedData[msg.sender] = hash;
@@ -186,7 +185,7 @@ event eventWithdrawFundsCompany(address indexed company, uint amount);
 
     //function getRewards(address company, uint videoId) public returns (uint) {
     function getRewards(address company, uint videoId) public {
-        require((block.number > videos[company][videoId].timestamp + 14400) || (videos[company][videoId].revValidators.length == validatorsQuantity), "Withdraw not yet allowed!");
+        require((block.number > videos[company][videoId].timestamp + 14400) || (videos[company][videoId].revValidators.length == videos[company][videoId].hashedCounter), "Withdraw not yet allowed!");
         require(isValidatorChosenForVideo(company, videoId, msg.sender), "Not a chosen validator for this video!");
         bool check = false;
         for (uint i = 0; i < validatorVideos[msg.sender].length; i++) {
@@ -224,11 +223,11 @@ event eventWithdrawFundsCompany(address indexed company, uint amount);
 
         // Categorize tags and count totals for each category
         for (uint i = 0; i < tagsNumber; i++) {
-            if (tagCounts[i] >= totalValidators * confirmedTags / 100) {
+            if (tagCounts[i] * 100 >= totalValidators * confirmedTags) {
                 tagStatus[i] = 1; // Confirmed
                 totalConfirmedTags++;
             } 
-            else if (tagCounts[i] >= totalValidators * ambiguousTags / 100) {
+            else if (tagCounts[i] * 100 >= totalValidators * ambiguousTags) {
                 tagStatus[i] = 2; // Ambiguous
                 totalAmbiguousTags++;
             } 
@@ -272,7 +271,7 @@ event eventWithdrawFundsCompany(address indexed company, uint amount);
             reward += (validatorConfirmedTags * 1e18 / totalConfirmedTags) ;
         }
         if (totalAmbiguousTags > 0) {
-            reward -= (validatorAmbiguousTags * 1e18 / totalAmbiguousTags * 100) * 75 / 10000;
+            reward -= (validatorAmbiguousTags * 1e20 / totalAmbiguousTags ) * 75 / 10000;
         }
         if (totalWrongTags > 0) {
             reward -= (validatorWrongTags * 125) * (125 * 1e18 / 100 - 1e18 * validatorConfirmedTags / totalConfirmedTags) / 100 ;
@@ -312,6 +311,7 @@ event eventWithdrawFundsCompany(address indexed company, uint amount);
         return true;   
     }
 
+    //function withdrawFundsValidator() public notCompany returns (uint) {
     function withdrawFundsValidator() public notCompany {
         require(!variableValidators[msg.sender], "You have to turn off the variable!");
         uint val = 0;
@@ -350,7 +350,6 @@ event eventWithdrawFundsCompany(address indexed company, uint amount);
         require(videos[msg.sender][videoId].id == 0, "Video ID already exists for this company!");
         companyVideos[msg.sender].push(videoId);
         Video storage newVideo = videos[msg.sender][videoId];
-        newVideo.id = videoId;
         newVideo.length = videoLength;
         newVideo.chosenValidators = randomChooseValidators(videoId);
         newVideo.timestamp = block.number;
@@ -407,16 +406,15 @@ event eventWithdrawFundsCompany(address indexed company, uint amount);
         require(block.number >= lastVideo[msg.sender] + 72000 , "You have to wait 10 days since adding the last video!");
         uint amount = balanceCompanies[msg.sender];
         balanceCompanies[msg.sender] -= amount;
-        balanceValidators[mtgTeam] += amount * 1/100;
-        require(mtgToken.transfer(msg.sender, amount * 99/100), "Transfer failed!");
+        require(mtgToken.transfer(mtgTeam, amount * 1/100), "Transfer to team failed!");
+        require(mtgToken.transfer(msg.sender, amount * 99/100), "Transfer to wallet failed!");
         emit eventWithdrawFundsCompany(msg.sender, amount);
     }
 
 // ADDITIONAL FUNCTIONS ####################################################################################################################################################################################
 
     // Function that terminate the smart contract
-    function terminate() public {
-        require(msg.sender == mtgTeam, "Only the owner can terminate the smart contract!");
+    function terminate() public onlyTeam {
         selfdestruct(payable(mtgTeam)); // This is deprecated but I do not see alternatives at this moment
     }
 }
