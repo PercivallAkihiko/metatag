@@ -153,8 +153,6 @@ contract MetaTag {
 
     /// @notice Function for validators to announce their willingness to participate in the DApp.
     function setVariable() public notCompany {
-        // Check if the validator has locked at least 50 tokens
-        require(balanceValidators[msg.sender] >= 50 * 1e18, "You need to lock at least 50 tokens!"); 
         // If the validator is already registered
         if (variableValidators[msg.sender]) {
             // Loop through the ready validators to find the validator's index
@@ -172,6 +170,8 @@ contract MetaTag {
         }
         // If the validator is not registered
         else {
+            // Check if the validator has locked at least 50 tokens
+            require(balanceValidators[msg.sender] >= 50 * 1e18, "You need to lock at least 50 tokens!"); 
             // Add the validator to the list of ready validators
             readyValidators.push(msg.sender);
             // Set the validator's participation status to true
@@ -331,17 +331,16 @@ contract MetaTag {
         {
             // If the validator's balance is less than the threshold for no confirmed or no revealed tag slash (possible if the validator has more than one tagging job at the same moment)
             if (balanceValidators[msg.sender] < noConfirmedOrNoRevealedTagSlash * 1e18) {
-                // Set the validator's balance to zero and his variable to false
+                // Set the validator's balance to zero
                 balanceValidators[msg.sender] = 0;
-                variableValidators[msg.sender] = false;
             }
             else {
                 // Deduct the threshold amount from the validator's balance
                 balanceValidators[msg.sender] -= noConfirmedOrNoRevealedTagSlash * 1e18;
-                // Check if the validator has 50 tokens left in stake
-                if (balanceValidators[msg.sender] < 50 * 1e18) {
-                    variableValidators[msg.sender] = false;
-                }
+            }
+            // Check if the validator has 50 tokens left in stake
+            if (balanceValidators[msg.sender] < 50 * 1e18 && variableValidators[msg.sender]) {
+                setVariable();
             }
             return;
         }
@@ -380,15 +379,14 @@ contract MetaTag {
             // If the validator's balance is less than the slash (possible if the validator has more than one tagging job at the same moment)
             if (balanceValidators[msg.sender] < rewardAmount) {
                 balanceValidators[msg.sender] = 0;
-                variableValidators[msg.sender] = false;
             }
             else {
                 // Otherwise, deduct the slashed amount from the validator's balance
                 balanceValidators[msg.sender] -= rewardAmount;
-                // Check if the validator has 50 tokens left in stake
-                if (balanceValidators[msg.sender] < 50 * 1e18) {
-                    variableValidators[msg.sender] = false;
-                }
+            }
+            // Check if the validator has 50 tokens left in stake
+            if (balanceValidators[msg.sender] < 50 * 1e18 && variableValidators[msg.sender]) {
+                setVariable();
             }
             // Set the reward sign as negative
             positive = false; 
