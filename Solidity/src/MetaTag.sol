@@ -279,7 +279,6 @@ contract MetaTag {
         uint validatorConfirmedTags = 0;
         uint validatorAmbiguousTags = 0;
         uint validatorWrongTags = 0;
-        uint videoLength = videos[company][videoId].length;
         // Arrays to keep track of tag counts and status
         // There are 20 possible tags
         uint[tagsNumber] memory tagCounts;
@@ -312,22 +311,8 @@ contract MetaTag {
                 totalWrongTags++;
             }
         }
-        // Calculate the number of confirmed, ambiguous, and wrong tags for the validator
-        uint[] memory senderTags = videos[company][videoId].revealedTags[msg.sender];
-        for (uint i = 0; i < senderTags.length; i++) {
-            uint tag = senderTags[i];
-            if (tagStatus[tag] == 1) {
-                validatorConfirmedTags++;
-            } 
-            else if (tagStatus[tag] == 2) {
-                validatorAmbiguousTags++;
-            } 
-            else if (tagStatus[tag] == 3) {
-                validatorWrongTags++;
-            }
-        }
-        // Handle cases where the validator hasn't revealed any tags or there is no agreement between validators (at least one confirmed tag)
-        if (senderTags.length == 0 || totalConfirmedTags == 0)
+        // Handle cases where the validator hasn't revealed any tags or there is no agreement between validators (we want at least one confirmed tag)
+        if (videos[company][videoId].revealedTags[msg.sender].length == 0 || totalConfirmedTags == 0)
         {
             // If the validator's balance is less than the threshold for no confirmed or no revealed tag slash (possible if the validator has more than one tagging job at the same moment)
             if (balanceValidators[msg.sender] < noConfirmedOrNoRevealedTagSlash * 1e18) {
@@ -338,11 +323,24 @@ contract MetaTag {
                 // Deduct the threshold amount from the validator's balance
                 balanceValidators[msg.sender] -= noConfirmedOrNoRevealedTagSlash * 1e18;
             }
-            // Check if the validator has 50 tokens left in stake
+            // Check if the validator has 50 tokens left in stake, if not remove him from the validators that are ready
             if (balanceValidators[msg.sender] < 50 * 1e18 && variableValidators[msg.sender]) {
                 setVariable();
             }
             return;
+        }
+        // Calculate the number of confirmed, ambiguous, and wrong tags for the validator
+        for (uint i = 0; i < videos[company][videoId].revealedTags[msg.sender].length; i++) {
+            uint tag = videos[company][videoId].revealedTags[msg.sender][i];
+            if (tagStatus[tag] == 1) {
+                validatorConfirmedTags++;
+            } 
+            else if (tagStatus[tag] == 2) {
+                validatorAmbiguousTags++;
+            } 
+            else if (tagStatus[tag] == 3) {
+                validatorWrongTags++;
+            }
         }
         // Calculate the reward for the validator based on their tag categorizations
         // Initialize the base reward with a constant value
@@ -366,7 +364,7 @@ contract MetaTag {
         // Distribute the reward or slash the validator's tokens based on their performance
         if (reward >= 1e26) {
             // If the reward is positive, calculate the reward amount and transfer it to the validator
-            rewardAmount = (reward - 1e26) * videoLength * 1 / rewardVariable;
+            rewardAmount = (reward - 1e26) * videos[company][videoId].length * 1 / rewardVariable;
             // Deduct the reward amount from the company's balance
             balanceCompanies[company] -= rewardAmount; 
             // Add the reward amount to the validator's balance
@@ -375,7 +373,7 @@ contract MetaTag {
         else {
             // If the reward is negative, slash the validator's tokens
             // Calculate the slashed amount
-            rewardAmount = (1e26 - reward) * videoLength * 1 / rewardVariable;
+            rewardAmount = (1e26 - reward) * videos[company][videoId].length * 1 / rewardVariable;
             // If the validator's balance is less than the slash (possible if the validator has more than one tagging job at the same moment)
             if (balanceValidators[msg.sender] < rewardAmount) {
                 balanceValidators[msg.sender] = 0;
@@ -384,7 +382,7 @@ contract MetaTag {
                 // Otherwise, deduct the slashed amount from the validator's balance
                 balanceValidators[msg.sender] -= rewardAmount;
             }
-            // Check if the validator has 50 tokens left in stake
+            // Check if the validator has 50 tokens left in stake, if not remove him from the validators that are ready
             if (balanceValidators[msg.sender] < 50 * 1e18 && variableValidators[msg.sender]) {
                 setVariable();
             }
