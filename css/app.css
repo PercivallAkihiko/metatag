@@ -1058,7 +1058,7 @@ cursive{
 
 .events_headers{
     display: grid;
-    grid-template-columns: 230px 390px auto 140px;
+    grid-template-columns: 220px auto  270px;
     grid-column-gap: 10px;
 
     font-size: .875rem;
@@ -1077,9 +1077,13 @@ cursive{
     height: fit-content;     
 }
 
+.descriptionDiv{
+    display: grid;
+}
+
 .event_element{
     display: grid;
-    grid-template-columns: 230px 390px auto 140px;
+    grid-template-columns: 220px auto  270px;
     grid-column-gap: 10px;
     padding: 0px 1.5rem;
 
@@ -1087,12 +1091,16 @@ cursive{
 
     align-items: center;
     height: 100%;
-    color: white;
-    cursor: pointer;
+    color: white;    
 }
 
 .event_element:hover{
     background-color: var(--second-color-hovered);
+}
+
+.event_macro_element{
+    display: grid;
+    grid-template-columns: 100px auto;
 }
 
 /* //////////////////SHRINK */

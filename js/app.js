@@ -241,71 +241,159 @@ const validTags = [
     "michele"
 ];
 
-// BuyTokens(                  address indexed purchaser, 					uint amount) 
-// ReceiveTokensFromValidator( address indexed company, 					uint amount);
-// SetVariable(                address indexed validator, 					bool value);
-// SubmitHash(                 address indexed validator, 	address indexed company, 	bytes32 hash, 				uint videoId, 
-// RevealHash(                 address indexed validator, 	address indexed company, 	uint[] tags, bytes11 seed uint, 	uint videoId, 
-// GetRewards(                 address indexed validator, 	address indexed company, 	uint rewardAmount, bool positive, 	uint videoId, 
-// WithdrawFundsValidator(     address indexed validator, 					uint amount
-// MTGforVoucher(              address indexed validator);
+// 1 BuyTokens(                  address indexed purchaser, 					uint amount) 
+// 2 ReceiveTokensFromValidator( address indexed company, 					uint amount);
+// 3 SetVariable(                address indexed validator, 					bool value);
+// 4 SubmitHash(                 address indexed validator, 	address indexed company, 	bytes32 hash, 				uint videoId, 
+// 5 RevealHash(                 address indexed validator, 	address indexed company, 	uint[] tags, bytes11 seed uint, 	uint videoId, 
+// 6 GetRewards(                 address indexed validator, 	address indexed company, 	uint rewardAmount, bool positive, 	uint videoId, 
+// 7 WithdrawFundsValidator(     address indexed validator, 					uint amount
+// 8 MTGforVoucher(              address indexed validator);
 
 var events = [
     // BuyTokens(                  address indexed purchaser, 					uint amount) 
     {
-        name: "BuyTokens",            
-        addresses: "Purchaser: 0x9FC3da866e7DF3a1c57adE1a97c9f00a70f010c8",
-        values: "Amount: 5MTG",
-        additional: ""
+        name: "BuyTokens", 
+        validator: "",        
+        purchaser: "0x9FC3da866e7DF3a1c57adE1a97c9f00a70f010c8",
+        company: "",
+
+        amount: "5MTG",
+        additional: "",
+        positive: "",
+        hash: "",
+        tags: [],
+        seed: "",
+        rewardAmount: "",
+
+        videoId: "",
+        status: 1
     },     
     // ReceiveTokensFromValidator( address indexed company, 					uint amount);
     {
-        name: "ReceiveTokensFromValidator",            
-        addresses: "Company: 0x9FC3da866e7DF3a1c57adE1a97c9f00a70f010c8",
-        values: "Amount: 20MTG",
-        additional: ""
+        name: "ReceiveTokensFromValidator", 
+        validator: "",        
+        purchaser: "",
+        company: "0x07FAc54A901409Fe10E56c899Be3dCF2471ae321",
+
+        amount: "5MTG",
+        additional: "",
+        positive: "",
+        hash: "",
+        tags: [],
+        seed: "",
+        rewardAmount: "",
+
+        videoId: "zTFBJgnNgU4",
+        status: 2
     },    
     // SetVariable(                address indexed validator, 					bool value);
     {
-        name: "SetVariable",            
-        addresses: "Validator: 0x9FC3da866e7DF3a1c57adE1a97c9f00a70f010c8",
-        values: "Bool: true",
-        additional: ""
+        name: "SetVariable", 
+        validator: "0x9138Cc7ff38D9DA8cb2102c920b36473736E6EA5",        
+        purchaser: "",
+        company: "",
+
+        amount: "",
+        additional: "",
+        positive: "false",
+        hash: "",
+        tags: [],
+        seed: "",
+        rewardAmount: "",
+
+        videoId: "",
+        status: 3
     },    
     // SubmitHash(                 address indexed validator, 	address indexed company, 	bytes32 hash, 				uint videoId, 
     {
-        name: "SubmitHash",            
-        addresses: "Validator: 0x9FC3da866e7DF3a1c57adE1a97c9f00a70f010c8 <br>Company: 0x9FC3da866e7DF3a1c57adE1a97c9f00a70f010c8",
-        values: "hash: XXXXXXXXXXXXXXXX",
-        additional: "3zLsnD6TIWo"
+        name: "SubmitHash", 
+        validator: "0xdbC3363De051550D122D9C623CBaff441AFb477C",        
+        purchaser: "",
+        company: "0xe67026A91CD57988626A2c4C6EB64c03cae20911",
+
+        amount: "",
+        additional: "",
+        positive: "",
+        hash: "XXXXX",
+        tags: [],
+        seed: "",
+        rewardAmount: "",
+
+        videoId: "95Bbjmwlnss",
+        status: 4
     },    
     // RevealHash(                 address indexed validator, 	address indexed company, 	uint[] tags, bytes11 seed uint, 	uint videoId, 
     {
-        name: "RevealHash",            
-        addresses: "Validator: 0x9FC3da866e7DF3a1c57adE1a97c9f00a70f010c8 <br>Company: 0x9FC3da866e7DF3a1c57adE1a97c9f00a70f010c8",
-        values: "Tags: [1,2,3,4] <br>Seed: 0h34t3o4uthiou",
-        additional: "3zLsnD6TIWo"
+        name: "RevealHash", 
+        validator: "0xB6E268B6675846104feeF5582D22f40723164d05",        
+        purchaser: "",
+        company: "0xB6E268B6675846104feeF5582D22f40723164d05",
+
+        amount: "",
+        additional: "",
+        positive: "",
+        hash: "",
+        tags: ["pippo", "caio", "sempronio"],
+        seed: "rMFUws0juJn",
+        rewardAmount: "",
+
+        videoId: "95Bbjmwlnss",
+        status: 5
     },    
     // GetRewards(                 address indexed validator, 	address indexed company, 	uint rewardAmount, bool positive, 	uint videoId, 
     {
-        name: "GetRewards",            
-        addresses: "Validator: 0x9FC3da866e7DF3a1c57adE1a97c9f00a70f010c8 <br>Company: 0x9FC3da866e7DF3a1c57adE1a97c9f00a70f010c8",
-        values: "Reward: 5MTG <br>Positive: false",
-        additional: "3zLsnD6TIWo"
+        name: "GetRewards", 
+        validator: "0xb7019c9184580b2E1f66fCDc3EB6c62621732064",        
+        purchaser: "",
+        company: "0xF5d958F6eD5170903752d04d3B2a9D355e87C87B",
+
+        amount: "",
+        additional: "",
+        positive: "false",
+        hash: "",
+        tags: [],
+        seed: "",
+        rewardAmount: "",
+
+        videoId: "xxxr4J1fzvc",
+        status: 6
     },    
     // WithdrawFundsValidator(     address indexed validator, 					uint amount
     {
-        name: "WithdrawFundsValidator",            
-        addresses: "Validator: 0x9FC3da866e7DF3a1c57adE1a97c9f00a70f010c8",
-        values: "Amount: 5MTG",
-        additional: ""
+        name: "WithdrawFundsValidator", 
+        validator: "0x388C818CA8B9251b393131C08a736A67ccB19297",        
+        purchaser: "",
+        company: "0x6bE457e04092B28865E0cBa84E3b2CFa0f871E67",
+
+        amount: "5MTG",
+        additional: "",
+        positive: "",
+        hash: "",
+        tags: [],
+        seed: "",
+        rewardAmount: "",
+
+        videoId: "",
+        status: 7
     },    
     // MTGforVoucher(              address indexed validator);
     {
-        name: "MTGforVoucher",            
-        addresses: "Purchaser: 0x9FC3da866e7DF3a1c57adE1a97c9f00a70f010c8",
-        values: "",
-        additional: ""
+        name: "MTGforVoucher", 
+        validator: "0x388C818CA8B9251b393131C08a736A67ccB19297",        
+        purchaser: "",
+        company: "",
+
+        amount: "",
+        additional: "",
+        positive: "",
+        hash: "",
+        tags: [],
+        seed: "",
+        rewardAmount: "",
+
+        videoId: "",
+        status: 8
     }            
 ]
 
@@ -426,32 +514,65 @@ function initEventList(){
 
     events.forEach(function(event) {                
         var elementDiv = document.createElement('div');  
+        elementDiv.classList.add('event_element');
 
         var nameDiv = document.createElement('div');
-        var addressesDiv = document.createElement('div');
+        var addressDiv = document.createElement('div');
         var valuesDiv = document.createElement('div');        
-        var additionalDiv = document.createElement('div');  
         
-        nameDiv.innerHTML = event.name;
-        addressesDiv.innerHTML = event.addresses;
-        valuesDiv.innerHTML = event.values;        
-        additionalDiv.innerHTML = event.additional; 
+        // name: "SetVariable", 
+        // validator: "0x9FC3da866e7DF3a1c57adE1a97c9f00a70f010c8",        
+        // purchaser: "",
+        // company: "",        
+        
+        nameDiv.innerHTML = event.name;                   
+        createMacroEventDiv(addressDiv, "Validator:", event.validator);
+        createMacroEventDiv(addressDiv, "Purchaser:", event.purchaser);
+        createMacroEventDiv(addressDiv, "Company:", event.company);         
 
-        elementDiv.classList.add('event_element');
-        nameDiv.classList.add('event_name');
-        addressesDiv.classList.add('event_addresses');
-        valuesDiv.classList.add('event_values');    
-        additionalDiv.classList.add('event_additional');       
+        // amount: "",
+        // additional: "",
+        // positive: "false",
+        // hash: "",
+        // tags: [],
+        // seed: "",
+        // rewardAmount: "",
+        createMacroEventDiv(valuesDiv, "Amount:", event.amount);                    
+        createMacroEventDiv(valuesDiv, "Additional:", event.additional);
+        createMacroEventDiv(valuesDiv, "Positive:", event.positive);
+        createMacroEventDiv(valuesDiv, "Hash:", event.hash);                             
+        createMacroEventDiv(valuesDiv, "Seed:", event.seed);
+        createMacroEventDiv(valuesDiv, "Reward:", event.rewardAmount);                   
+        createMacroEventDiv(valuesDiv, "Video ID:", event.videoId); 
+
+
+        createMacroEventDiv(valuesDiv, "Tags:", event.tags); 
         
         elementDiv.appendChild(nameDiv); 
-        elementDiv.appendChild(addressesDiv); 
-        elementDiv.appendChild(valuesDiv);         
-        elementDiv.appendChild(additionalDiv); 
+        elementDiv.appendChild(addressDiv); 
+        elementDiv.appendChild(valuesDiv); 
         events_list.appendChild(elementDiv);       
         
         eventCounter += 1;
     });    
     setGridRows(eventCounter, events_list, 100);
+}
+
+function createMacroEventDiv(div, name, value){
+    if(value.length == 0){ return;}
+    var macroElement = document.createElement('div');
+    var nameDiv = document.createElement('div');
+    var valueDiv = document.createElement('div');
+
+    nameDiv.innerHTML = "<grey>" + name + "</grey>";
+    valueDiv.innerHTML = value;
+
+    macroElement.appendChild(nameDiv); 
+    macroElement.appendChild(valueDiv); 
+    macroElement.classList.add('event_macro_element');
+
+    div.appendChild(macroElement);    
+    
 }
 
 function setItemMenuListener(button, wrapper, title){
