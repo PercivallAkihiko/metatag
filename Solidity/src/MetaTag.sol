@@ -13,42 +13,42 @@ contract MetaTag {
     IERC20 public mtgToken;
     /// @notice Address of the team managing the contract
     address public mtgTeam;
-    /// @notice Mapping of whitelisted companies
+    /// @notice To keep track of whitelisted companies by mtgTeam
     mapping(address => bool) public wlCompanies;
     /// @notice Mapping of balances for validators
     mapping(address => uint) public balanceValidators;
-    /// @notice Mapping of the variable for validators
+    /// @notice Mapping of the variable for validators, to keep track of the validators that are ready to tag a new video when the video is added
     mapping(address => bool) public variableValidators;
-    /// @notice List of ready validators
+    /// @notice List of ready validators to perform the pseudo random decision
     address[] public readyValidators;
-    /// @notice Mapping of validators' videos
+    /// @notice Mapping of validators' videos to keep track of the videos of every single validator (this is done mainly for the withdrawFundsValidator function)
     mapping(address => ValidatorVideo[]) public validatorVideos;
     /// @notice Mapping of balances for companies
     mapping(address => uint) public balanceCompanies;
-    /// @notice Mapping of videos submitted by companies
+    /// @notice Mapping of videos submitted by companies (maily for calculateNeededTokens function)
     mapping(address => uint[]) public companyVideos;
     /// @notice Mapping of videos submitted by companies and their details
     mapping(address => mapping(uint => Video)) public videos;
-    /// @notice Mapping of the last block number when a video was added by a company
+    /// @notice Mapping of the last block number when a video was added by a company (for withdrawFundsCompany function)
     mapping(address => uint) public lastVideo;
 
     /// @notice Structure for the video information given by the companies
     struct Video {
         /// @notice Video ID
         uint id;
-        /// @notice Video length
+        /// @notice Video length (rewards are based also on the length)
         uint length;
-        /// @notice Timestamp when the video was added
+        /// @notice Timestamp when the video was added (to keep track of the three phases for the validators)
         uint timestamp;
-        /// @notice Validators chosen for the video
+        /// @notice Validators chosen for the video (done pseudo randomly)
         address[] chosenValidators;
         /// @notice Hashed data submitted by validators
         mapping(address => bytes32) hashedData;
-        /// @notice Counter for hashed data submitted
+        /// @notice Counter for hashed data submitted by validators (if all validators publish the hash they can go to the next phase)
         uint hashedCounter;
-        /// @notice Tags revealed by validators
+        /// @notice Tags revealed by validators (if all validators publish their tags they can go to the next phase)
         mapping(address => uint[]) revealedTags;
-        /// @notice Validators who revealed their tags
+        /// @notice Validators who revealed their tags (needed because validators that performed the reveal may be less than the selected validators for the video because of time limit)
         address[] revValidators;
     }
     /// @notice Structure for storing validator's videos
@@ -59,13 +59,14 @@ contract MetaTag {
         uint videoIdChosen;
     }
 
-    /// @notice Number of total tags
+    /// @notice These constants are here to facilitate in the future development of the DApp the preferences for the companies 
+    /// @notice Number of possible tags
     uint constant tagsNumber = 20;
     /// @notice Percetage of acceptance for a tag
     uint constant confirmedTags = 80;
     /// @notice Percetage of ambiguity for a tag
     uint constant ambiguousTags = 30;
-    /// @notice Minimum needed number of validators to accept a new video for tagging
+    /// @notice Minimum needed number of validators to accept a new video for tagging by a company
     uint constant minimumReadyValidators = 15;
     /// @notice Number of validators to choose tags for a video
     uint constant validatorsQuantity = 10;
@@ -125,6 +126,21 @@ contract MetaTag {
     /// @notice Whitelists a company, allowing it to access certain functionalities
     /// @param company The address of the company to be whitelisted
     function whitelistCompany(address company) public onlyTeam {
+        // If the company is registered as validator, remove it
+        if (variableValidators[company]) {
+            // Loop through the ready validators to find the company's index
+            for (uint i = 0; i < readyValidators.length; i++) {
+                if (readyValidators[i] == company) {
+                    // Replace the company address with the last validator in the list
+                    readyValidators[i] = readyValidators[readyValidators.length - 1];
+                    // Remove the last validator from the list
+                    readyValidators.pop();
+                    // Set the company's participation status to false
+                    variableValidators[company] = false;
+                    break;
+                }
+            }
+        }
         // Set the company's whitelist status to true
         wlCompanies[company] = true;
         // Emit an event indicating the company was whitelisted
@@ -143,7 +159,7 @@ contract MetaTag {
     /// @notice Function for validators to send their tokens to the smart contract to participate in the DApp
     /// @param amount The amount of tokens to be sent by the validator
     function receiveTokensFromValidator(uint amount) public notCompany {
-        // Transfer tokens from the validator's address to this contract and ensure the token transfer was successful
+        // Transfer tokens from the validator's address to this contract and ensure the token transfer was successful, it requires the approve
         require(mtgToken.transferFrom(msg.sender, address(this), amount), "Token transfer failed!"); // 
         // Update the validator's token balance in this contract
         balanceValidators[msg.sender] += amount;
@@ -151,9 +167,9 @@ contract MetaTag {
         emit eventReceiveTokensFromValidator(msg.sender, amount);
     }
 
-    /// @notice Function for validators to announce their willingness to participate in the DApp.
+    /// @notice Function for validators to announce their willingness to participate in the DApp
     function setVariable() public notCompany {
-        // If the validator is already registered
+        // If the validator is already registered, remove it
         if (variableValidators[msg.sender]) {
             // Loop through the ready validators to find the validator's index
             for (uint i = 0; i < readyValidators.length; i++) {
@@ -197,19 +213,20 @@ contract MetaTag {
         return false;
     }
 
-    /// @notice Function for validators to submit a hash for a video.
+    /// @notice Function for validators to submit a hash for a video
     /// @param company The address of the company uploading the video
     /// @param videoId The ID of the video for which the hash is being submitted
     /// @param hash The hash of the video submitted by the validator
     function submitHash(address company, uint videoId, bytes32 hash) public {
         // Ensure the validator is chosen for the specified video
         require(isValidatorChosenForVideo(company, videoId, msg.sender), "Not a chosen validator for this video!");
-        // Check if the submission time has not exceeded the allowed limit
+        // Check if the submission time has not exceeded the allowed limit (24h)
         require(block.number <= videos[company][videoId].timestamp + 7200, "Submission time exceeded!");
         // Ensure the validator has not already submitted a hash for this video
         require((videos[company][videoId].hashedData[msg.sender]) == "","You cannot submit the hash twice!");
-        // Store the submitted hash for the validator and update the hashed counter
+        // Store the submitted hash for the validator
         videos[company][videoId].hashedData[msg.sender] = hash;
+        // Update the hashed counter
         videos[company][videoId].hashedCounter +=1;
         // Emit an event indicating the hash submission
         emit eventSubmitHash(msg.sender, company, videoId, hash);
@@ -234,14 +251,15 @@ contract MetaTag {
         }
         // Ensure the hash of the revealed tags matches the stored hash
         require(videos[company][videoId].hashedData[msg.sender] == keccak256(abi.encodePacked(result, " ", seed)), "Hash mismatch!");
-        // Check if reveal is allowed (either reveal time exceeded or all validators have submitted their hashes)
+        // Check if reveal is allowed (either reveal time greater than 24h or all validators have submitted their hashes)
         require((block.number > videos[company][videoId].timestamp + 7200) || (videos[company][videoId].hashedCounter == validatorsQuantity), "Reveal not yet allowed!");
-        // Check if reveal time has not exceeded
+        // Check if reveal time has not exceeded 48h
         require(block.number < videos[company][videoId].timestamp + 14400, "Reveal time exceeded!");
         // Ensure the validator has not already revealed tags for this video
         require(videos[company][videoId].revealedTags[msg.sender].length == 0,"You cannot submit the reveal twice!");
-        // Store the revealed tags for the validator and add the validator to the list of revealing validators
+        // Store the revealed tags for the validator
         videos[company][videoId].revealedTags[msg.sender] = tags;
+        // Add the validator to the list of revealing validators (needed for the getRewards function)
         videos[company][videoId].revValidators.push(msg.sender);
         // Emit an event indicating the hash reveal
         emit eventRevealHash(msg.sender, company, videoId, tags, seed);
@@ -256,7 +274,7 @@ contract MetaTag {
         // Ensure the caller is a chosen validator for this video
         require(isValidatorChosenForVideo(company, videoId, msg.sender), "Not a chosen validator for this video!");
         bool check = false;
-        // Find and remove the validator's entry for the chosen video (to ensure one getRewards), done in this way because of withdrawFundsValidator
+        // Find and remove the validator's entry for the chosen video (to ensure one getRewards for video), done in this way because of withdrawFundsValidator
         for (uint i = 0; i < validatorVideos[msg.sender].length; i++) {
             if (validatorVideos[msg.sender][i].companyChosen == company && validatorVideos[msg.sender][i].videoIdChosen == videoId) {
                 uint lastIndex = validatorVideos[msg.sender].length - 1;
@@ -314,7 +332,7 @@ contract MetaTag {
         // Handle cases where the validator hasn't revealed any tags or there is no agreement between validators (we want at least one confirmed tag)
         if (videos[company][videoId].revealedTags[msg.sender].length == 0 || totalConfirmedTags == 0)
         {
-            // If the validator's balance is less than the threshold for no confirmed or no revealed tag slash (possible if the validator has more than one tagging job at the same moment)
+            // If the validator's balance is less than the threshold for no confirmed or no revealed tag slash him (possible if the validator has more than one tagging job at the same moment)
             if (balanceValidators[msg.sender] < noConfirmedOrNoRevealedTagSlash * 1e18) {
                 // Set the validator's balance to zero
                 balanceValidators[msg.sender] = 0;
@@ -347,31 +365,31 @@ contract MetaTag {
         uint reward = 1e26;
         if (totalConfirmedTags > 0) {
             // Add the confirmed tag reward proportionally based on the validator's confirmed tags compared to the total confirmed tags
-            reward += (validatorConfirmedTags * 1e18 / totalConfirmedTags);
+            reward += validatorConfirmedTags * 1e18 / totalConfirmedTags;
         }
         if (totalAmbiguousTags > 0) {
             // Deduct the ambiguous tag penalty based on the validator's ambiguous tags compared to the total ambiguous tags
-            reward -= (validatorAmbiguousTags * 1e20 / totalAmbiguousTags ) * 75 / 10000;
+            reward -= (validatorAmbiguousTags * 1e20 / totalAmbiguousTags ) * 75 / 1e4;
         }
         if (totalWrongTags > 0) {
             // Deduct the wrong tag penalty based on validatorWrongTags, validatorConfirmedTags and totalConfirmedTags
-            reward -= (validatorWrongTags * 125) * (125 * 1e16 - 1e18 * validatorConfirmedTags / totalConfirmedTags) / 100 ;
+            reward -= (validatorWrongTags * 125) * (125 * 1e16 - 1e18 * validatorConfirmedTags / totalConfirmedTags) / 1e2;
         }
         // Initialize the reward amount variable
         uint rewardAmount; 
-        // Initialize a boolean variable to indicate if the reward is positive or negative
-        bool positive = true; 
+        // Initialize a boolean variable to indicate if the reward is positive or negative for the event
+        bool positive = true;
         // Distribute the reward or slash the validator's tokens based on their performance
+        // If the reward is positive, calculate the reward amount and transfer it to the validator
         if (reward >= 1e26) {
-            // If the reward is positive, calculate the reward amount and transfer it to the validator
             rewardAmount = (reward - 1e26) * videos[company][videoId].length * 1 / rewardVariable;
             // Deduct the reward amount from the company's balance
             balanceCompanies[company] -= rewardAmount; 
             // Add the reward amount to the validator's balance
             balanceValidators[msg.sender] += rewardAmount; 
-        } 
+        }
+        // If the reward is negative, slash the validator's tokens
         else {
-            // If the reward is negative, slash the validator's tokens
             // Calculate the slashed amount
             rewardAmount = (1e26 - reward) * videos[company][videoId].length * 1 / rewardVariable;
             // If the validator's balance is less than the slash (possible if the validator has more than one tagging job at the same moment)
@@ -394,7 +412,7 @@ contract MetaTag {
     }
 
     /// @notice Allows validators to withdraw their accumulated rewards and funds from the smart contract
-    function withdrawFundsValidator() public notCompany {
+    function withdrawFundsValidator() public {
         // Ensure that the validator has turned off the variable
         require(!variableValidators[msg.sender], "You have to turn off the variable!");
         // Initialize a variable to iterate through the validator's videos
@@ -417,12 +435,10 @@ contract MetaTag {
         // Withdraw the validator's balance from the contract
         uint amount = balanceValidators[msg.sender];
         balanceValidators[msg.sender] = 0;
-        // Transfer 1% of the withdrawn amount to the MtgTeam address
-        require(mtgToken.transfer(mtgTeam, amount * 1/100), "Transfer failed!");
-        // Transfer 99% of the withdrawn amount to the validator
-        require(mtgToken.transfer(msg.sender, amount * 99/100), "Transfer failed!");
+        // Transfer 1% of the withdrawn amount to the MtgTeam address and 99% of the withdrawn amount to the validator
+        require(mtgToken.transfer(mtgTeam, amount * 1/100) && mtgToken.transfer(msg.sender, amount * 99/100), "Transfer failed!");
         // Emit an event for the successful withdrawal
-        emit eventWithdrawFundsValidator(msg.sender, amount);
+        emit eventWithdrawFundsValidator(msg.sender, amount * 99/100);
     }
 
     /// @notice Allows whitelisted companies to deposit tokens for video tagging
