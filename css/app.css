@@ -14,7 +14,7 @@
     --pending-color: rgb(253, 141, 60);
     --pending-color-hover: rgb(202, 112, 47);
     --expired-color: rgb(251, 106, 74);
-    --expired-color-hover: rgb(199, 84, 58);
+    --expired-color-hover: rgb(199, 84, 58);    
 }
 
 body {
@@ -803,6 +803,59 @@ cursive{
 .tag_button.disabled, .tag_button.disabled:hover{
     background-color: var(--text-color);
     cursor: inherit;
+}
+
+.hide{
+    display: none;
+}
+
+.poll_wrapper{
+    padding: 15px;    
+}
+
+.poll_title{
+    font-size: 1.1rem;
+    font-weight: bold;
+    border-bottom: 1px solid rgb(62, 63, 75);
+
+    display: flex;
+    align-items: center;     
+}
+
+.poll_container{
+    display: grid;    
+    grid-template-rows: 30px repeat(6, auto);
+    height: 100%;
+}
+
+.result_name, .result_vote, .result_vote_value{
+    display: flex;
+    align-items: center;    
+}
+
+.result_element{
+    color: var(--text-color);
+
+    display: grid;
+    grid-template-columns: 95px auto 50px;
+    column-gap: 5px;
+}
+
+.result_vote{
+    display: grid;
+    grid-template-columns: 2550fr 7450fr;    
+}
+
+.result_full{
+    background-color: var(--special);
+    width: 100%;
+    height: 10px;
+    border-radius: 3px;
+}
+
+.result_empty{    
+    width: 100%;
+    height: 10px;
 }
 
 /* !!!! ---- STAKE PART ---- !!!! */

@@ -14,6 +14,10 @@
 //1 MTG = 0.001 ETH
 var ethxmtg = 0.001;
 
+const pendingColor = "rgb(218, 253, 60)";
+const completedColor = "rgb(116, 196, 118)";
+const expiredColor = "rgb(251, 106, 74)";
+
 var videoDB = [
     {
         hashId: "xxxr4J1fzvc",            
@@ -21,7 +25,8 @@ var videoDB = [
         company: "Youtube",
         link: "www.google.it",            
         status: 1,
-        reward: "-"
+        reward: "-",
+        results: []
     },
     {
         hashId: "xxxr4J1fzvc",
@@ -37,7 +42,8 @@ var videoDB = [
         title: "Bitcoin: Watching the Weekly Close",
         link: "www.google.it",
         status: 2,
-        reward: "0.3 MTG"
+        reward: "0.3 MTG",
+        results: []
     },
     {
         hashId: "xxxr4J1fzvc",
@@ -45,7 +51,8 @@ var videoDB = [
         title: "Bitcoin: Watching the Weekly Close",
         link: "www.google.it",
         status: 3,
-        reward: "0.3 MTG"
+        reward: "0.3 MTG",
+        results: []
     },
     {
         hashId: "xxxr4J1fzvc",
@@ -53,7 +60,8 @@ var videoDB = [
         title: "Bitcoin: Watching the Weekly Close",
         link: "www.google.it",
         status: 4,
-        reward: "0.3 MTG"
+        reward: "0.3 MTG",
+        results: []
     },
     {
         hashId: "xxxr4J1fzvc",
@@ -61,7 +69,8 @@ var videoDB = [
         title: "Bitcoin: Watching the Weekly Close",
         link: "www.google.it",
         status: 5,
-        reward: "0.3 MTG"
+        reward: "0.3 MTG",
+        results: []
     },
     {
         hashId: "xxxr4J1fzvc",
@@ -69,7 +78,11 @@ var videoDB = [
         title: "Bitcoin: Watching the Weekly Close",
         link: "www.google.it",
         status: 6,
-        reward: "0.3 MTG"
+        reward: "0.3 MTG",
+        results: [
+            [5, 91],
+            [8, 12.2]
+        ]
     },
     {
         hashId: "xxxr4J1fzvc",
@@ -77,15 +90,29 @@ var videoDB = [
         title: "Bitcoin: Watching the Weekly Close",
         link: "www.google.it",
         status: 7,
-        reward: "0.3 MTG"
+        reward: "0.3 MTG",
+        results: []
     },
     {
         hashId: "95Bbjmwlnss",
         company: "Youtube",
-        title: "Bitcoin: Watching the Weekly Close",
+        title: "TEst",
         link: "www.google.it",
-        status: 1,
-        reward: "0.3 MTG"
+        status: 6,
+        reward: "0.3 MTG",
+        results: [
+            [5, 10.4],
+            [8, 12.2],
+            [3, 30.12],
+            [12, 15.12],
+            [11, 55.25],
+            [15, 90.25],
+            [20, 81.25],
+            [20, 81.25],
+            [20, 81.25],
+            [20, 81.25],
+            [20, 81.25],
+        ]
     },
     {
         hashId: "95Bbjmwlnss",
@@ -93,7 +120,8 @@ var videoDB = [
         title: "Bitcoin: Watching the Weekly Close",
         link: "www.google.it",
         status: 2,
-        reward: "0.3 MTG"
+        reward: "0.3 MTG",
+        results: []
     },
     {
         hashId: "95Bbjmwlnss",
@@ -101,7 +129,8 @@ var videoDB = [
         title: "Bitcoin: Watching the Weekly Close",
         link: "www.google.it",
         status: 3,
-        reward: "0.3 MTG"
+        reward: "0.3 MTG",
+        results: []
     },
     {
         hashId: "95Bbjmwlnss",
@@ -109,7 +138,8 @@ var videoDB = [
         title: "Bitcoin: Watching the Weekly Close",
         link: "www.google.it",
         status: 4,
-        reward: "0.3 MTG"
+        reward: "0.3 MTG",
+        results: []
     },
     {
         hashId: "95Bbjmwlnss",
@@ -117,7 +147,8 @@ var videoDB = [
         title: "Bitcoin: Watching the Weekly Close",
         link: "www.google.it",
         status: 5,
-        reward: "0.3 MTG"
+        reward: "0.3 MTG",
+        results: []
     },
     {
         hashId: "95Bbjmwlnss",
@@ -125,7 +156,14 @@ var videoDB = [
         title: "Bitcoin: Watching the Weekly Close",
         link: "www.google.it",
         status: 6,
-        reward: "0.3 MTG"
+        reward: "0.3 MTG",
+        results: [
+            [5, 10.4],
+            [8, 12.2],
+            [3, 30.123],
+            [12, 15.12],
+            [11, 55.25],
+        ]
     },
     {
         hashId: "95Bbjmwlnss",
@@ -133,7 +171,8 @@ var videoDB = [
         title: "Bitcoin: Watching the Weekly Close",
         link: "www.google.it",
         status: 7,
-        reward: "0.3 MTG"
+        reward: "0.3 MTG",
+        results: []
     }
 ];
 
@@ -518,25 +557,13 @@ function initEventList(){
 
         var nameDiv = document.createElement('div');
         var addressDiv = document.createElement('div');
-        var valuesDiv = document.createElement('div');        
-        
-        // name: "SetVariable", 
-        // validator: "0x9FC3da866e7DF3a1c57adE1a97c9f00a70f010c8",        
-        // purchaser: "",
-        // company: "",        
+        var valuesDiv = document.createElement('div');                
         
         nameDiv.innerHTML = event.name;                   
         createMacroEventDiv(addressDiv, "Validator:", event.validator);
         createMacroEventDiv(addressDiv, "Purchaser:", event.purchaser);
         createMacroEventDiv(addressDiv, "Company:", event.company);         
 
-        // amount: "",
-        // additional: "",
-        // positive: "false",
-        // hash: "",
-        // tags: [],
-        // seed: "",
-        // rewardAmount: "",
         createMacroEventDiv(valuesDiv, "Amount:", event.amount);                    
         createMacroEventDiv(valuesDiv, "Additional:", event.additional);
         createMacroEventDiv(valuesDiv, "Positive:", event.positive);
@@ -698,7 +725,7 @@ function loadVoteList(option){
         videolistDiv.appendChild(elementDiv);       
         
         elementDiv.addEventListener('click', function () {                        
-            generateDiv(video.hashId, video.status);                   
+            generateDiv(video.hashId, video.status, video.results);                   
         });             
 
         videoCounter += 1;
@@ -783,7 +810,7 @@ function resetListeners(element){
     element.parentNode.replaceChild(new_element, element);
 }
 
-function generateDiv(videoId, status) {   
+function generateDiv(videoId, status, results) {   
     resetListeners(".tag_button");
 
     var overlay = document.querySelector(".overlay");
@@ -804,35 +831,44 @@ function generateDiv(videoId, status) {
                 suggestionsContainer.innerHTML = "<grey>Seed: </grey>" + seed;        
                 setCookie(videoId, { list: tagList, seed: seed } , 1);                        
             });  
-            addTagFromCookie(videoId, false, true);
+            addTagFromCookie(videoId, false, true);            
             inputElement.disabled = false;
             tagsContainer.classList.remove("disabled")
             tagButton.classList.remove("disabled");
-            tagButton.innerHTML = "SEND VOTE";  
+            tagButton.innerHTML = "SEND VOTE";     
+            
+            showTagOrPolls();
             break;
         case 2:        
             disableDiv(videoId);
+            showTagOrPolls();
             tagButton.innerHTML = "WAITING VOTE";  
             break;
         case 3:
             disableDiv(videoId, true);
+            showTagOrPolls();
             tagButton.innerHTML = "REVEAL";  
             break;
         case 4:
             disableDiv(videoId);
+            showTagOrPolls();
             tagButton.innerHTML = "WAITING REVEAL";  
             break;
         case 5:
             disableDiv(videoId, true);
+            showTagOrPolls();
             tagButton.innerHTML = "CLAIM";  
             break;
         case 6:
+            //COMPLETED
+            generatePoll(results);
             disableDiv(videoId);
-            tagButton.innerHTML = "COMPLITED";  
+            showTagOrPolls(false);  
             break;                                              
-        default:         
+        default:       
+            //EXPIRED
             disableDiv(videoId);
-            tagButton.innerHTML = "EXPIRED";               
+            showTagOrPolls(false);              
       }
                   
     document.getElementById('youtubeVideo').src = "https://www.youtube.com/embed/" + videoId + "?si=EwWUd-wd4mxodglK"
@@ -851,6 +887,79 @@ function disableDiv(videoId, confirm=false){
         tag_button.classList.remove("disabled");   
     }else{
         tag_button.classList.add("disabled");   
+    }
+}
+
+function showTagOrPolls(tags=true){
+    var pollWrapper = document.querySelector(".poll_wrapper");  
+    var tagsWrapper = document.querySelector(".tags_wrapper");  
+
+    if(tags){
+        pollWrapper.classList.add("hide");
+        tagsWrapper.classList.remove("hide");
+    }
+    else{
+        pollWrapper.classList.remove("hide");
+        tagsWrapper.classList.add("hide");
+    }
+}
+
+function generatePoll(results){
+    var pollContainer = document.querySelector(".poll_container");
+    pollContainer.innerHTML = "<div class=\"poll_title\">Poll results</div>";
+
+    if(results.length < 5){
+        pollContainer.style.gridTemplateRows = "30px repeat(" + results.length + ", 60px) auto";
+    }
+    else{
+        pollContainer.style.gridTemplateRows = "30px repeat(" + results.length + ", auto)";
+    }    
+
+    results.sort((a, b) => b[1] - a[1]);
+
+    for (let i = 0; i < results.length; i++){
+        var tag = results[i][0];
+        var percentage = results[i][1];
+
+        var resultElement = document.createElement('div');
+        var resultName = document.createElement('div');
+        var resultVote = document.createElement('div');
+        var resultFull = document.createElement('div');
+        var resultEmpty = document.createElement('div');
+        var resultVoteValue = document.createElement('div');
+
+        resultName.innerHTML = getTagByIndex(tag);
+        resultFull.innerHTML = " ";
+        resultEmpty.innerHTML = " ";
+        resultVoteValue.innerHTML = percentage + "%";
+
+        resultElement.appendChild(resultName);
+        resultVote.appendChild(resultFull);
+        resultVote.appendChild(resultEmpty);
+        resultElement.appendChild(resultVote);
+        resultElement.appendChild(resultVoteValue); 
+
+        var fullFraction = percentage * 100;
+        var emptyFraction = 10000 - fullFraction;        
+        resultVote.style.display = "grid";        
+        resultVote.style.gridTemplateColumns = fullFraction + "fr " + emptyFraction + "fr";
+        resultVote.style.alignItems = "center";
+
+        if (percentage >= 80) {
+            resultFull.style.backgroundColor = completedColor;
+        } else if (percentage >= 20 && percentage < 80) {
+            resultFull.style.backgroundColor = pendingColor;
+        } else {
+            resultFull.style.backgroundColor = expiredColor;
+        }
+        
+        resultElement.classList.add("result_element");
+        resultName.classList.add("result_name");        
+        resultFull.classList.add("result_full");
+        resultEmpty.classList.add("result_empty");
+        resultVoteValue.classList.add("result_vote_value");
+
+        pollContainer.appendChild(resultElement);
     }
 }
 
@@ -983,6 +1092,16 @@ function calculateTextWidth(text) {
     const width = span.offsetWidth;
     document.body.removeChild(span);
     return width;
+}
+
+function getTagByIndex(index) {    
+    index = index - 1;    
+    if (index >= 0 && index < validTags.length) {
+        var tag = validTags[index];    
+        return tag.charAt(0).toUpperCase() + tag.slice(1)
+    } else {
+        return "Invalid TAG";
+    }
 }
 
 //Input validation form
