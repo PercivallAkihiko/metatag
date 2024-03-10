@@ -168,7 +168,7 @@ contract MetaTag {
     }
 
     /// @notice Function for validators to announce their willingness to participate in the DApp
-    function setVariable() public notCompany {
+    function setVariable() public {
         // If the validator is already registered, remove it
         if (variableValidators[msg.sender]) {
             // Loop through the ready validators to find the validator's index
@@ -186,6 +186,8 @@ contract MetaTag {
         }
         // If the validator is not registered
         else {
+            // This action can be performed only by a non-company
+            require(wlCompanies[msg.sender] == false, "You are a company!");
             // Check if the validator has locked at least 50 tokens
             require(balanceValidators[msg.sender] >= 50 * 1e18, "You need to lock at least 50 tokens!"); 
             // Add the validator to the list of ready validators
@@ -468,14 +470,14 @@ contract MetaTag {
         uint indexo = 0;
         // Iterate until the required number of validators is selected
         while (indexo != validatorsQuantity) {
-            // Generate a random index using block information and sender's address
+            // Generate a pseudo random index using block information, sender's address and index value
             uint randomIndex = uint(keccak256(abi.encodePacked(block.prevrandao, msg.sender, indexo))) % length;
-            // Select a validator at the random index and store it in the selected validators array
+            // Select a validator at the pseudo random index and store it in the output array
             selectedValidators[indexo] = readyFinal[randomIndex];
             // Replace the selected validator with the last validator in the array
             readyFinal[randomIndex] = readyFinal[length-1];
-            // Decrease the length of the array to exclude the selected validator
-            assembly { mstore(readyFinal, sub(mload(readyFinal), 1))}
+            // Decrease the length of the array to exclude the selected validator (done with assembly because normally it is not possible to pop from a memory array)
+            assembly {mstore(readyFinal, sub(mload(readyFinal), 1))}
             // Move to choose the next validator
             indexo += 1;
             length -= 1;
@@ -484,14 +486,14 @@ contract MetaTag {
         // Add the selected validators to the list of validators for the video
         for (uint i = 0; i < validatorsQuantity; i++) {
             selectedValidators[i] = readyValidators[i];
-            validatorVideos[selectedValidators[i]].push(ValidatorVideo(msg.sender,videoId));
+            validatorVideos[selectedValidators[i]].push(ValidatorVideo(msg.sender, videoId));
         }
         // ONLY FOR TESTING
         // Return the array of selected validators
         return selectedValidators;
     }
 
-        /// @notice Calculates the total number of tokens that a company needs to have before adding a new video
+    /// @notice Calculates the total number of tokens that a company needs to have before adding a new video
     /// @return The total number of tokens needed by the company
     function calculateNeededTokens() internal returns (uint) {
         // Initialize the variable to store the total needed tokens
@@ -502,7 +504,7 @@ contract MetaTag {
         uint e = 0;
         // Iterate through each video uploaded by the company
         while (e < last) {
-            // Check if the current video is still within the allowed time frame for tagging
+            // Check if the current video is still within the allowed time frame for rewards (10 days)
             if (block.number < videos[msg.sender][companyVideos[msg.sender][e]].timestamp + 72000) {
                 // Calculate the tokens needed for the current video and add to the total needed tokens
                 neededTokens += 1e18 * videos[msg.sender][companyVideos[msg.sender][e]].length * validatorsQuantity * 1/rewardVariable;
@@ -519,11 +521,11 @@ contract MetaTag {
         return neededTokens;
     }
 
-    /// @notice Allows companies to submit videos for tagging by selecting pseudo randomly validators and depositing the required tokens to reward the validators.
+    /// @notice Allows companies to submit videos for tagging by selecting pseudo randomly validators and depositing the required tokens to reward the validators
     /// @param videoId The unique ID of the video being submitted
     /// @param videoLength The length of the video in seconds
     function addVideo(uint videoId, uint videoLength) public onlyWhitelist {
-        // Require that there are at least the minimum required number of ready validators
+        // Require that there are at least the minimum number of ready validators
         require(readyValidators.length >= minimumReadyValidators, "There should be a minimum of 15 ready validators!");
         // Require that the video ID does not already exist for this company
         require(videos[msg.sender][videoId].id == 0, "Video ID already exists for this company!");
@@ -542,18 +544,16 @@ contract MetaTag {
         emit eventAddVideo(msg.sender, videoId, newVideo.chosenValidators, block.number);
     }
 
-    /// @notice Allows whitelisted companies to withdraw their funds from the smart contract
-    function withdrawFundsCompany() public onlyWhitelist {
+    /// @notice Allows companies to withdraw their funds from the smart contract
+    function withdrawFundsCompany() public {
         // Ensure that 10 days have passed since the last video was added to give enough time to validators to withdraw their rewards
         require(block.number >= lastVideo[msg.sender] + 72000 , "You have to wait 10 days since adding the last video!");
         // Retrieve the amount of funds held by the company
         uint amount = balanceCompanies[msg.sender];
         // Deduct the withdrawn amount from the company's balance
         balanceCompanies[msg.sender] = 0;
-        // Transfer 1% of the withdrawn amount to the contract owner (MtG Team)
-        require(mtgToken.transfer(mtgTeam, amount * 1/100), "Transfer to team failed!");
-        // Transfer the remaining 99% of the withdrawn amount to the company's wallet
-        require(mtgToken.transfer(msg.sender, amount * 99/100), "Transfer to wallet failed!");
+        // Transfer 1% of the withdrawn amount to the contract owner (MTG Team) and 99% to the company's wallet
+        require(mtgToken.transfer(mtgTeam, amount * 1/100) && mtgToken.transfer(msg.sender, amount * 99/100), "Transfer failed!");
         // Emit an event to log the withdrawal of funds by the company
         emit eventWithdrawFundsCompany(msg.sender, amount);
     }
