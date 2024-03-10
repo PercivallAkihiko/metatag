@@ -25,6 +25,7 @@ var videoDB = [
         company: "Youtube",
         link: "www.google.it",            
         status: 1,
+        leftvote: 0,
         reward: "-",
         results: []
     },
@@ -34,6 +35,7 @@ var videoDB = [
         title: "Bitcoin: Watching the Weekly Close",
         link: "www.google.it",
         status: 1,
+        leftvote: 0,
         reward: "0.3 MTG"
     },
     {
@@ -42,6 +44,7 @@ var videoDB = [
         title: "Bitcoin: Watching the Weekly Close",
         link: "www.google.it",
         status: 2,
+        leftvote: 4,
         reward: "0.3 MTG",
         results: []
     },
@@ -51,6 +54,7 @@ var videoDB = [
         title: "Bitcoin: Watching the Weekly Close",
         link: "www.google.it",
         status: 3,
+        leftvote: 0,
         reward: "0.3 MTG",
         results: []
     },
@@ -60,6 +64,7 @@ var videoDB = [
         title: "Bitcoin: Watching the Weekly Close",
         link: "www.google.it",
         status: 4,
+        leftvote: 5,
         reward: "0.3 MTG",
         results: []
     },
@@ -69,6 +74,7 @@ var videoDB = [
         title: "Bitcoin: Watching the Weekly Close",
         link: "www.google.it",
         status: 5,
+        leftvote: 0,
         reward: "0.3 MTG",
         results: []
     },
@@ -78,6 +84,7 @@ var videoDB = [
         title: "Bitcoin: Watching the Weekly Close",
         link: "www.google.it",
         status: 6,
+        leftvote: 0,
         reward: "0.3 MTG",
         results: [
             [5, 91],
@@ -90,6 +97,7 @@ var videoDB = [
         title: "Bitcoin: Watching the Weekly Close",
         link: "www.google.it",
         status: 7,
+        leftvote: 0,
         reward: "0.3 MTG",
         results: []
     },
@@ -99,6 +107,7 @@ var videoDB = [
         title: "TEst",
         link: "www.google.it",
         status: 6,
+        leftvote: 0,
         reward: "0.3 MTG",
         results: [
             [5, 10.4],
@@ -120,6 +129,7 @@ var videoDB = [
         title: "Bitcoin: Watching the Weekly Close",
         link: "www.google.it",
         status: 2,
+        leftvote: 1,
         reward: "0.3 MTG",
         results: []
     },
@@ -129,6 +139,7 @@ var videoDB = [
         title: "Bitcoin: Watching the Weekly Close",
         link: "www.google.it",
         status: 3,
+        leftvote: 0,
         reward: "0.3 MTG",
         results: []
     },
@@ -138,6 +149,7 @@ var videoDB = [
         title: "Bitcoin: Watching the Weekly Close",
         link: "www.google.it",
         status: 4,
+        leftvote: 4,
         reward: "0.3 MTG",
         results: []
     },
@@ -147,6 +159,7 @@ var videoDB = [
         title: "Bitcoin: Watching the Weekly Close",
         link: "www.google.it",
         status: 5,
+        leftvote: 0,
         reward: "0.3 MTG",
         results: []
     },
@@ -156,6 +169,7 @@ var videoDB = [
         title: "Bitcoin: Watching the Weekly Close",
         link: "www.google.it",
         status: 6,
+        leftvote: 0,
         reward: "0.3 MTG",
         results: [
             [5, 10.4],
@@ -171,6 +185,7 @@ var videoDB = [
         title: "Bitcoin: Watching the Weekly Close",
         link: "www.google.it",
         status: 7,
+        leftvote: 0,
         reward: "0.3 MTG",
         results: []
     }
@@ -725,7 +740,7 @@ function loadVoteList(option){
         videolistDiv.appendChild(elementDiv);       
         
         elementDiv.addEventListener('click', function () {                        
-            generateDiv(video.hashId, video.status, video.results);                   
+            generateDiv(video.hashId, video.status, video.results, video.leftvote);                   
         });             
 
         videoCounter += 1;
@@ -810,7 +825,7 @@ function resetListeners(element){
     element.parentNode.replaceChild(new_element, element);
 }
 
-function generateDiv(videoId, status, results) {   
+function generateDiv(videoId, status, results, leftVote) {   
     resetListeners(".tag_button");
 
     var overlay = document.querySelector(".overlay");
@@ -842,7 +857,7 @@ function generateDiv(videoId, status, results) {
         case 2:        
             disableDiv(videoId);
             showTagOrPolls();
-            tagButton.innerHTML = "WAITING VOTE";  
+            tagButton.innerHTML = "WAITING FOR " + leftVote + " VOTE";  
             break;
         case 3:
             disableDiv(videoId, true);
@@ -852,7 +867,7 @@ function generateDiv(videoId, status, results) {
         case 4:
             disableDiv(videoId);
             showTagOrPolls();
-            tagButton.innerHTML = "WAITING REVEAL";  
+            tagButton.innerHTML = "WAITING FOR " + leftVote + " REVEAL";  
             break;
         case 5:
             disableDiv(videoId, true);
