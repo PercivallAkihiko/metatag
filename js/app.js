@@ -727,7 +727,7 @@ function loadVoteList(option){
             default:
                 if(option == 2){return;} //Pending
                 if(option == 3){return;} //Action
-                if(option == 4){return;} //Completed
+                //if(option == 4){return;} //Completed
                 pendingDiv.classList.add('EXPIRED');
                 pendingDiv.innerHTML = 'EXPIRED';
         }
