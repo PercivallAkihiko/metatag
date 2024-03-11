@@ -547,7 +547,7 @@ white{
     border-radius: 50%;
   }
 
-.vote_container_title{
+.vote_container_title, .events_container_title{
     font-size: 1.5rem;
     line-height: 2rem;
     color: white;
@@ -1145,6 +1145,10 @@ cursive{
     grid-template-columns: auto 100px;    
 }
 
+.events_container_title{
+    padding-left: 24px;
+}
+
 .events_headers{
     display: grid;
     grid-template-columns: 220px auto  270px;
@@ -1159,6 +1163,7 @@ cursive{
     padding: 0px 1.5rem;
     
     border-bottom: 1px solid rgb(62, 63, 75);
+    border-top: 1px solid rgb(62, 63, 75);
 }
 
 .events_list{
