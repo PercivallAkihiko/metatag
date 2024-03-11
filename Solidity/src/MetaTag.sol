@@ -407,7 +407,7 @@ contract MetaTag {
                 setVariable();
             }
             // Set the reward sign as negative
-            positive = false; 
+            positive = false;
         }
         // Emit an event indicating the reward distribution
         emit eventGetRewards(msg.sender, company, videoId, rewardAmount, positive);
@@ -555,7 +555,7 @@ contract MetaTag {
         // Transfer 1% of the withdrawn amount to the contract owner (MTG Team) and 99% to the company's wallet
         require(mtgToken.transfer(mtgTeam, amount * 1/100) && mtgToken.transfer(msg.sender, amount * 99/100), "Transfer failed!");
         // Emit an event to log the withdrawal of funds by the company
-        emit eventWithdrawFundsCompany(msg.sender, amount);
+        emit eventWithdrawFundsCompany(msg.sender, amount * 99/100);
     }
 
     /// @notice Allows users to exchange 100 MTG tokens for a voucher

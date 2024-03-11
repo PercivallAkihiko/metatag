@@ -231,164 +231,155 @@ contract MetaTagTest is DSTest {
        //}
 
         vm.startPrank(user1);
-        tag.submitHash(company, 12, 0xe7e58eed08f818747b2a268007dc40a50521536b02c4db9ed4c0221984d9908c);
+        tag.submitHash(company, 12, 0x4adaa3070110d4026c3e6f5288f9f23fd66b5e5e5438ed3bf7ef8c017a4c3c4f);
         vm.stopPrank();
 
         vm.startPrank(user2);
-        tag.submitHash(company, 12, 0x4be25c88e0160a8688ff9c2a951cd73ab31292a83640699111cbba817894947f);
+        tag.submitHash(company, 12, 0x79e6b03012503efbdd4a2838f8186e52a2ba4ddc19d12e9866ec89ccc1b85d83);
         vm.stopPrank();
 
         vm.startPrank(user3);
-        tag.submitHash(company, 12, 0x2ba50801c924fbcaa5759d1ee855727a5f141d90ec29de667683082bcf3fbe25);
+        tag.submitHash(company, 12, 0x94759a906497aab2e5670a365581a96c39a6c5a99946763dcd3417f34b779d9a);
         vm.stopPrank();
 
         vm.startPrank(user4);
-        tag.submitHash(company, 12, 0x5b1b7fc3cc64855a85d5cdc91c77a9c8db4e2dc242f1800d6cfcfa2e8c73335c);
+        tag.submitHash(company, 12, 0x87c8f2f9fc02302eaa5063862823f121c33d6d791fea1a652792460030e4080f);
         vm.stopPrank();
 
         vm.startPrank(user5);
-        tag.submitHash(company, 12, 0xf4b77ec457b3179d88e24558e81d6119960e66df8f49ee862468b927e04ce4d4);
+        tag.submitHash(company, 12, 0xe23e10568ae9ea0bc5b5f7ed8c03341f520c8dba14f0af760d20a53b80920830);
         vm.stopPrank();
 
         vm.startPrank(user6);
-        tag.submitHash(company, 12, 0x4d7d2f60c3f6b8e07f91957c214751750be65c4750e1be52f8e0a346821788b1);
+        tag.submitHash(company, 12, 0x01e96e3adf4bda90192ee694db38e421e75444b9a008ab20e83090ec8b82feb3);
         vm.stopPrank();
 
         vm.startPrank(user7);
-        tag.submitHash(company, 12, 0xf11d3d3c5084710df6f6f312f17c1f5ac2f230e54c63d569c6bc5e0d4ccdc1fd);
+        tag.submitHash(company, 12, 0x65b776ca4943c369e64f4eb1735e1b00acf9c39785f03662725b3577f4f12462);
         vm.stopPrank();
 
         vm.startPrank(user8);
-        tag.submitHash(company, 12, 0x2eb7678a5bdfe34c4d36a2d1168e60de750c629e3c0b9f359af0772edf4f4fe8);
+        tag.submitHash(company, 12, 0xabdb1ca529b15bc26f5fd868a27e15e375dd3c9c23e32bc21bf3532a03ad64b0);
         vm.stopPrank();
 
         vm.startPrank(user9);
-        tag.submitHash(company, 12, 0x46d3ccc5685fc4c14269a8cbbf01f00e39e03c8090b44c197757411e8c720969);
+        tag.submitHash(company, 12, 0x31dab6c372b09756601ca1d927ec5cf40b193c9aeb9e1b744f6e95d32c96b205);
         vm.stopPrank();
 
         vm.startPrank(user10);
-        tag.submitHash(company, 12, 0xf0d097a87446c4a503c6517e7d22e9a72f6c1ead42a24d30c7529ecec115b9a8);
+        tag.submitHash(company, 12, 0x60e518a4dadd3715d5995c47d994c3a2cb1ec507e7edccfb1ab0ba18c0a5535d);
         vm.stopPrank();
         
         //vm.roll(7304);
 
         vm.startPrank(user1);
-        uint256[] memory inputArray1 = new uint256[](2);
-        inputArray1[0] = 8;
-        inputArray1[1] = 10;
-        tag.revealHash(company, 12, inputArray1, 0x4f6b32704865304d324b65);
+        uint256[] memory inputArray1 = new uint256[](3);
+        inputArray1[0] = 1;
+        inputArray1[1] = 8;
+        inputArray1[2] = 10;
+        tag.revealHash(company, 12, inputArray1, 0x4f6b32704865304d324b65); //Ok2pHe0M2Ke
         vm.stopPrank();
 
         vm.startPrank(user2);
-        uint256[] memory inputArray2 = new uint256[](7);
+        uint256[] memory inputArray2 = new uint256[](3);
         inputArray2[0] = 1;
-        inputArray2[1] = 2;
-        inputArray2[2] = 3;
-        inputArray2[3] = 4;
-        inputArray2[4] = 6;
-        inputArray2[5] = 7;
-        inputArray2[6] = 9;
+        inputArray2[1] = 8;
+        inputArray2[2] = 10;
         tag.revealHash(company, 12, inputArray2, 0x466b44785a63374861764e); //FkDxZc7HavN
         vm.stopPrank();
 
         vm.startPrank(user3);
-        uint256[] memory inputArray3 = new uint256[](2);
-        inputArray3[0] = 4;
-        inputArray3[1] = 10;
-        tag.revealHash(company, 12, inputArray3, 0x4846756242686533716337);
+        uint256[] memory inputArray3 = new uint256[](3);
+        inputArray3[0] = 7;
+        inputArray3[1] = 9;
+        inputArray3[2] = 10;
+        tag.revealHash(company, 12, inputArray3, 0x4846756242686533716337); //HFubBhe3qc7
         vm.stopPrank();
-
+        
         vm.startPrank(user4);
-        uint256[] memory inputArray4 = new uint256[](2);
-        inputArray4[0] = 8;
-        inputArray4[1] = 10;
-        tag.revealHash(company, 12, inputArray4, 0x736c524c38396f5a425033);
+        uint256[] memory inputArray4 = new uint256[](1);
+        inputArray4[0] = 1;
+        tag.revealHash(company, 12, inputArray4, 0x736c524c38396f5a425033); //slRL89oZBP3
         vm.stopPrank();
 
         vm.startPrank(user5);
-        uint256[] memory inputArray5 = new uint256[](3);
-        inputArray5[0] = 8;
-        inputArray5[1] = 9;
-        inputArray5[2] = 10;
-        tag.revealHash(company, 12, inputArray5, 0x6b62673054795a5a645552);
+        uint256[] memory inputArray5 = new uint256[](1);
+        inputArray5[0] = 1;
+        tag.revealHash(company, 12, inputArray5, 0x6b62673054795a5a645552); //kbg0TyZZdUR
         vm.stopPrank();
 
         vm.startPrank(user6);
-        uint256[] memory inputArray6 = new uint256[](2);
-        inputArray6[0] = 8;
-        inputArray6[1] = 10;
-        tag.revealHash(company, 12, inputArray6, 0x667267756442735a5a7941);
+        uint256[] memory inputArray6 = new uint256[](1);
+        inputArray6[0] = 1;
+        tag.revealHash(company, 12, inputArray6, 0x667267756442735a5a7941); //frgudBsZZyA
         vm.stopPrank();
 
         vm.startPrank(user7);
-        uint256[] memory inputArray7 = new uint256[](2);
-        inputArray7[0] = 5;
-        inputArray7[1] = 8;
+        uint256[] memory inputArray7 = new uint256[](1);
+        inputArray7[0] = 1;
         tag.revealHash(company, 12, inputArray7, 0x4b53346934456756396f58); //KS4i4EgV9oX
         vm.stopPrank();
 
         vm.startPrank(user8);
-        uint256[] memory inputArray8 = new uint256[](2);
+        uint256[] memory inputArray8 = new uint256[](1);
         inputArray8[0] = 1;
-        inputArray8[1] = 8;
         tag.revealHash(company, 12, inputArray8, 0x5568334c6776337332736b); //Uh3Lgv3s2sk
         vm.stopPrank();
 
+        /*
         vm.startPrank(user9);
-        uint256[] memory inputArray9 = new uint256[](2);
+        uint256[] memory inputArray9 = new uint256[](1);
         inputArray9[0] = 7;
-        inputArray9[1] = 8;
-        tag.revealHash(company, 12, inputArray9, 0x796b6e7069523531585868);
+        tag.revealHash(company, 12, inputArray9, 0x796b6e7069523531585868); //yknpiR51XXh
         vm.stopPrank();
 
         vm.startPrank(user10);
-        uint256[] memory inputArray10 = new uint256[](4);
+        uint256[] memory inputArray10 = new uint256[](3);
         inputArray10[0] = 3;
         inputArray10[1] = 4;
-        inputArray10[2] = 8;
-        inputArray10[3] = 10;
-        tag.revealHash(company, 12, inputArray10, 0x5a7a6c72504b366b4a4c6f);
-        vm.stopPrank();
+        inputArray10[2] = 10;
+        tag.revealHash(company, 12, inputArray10, 0x5a7a6c72504b366b4a4c6f); //ZzlrPK6kJLo
+        vm.stopPrank(); */
 
-        vm.startPrank(user8);
-        //vm.roll(15000);
-        tag.getRewards(company,12);
-        vm.stopPrank();
+        vm.roll(14620);
 
-        vm.startPrank(user3);
+        vm.startPrank(user1);
         tag.getRewards(company,12);
         vm.stopPrank();
 
         vm.startPrank(user2);
-        //console.log(tag.balanceValidators(user2));
-        //
-        //console.log(a, b, c);
-        //console.log(tag.getRewards(company,12));
-        //console.log(tag.balanceValidators(user2));
-        vm.stopPrank();
-
-        vm.startPrank(user1);
-        
-        //console.log(videos1);
-        //(address companyChosen, uint256 videoIdChosen) = tag.validatorVideos(user1, 0);
         tag.getRewards(company,12);
-        //tag.getRewards(company,12);
-        //console.log(tag.getRewards(company,12));
-        //console.log(tag.balanceValidators(user1));
+        vm.stopPrank();
+        
+        vm.startPrank(user3);
+        tag.getRewards(company,12);
         vm.stopPrank();
 
-        vm.startPrank(user7);
-        //console.log(tag.balanceValidators(user7));
-        tag.getRewards(company, 12);
-        tag.setVariable();
-        tag.withdrawFundsValidator();
-        //tag.getRewards(company, 12);
-        //(uint256 a, uint256 b, uint256 c) = tag.getRewards(company,12);
-        //console.log(a, b, c);
-        //console.log(tag.balanceValidators(user7));
+        vm.startPrank(user4);
+        tag.getRewards(company,12);
         vm.stopPrank();
 
         vm.startPrank(user5);
+        tag.getRewards(company,12);
+        vm.stopPrank();
+
+        vm.startPrank(user6);
+        tag.getRewards(company,12);
+        vm.stopPrank();
+
+        vm.startPrank(user7);
+        tag.getRewards(company,12);
+        vm.stopPrank();
+
+        vm.startPrank(user8);
+        tag.getRewards(company,12);
+        vm.stopPrank();
+
+        vm.startPrank(user9);
+        tag.getRewards(company,12);
+        vm.stopPrank();
+
+        vm.startPrank(user10);
         tag.getRewards(company,12);
         vm.stopPrank();
 
