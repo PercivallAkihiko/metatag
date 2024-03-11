@@ -418,7 +418,7 @@ var events = [
         name: "WithdrawFundsValidator", 
         validator: "0x388C818CA8B9251b393131C08a736A67ccB19297",        
         purchaser: "",
-        company: "0x6bE457e04092B28865E0cBa84E3b2CFa0f871E67",
+        company: "",
 
         amount: "5MTG",
         additional: "",
