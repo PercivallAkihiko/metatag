@@ -292,7 +292,7 @@ html{
 
 .dashboard_container{
     display: grid;
-    grid-template-rows: 36px auto 37px auto;  
+    grid-template-rows: 36px auto 37px auto 37px auto;  
 
 }
 
@@ -1052,7 +1052,7 @@ cursive{
 }
 
 .events_container{
-    margin-top: 36px;
+    grid-row: 6;    
     border-radius: 12px;
     background-color: var(--second-color);
     padding: 20px 0px;

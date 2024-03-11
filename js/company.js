@@ -461,7 +461,7 @@ document.addEventListener("DOMContentLoaded", function() {
     initEthPrice();
     initProfile();
 
-    //initEventList();
+    initEventList();
     
     //Generating chart
     fetchEthereumPrices().then(monthxprice => {
