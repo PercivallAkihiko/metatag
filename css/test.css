@@ -17,6 +17,10 @@
   visibility: hidden;
   opacity: 0;
   transition: visibility 0s, opacity 0.5s linear;
+
+  display: grid;
+  grid-template-rows: repeat(10, auto);
+  z-index: 1;
 }
 
 .container:hover .hidden-div {

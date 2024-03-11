@@ -466,6 +466,7 @@ document.addEventListener("DOMContentLoaded", function() {
         generateChart(monthxprice[0], monthxprice[1], [2.4, 2.5, 2.4, 2.7, 1,3,10,5,2.3,4.2, 15, 20, 13.4, 15,5.5, 19, 20, 21.2, 30, 24, 45, 45, 70]);
     });   
     
+    
 });
 
 function initMenu(){
@@ -604,7 +605,13 @@ function createMacroEventDiv(div, name, value, chosenValidator = false){
     if(chosenValidator){
         valueDiv.innerHTML = value[0].substring(0, 6) + "...";
         var chosenValidatorDiv = document.createElement('div');          
-        chosenValidatorDiv.innerHTML = value.join("<br>");
+        
+        value.forEach(function(validator) {   
+            var validatorDiv = document.createElement('div');    
+            validatorDiv.innerHTML = validator;
+            validatorDiv.classList.add("validator");
+            chosenValidatorDiv.appendChild(validatorDiv);        
+        });
 
         valueDiv.classList.add("container-event");
         chosenValidatorDiv.classList.add("hidden-div");
