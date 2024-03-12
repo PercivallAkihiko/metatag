@@ -561,7 +561,7 @@ function initEthPrice(){
     .then(response => response.json())
     .then(data => {
         ethereumPrice = data["ethereum"].usd;
-        console.log("Actual etherium price: " + ethereumPrice);
+        //console.log("Actual Ethereum price: " + ethereumPrice);
     })
     .catch(error => {
         console.error('Error fetching cryptocurrency price:', error);
@@ -1100,7 +1100,7 @@ function addTagFromCookie(videoId, disabled = false, first = false){
     var suggestionsContainer = document.querySelector(".suggestions_container");  
     var tagsContainer = document.querySelector(".tags_container");  
 
-    console.log("First: " + first);
+    //console.log("First: " + first);
     if (cookieValue === null && first){
         suggestionsContainer.innerHTML = "<grey>Seed: </grey> <cursive>submit to generate.</cursive>";        
         return
@@ -1308,9 +1308,9 @@ var fetchEthereumPrices = async () => {
 
     const apiUrl = `https://api.coingecko.com/api/v3/coins/ethereum/market_chart/range?vs_currency=usd&from=${startTimestamp}&to=${endTimestamp}&interval`;
 
-    console.log(endTimestamp);
-    console.log(startTimestamp);
-    console.log(apiUrl);
+    //console.log(endTimestamp);
+    //console.log(startTimestamp);
+    //console.log(apiUrl);
 
     try {
         var response = await fetch(apiUrl);
