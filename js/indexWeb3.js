@@ -18,4 +18,3 @@ document.getElementById('app_button').addEventListener('click', async () => {
     }
   });
 }
-  
