@@ -126,12 +126,8 @@ html{
     grid-row: 6;        
 }
 
-.sell{
-    grid-row: 7;        
-}
-
 .voucher{
-    grid-row: 8;        
+    grid-row: 7;        
 }
 
 .term_service{
