@@ -484,6 +484,7 @@ document.addEventListener("DOMContentLoaded", function() {
     initProfile();
 
     initEventList();
+    initVoucherListener();
     
     //Generating chart
     fetchEthereumPrices().then(monthxprice => {
@@ -620,6 +621,20 @@ function initEventList(){
         eventCounter += 1;
     });    
     setGridRows(eventCounter, events_list, 100);
+}
+
+function initVoucherListener(){
+    var voucherCopy = document.querySelector('.voucher_copy'); 
+    var voucherGenerate = document.querySelector('.voucher_generate'); 
+    var voucherValue = document.querySelector('.voucher_value'); 
+
+    voucherCopy.addEventListener("click" , () => {
+        navigator.clipboard.writeText(voucherValue.innerHTML);        
+    });  
+
+    voucherGenerate.addEventListener("click" , () => {
+        voucherValue.innerHTML = generateAlphanumericSeed();
+    });     
 }
 
 function createMacroEventDiv(div, name, value){

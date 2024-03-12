@@ -377,6 +377,7 @@ document.addEventListener("DOMContentLoaded", function() {
     initProfile();
 
     initEventList();
+    initVoucherListener();
     
     //Generating chart
     fetchEthereumPrices().then(monthxprice => {
@@ -394,11 +395,13 @@ function initMenu(){
     var vote = document.querySelector(".vote"); 
     var lock = document.querySelector(".lock"); 
     var buy = document.querySelector(".buy");   
+    var voucher = document.querySelector(".voucher");   
     
     var dashboardWrapper = document.querySelector('.dashboard_wrapper');
     var voteWrapper = document.querySelector('.vote_wrapper');
     var lockWrapper = document.querySelector('.lock_wrapper');
     var buyWrapper = document.querySelector('.buy_wrapper');  
+    var voucherWrapper = document.querySelector('.voucher_wrapper');  
     
     menuButton.addEventListener("click" , () => {
         document.body.classList.toggle("shrink");
@@ -419,6 +422,7 @@ function initMenu(){
     setItemMenuListener(vote, voteWrapper, "Vote")
     setItemMenuListener(lock, lockWrapper, "Lock")
     setItemMenuListener(buy, buyWrapper, "Buy")
+    setItemMenuListener(voucher, voucherWrapper, "Voucher")
 }
 
 function initVoteSection(){
@@ -522,6 +526,20 @@ function initEventList(){
     setGridRows(eventCounter, events_list, 100);
 }
 
+function initVoucherListener(){
+    var voucherCopy = document.querySelector('.voucher_copy'); 
+    var voucherGenerate = document.querySelector('.voucher_generate'); 
+    var voucherValue = document.querySelector('.voucher_value'); 
+
+    voucherCopy.addEventListener("click" , () => {
+        navigator.clipboard.writeText(voucherValue.innerHTML);        
+    });  
+
+    voucherGenerate.addEventListener("click" , () => {
+        voucherValue.innerHTML = generateAlphanumericSeed();
+    });     
+}
+
 function createMacroEventDiv(div, name, value, chosenValidator = false){
     if(value.length == 0){ return;}
     var macroElement = document.createElement('div');
@@ -560,6 +578,7 @@ function setItemMenuListener(button, wrapper, title){
     var vote = document.querySelector(".vote"); 
     var lock = document.querySelector(".lock"); 
     var buy = document.querySelector(".buy"); 
+    var voucher = document.querySelector(".voucher"); 
 
     var containerTitle = document.querySelector('.container_title');
     
@@ -567,17 +586,20 @@ function setItemMenuListener(button, wrapper, title){
     var voteWrapper = document.querySelector('.vote_wrapper');
     var lockWrapper = document.querySelector('.lock_wrapper');
     var buyWrapper = document.querySelector('.buy_wrapper');
+    var voucherWrapper = document.querySelector(".voucher_wrapper");     
 
     button.addEventListener("click" , () => {
         dashboardWrapper.style.display = 'none';
         voteWrapper.style.display = 'none';
         lockWrapper.style.display = 'none';
         buyWrapper.style.display = 'none';
+        voucherWrapper.style.display = 'none';
     
         dashboard.classList.remove("active");
         vote.classList.remove("active");
         lock.classList.remove("active");
         buy.classList.remove("active");
+        voucher.classList.remove("active");
     
         containerTitle.textContent = title;
         wrapper.style.display = 'block';
