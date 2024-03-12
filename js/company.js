@@ -18,111 +18,15 @@ const pendingColor = "rgb(218, 253, 60)";
 const completedColor = "rgb(116, 196, 118)";
 const expiredColor = "rgb(251, 106, 74)";
 
+// 1 Start Vote
+// 2 Waiting Vote
+// 3 Start Reveal
+// 4 Waiting Reveal
+// 5 Claim
+// 6 Completed
+// 7 Expired
+
 var videoDB = [
-    {
-        hashId: "xxxr4J1fzvc",            
-        title: "Bitcoin On-Chain Analysis: Value Days Destroyed Multiple",
-        company: "Youtube",
-        link: "www.google.it",            
-        status: 1,
-        leftvote: 0,
-        reward: "-",
-        results: []
-    },
-    {
-        hashId: "xxxr4J1fzvc",
-        company: "Youtube",
-        title: "Bitcoin: Watching the Weekly Close",
-        link: "www.google.it",
-        status: 1,
-        leftvote: 0,
-        reward: "0.3 MTG"
-    },
-    {
-        hashId: "xxxr4J1fzvc",
-        company: "Youtube",
-        title: "Bitcoin: Watching the Weekly Close",
-        link: "www.google.it",
-        status: 2,
-        leftvote: 4,
-        reward: "0.3 MTG",
-        results: []
-    },
-    {
-        hashId: "xxxr4J1fzvc",
-        company: "Youtube",
-        title: "Bitcoin: Watching the Weekly Close",
-        link: "www.google.it",
-        status: 3,
-        leftvote: 0,
-        reward: "0.3 MTG",
-        results: []
-    },
-    {
-        hashId: "xxxr4J1fzvc",
-        company: "Youtube",
-        title: "Bitcoin: Watching the Weekly Close",
-        link: "www.google.it",
-        status: 4,
-        leftvote: 5,
-        reward: "0.3 MTG",
-        results: []
-    },
-    {
-        hashId: "xxxr4J1fzvc",
-        company: "Youtube",
-        title: "Bitcoin: Watching the Weekly Close",
-        link: "www.google.it",
-        status: 5,
-        leftvote: 0,
-        reward: "0.3 MTG",
-        results: []
-    },
-    {
-        hashId: "xxxr4J1fzvc",
-        company: "Youtube",
-        title: "Bitcoin: Watching the Weekly Close",
-        link: "www.google.it",
-        status: 6,
-        leftvote: 0,
-        reward: "0.3 MTG",
-        results: [
-            [5, 91],
-            [8, 12.2]
-        ]
-    },
-    {
-        hashId: "xxxr4J1fzvc",
-        company: "Youtube",
-        title: "Bitcoin: Watching the Weekly Close",
-        link: "www.google.it",
-        status: 7,
-        leftvote: 0,
-        reward: "0.3 MTG",
-        results: []
-    },
-    {
-        hashId: "95Bbjmwlnss",
-        company: "Youtube",
-        title: "TEst",
-        link: "www.google.it",
-        status: 6,
-        leftvote: 0,
-        reward: "0.3 MTG",
-        results: [
-            [5, 10.4],
-            [8, 12.2],
-            [3, 30.12],
-            [12, 15.12],
-            [11, 55.25],
-            [15, 90.25],
-            [20, 81.25],
-            [20, 81.25],
-            [20, 81.25],
-            [20, 81.25],
-            [20, 81.25],
-        ]
-    },
     {
         hashId: "95Bbjmwlnss",
         company: "Youtube",
@@ -138,8 +42,8 @@ var videoDB = [
         company: "Youtube",
         title: "Bitcoin: Watching the Weekly Close",
         link: "www.google.it",
-        status: 3,
-        leftvote: 0,
+        status: 2,
+        leftvote: 2,
         reward: "0.3 MTG",
         results: []
     },
@@ -149,19 +53,27 @@ var videoDB = [
         title: "Bitcoin: Watching the Weekly Close",
         link: "www.google.it",
         status: 4,
-        leftvote: 4,
+        leftvote: 3,
         reward: "0.3 MTG",
-        results: []
+        results: [
+            [5, 10.4],
+            [8, 12.2],
+            [11, 55.25],
+        ]
     },
     {
         hashId: "95Bbjmwlnss",
         company: "Youtube",
         title: "Bitcoin: Watching the Weekly Close",
         link: "www.google.it",
-        status: 5,
-        leftvote: 0,
+        status: 4,
+        leftvote: 4,
         reward: "0.3 MTG",
-        results: []
+        results: [
+            [5, 10.4],
+            [8, 12.2],
+            [11, 55.25],
+        ]
     },
     {
         hashId: "95Bbjmwlnss",
@@ -184,10 +96,16 @@ var videoDB = [
         company: "Youtube",
         title: "Bitcoin: Watching the Weekly Close",
         link: "www.google.it",
-        status: 7,
+        status: 6,
         leftvote: 0,
         reward: "0.3 MTG",
-        results: []
+        results: [
+            [5, 10.4],
+            [8, 12.2],
+            [3, 30.123],
+            [12, 15.12],
+            [11, 55.25],
+        ]
     }
 ];
 
@@ -451,7 +369,6 @@ var events = [
 
 var ethereumPrice = 1;
 
-// OKEH
 document.addEventListener("DOMContentLoaded", function() {    
 
     initMenu();
@@ -506,8 +423,8 @@ function initMenu(){
 
 function initVoteList(){
     var all = document.querySelector('.filter_all');    
-    var pending = document.querySelector(".filter_pending");    
-    var action = document.querySelector(".filter_action");
+    var vote = document.querySelector(".filter_vote");    
+    var reveal = document.querySelector(".filter_reveal");
     var completed = document.querySelector(".filter_completed");
 
     var overlay = document.querySelector(".overlay");
@@ -515,8 +432,8 @@ function initVoteList(){
     loadVoteList(1);
 
     setFilterListener(all, 1);
-    setFilterListener(pending, 2);
-    setFilterListener(action, 3);
+    setFilterListener(vote, 2);
+    setFilterListener(reveal, 3);
     setFilterListener(completed, 4);
 
     overlay.addEventListener("click" , () => {
@@ -685,54 +602,26 @@ function loadVoteList(option){
         rewardDiv.classList.add('reward');       
 
         switch (video.status) {
-            case 1:
-                if(option == 2){return;} //Pending
-                //if(option == 3){return;} //Action
-                if(option == 4){return;} //Completed
-                pendingDiv.classList.add('START_VOTE');
-                pendingDiv.innerHTML = 'START VOTE';
-                break;
             case 2:
-                //if(option == 2){return;} //Pending
-                if(option == 3){return;} //Action
+                //if(option == 2){return;} //Vote
+                if(option == 3){return;} //Reveal
                 if(option == 4){return;} //Completed
                 pendingDiv.classList.add('WAITING_VOTE');
                 pendingDiv.innerHTML = 'WAITING VOTE';
                 break;
-            case 3:
-                if(option == 2){return;} //Pending
-                //if(option == 3){return;} //Action
-                if(option == 4){return;} //Completed
-                pendingDiv.classList.add('START_REVEAL');
-                pendingDiv.innerHTML = 'START REVEAL';
-                break;
             case 4:
-                //if(option == 2){return;} //Pending
-                if(option == 3){return;} //Action
+                if(option == 2){return;} //Vote
+                //if(option == 3){return;} //Reveal
                 if(option == 4){return;} //Completed
                 pendingDiv.classList.add('WAITING_REVEAL');
                 pendingDiv.innerHTML = 'WAITING REVEAL';
                 break;
-            case 5:
-                if(option == 2){return;} //Pending
-                //if(option == 3){return;} //Action
-                if(option == 4){return;} //Completed
-                pendingDiv.classList.add('CLAIM');
-                pendingDiv.innerHTML = 'CLAIM';
-                break;
-            case 6:
-                if(option == 2){return;} //Pending
-                if(option == 3){return;} //Action
+            default:
+                if(option == 2){return;} //Vote
+                if(option == 3){return;} //Reveal
                 //if(option == 4){return;} //Completed
                 pendingDiv.classList.add('COMPLETED');
                 pendingDiv.innerHTML = 'COMPLETED';
-                break;                                              
-            default:
-                if(option == 2){return;} //Pending
-                if(option == 3){return;} //Action
-                //if(option == 4){return;} //Completed
-                pendingDiv.classList.add('EXPIRED');
-                pendingDiv.innerHTML = 'EXPIRED';
         }
         
         elementDiv.appendChild(idDiv); 
@@ -753,14 +642,14 @@ function loadVoteList(option){
 
 function setFilterListener(selectedFilter, option){
     var all = document.querySelector(".filter_all"); 
-    var pending = document.querySelector(".filter_pending"); 
-    var action = document.querySelector(".filter_action"); 
+    var vote = document.querySelector(".filter_vote"); 
+    var reveal = document.querySelector(".filter_reveal"); 
     var completed = document.querySelector(".filter_completed");
 
     selectedFilter.addEventListener("click" , () => {
         all.classList.remove("filter_element_active");
-        pending.classList.remove("filter_element_active");
-        action.classList.remove("filter_element_active");
+        vote.classList.remove("filter_element_active");
+        reveal.classList.remove("filter_element_active");
         completed.classList.remove("filter_element_active");
 
         selectedFilter.classList.add("filter_element_active");
@@ -828,103 +717,32 @@ function resetListeners(element){
     element.parentNode.replaceChild(new_element, element);
 }
 
-function generateDiv(videoId, status, results, leftVote) {   
-    resetListeners(".tag_button");
+function generateDiv(videoId, status, results, leftVote) {       
 
     var overlay = document.querySelector(".overlay");
-    var tagsContainer = document.querySelector(".tags_container");
-    var tagButton = document.querySelector(".tag_button");
-    var inputElement = document.querySelector(".tags_insert");  
-    var suggestionsContainer = document.querySelector(".suggestions_container");  
-
-    suggestionsContainer.innerHTML = "";
-    tagsContainer.innerHTML = "";
-    inputElement.value = "";     
         
     switch (status) {
-        case 1:
-            tagButton.addEventListener('click', function () {   
-                var seed = generateAlphanumericSeed() 
-                var tagList = getTagPositions();  
-                suggestionsContainer.innerHTML = "<grey>Seed: </grey>" + seed;        
-                setCookie(videoId, { list: tagList, seed: seed } , 1);                        
-            });  
-            addTagFromCookie(videoId, false, true);            
-            inputElement.disabled = false;
-            tagsContainer.classList.remove("disabled")
-            tagButton.classList.remove("disabled");
-            tagButton.innerHTML = "SEND VOTE";     
-            
-            showTagOrPolls();
-            break;
-        case 2:        
-            disableDiv(videoId);
-            showTagOrPolls();
-            tagButton.innerHTML = "WAITING FOR " + leftVote + " VOTE";  
-            break;
-        case 3:
-            disableDiv(videoId, true);
-            showTagOrPolls();
-            tagButton.innerHTML = "REVEAL";  
+        case 2:
+            //Waiting Vote  
+            setTitleDesc("Poll results", `Waiting for ${leftVote} vote`);
             break;
         case 4:
-            disableDiv(videoId);
-            showTagOrPolls();
-            tagButton.innerHTML = "WAITING FOR " + leftVote + " REVEAL";  
+            //Waiting Reveal
+            setTitleDesc("Temporary results", `Waiting for ${leftVote} reveal`);
+            generatePoll(results);   
             break;
-        case 5:
-            disableDiv(videoId, true);
-            showTagOrPolls();
-            tagButton.innerHTML = "CLAIM";  
-            break;
-        case 6:
-            //COMPLETED
-            generatePoll(results);
-            disableDiv(videoId);
-            showTagOrPolls(false);  
-            break;                                              
-        default:       
-            //EXPIRED
-            disableDiv(videoId);
-            showTagOrPolls(false);              
+        default:
+            //Completed
+            setTitleDesc("Poll results", " ");
+            generatePoll(results);        
       }
                   
     document.getElementById('youtubeVideo').src = "https://www.youtube.com/embed/" + videoId + "?si=EwWUd-wd4mxodglK"
     overlay.classList.toggle("active");  
 }
 
-function disableDiv(videoId, confirm=false){
-    var tagsContainer = document.querySelector(".tags_container");
-    var tag_button = document.querySelector(".tag_button");
-    var inputElement = document.querySelector(".tags_insert");  
-
-    addTagFromCookie(videoId, true);
-    inputElement.disabled = true;
-    tagsContainer.classList.add("disabled")
-    if(confirm){
-        tag_button.classList.remove("disabled");   
-    }else{
-        tag_button.classList.add("disabled");   
-    }
-}
-
-function showTagOrPolls(tags=true){
-    var pollWrapper = document.querySelector(".poll_wrapper");  
-    var tagsWrapper = document.querySelector(".tags_wrapper");  
-
-    if(tags){
-        pollWrapper.classList.add("hide");
-        tagsWrapper.classList.remove("hide");
-    }
-    else{
-        pollWrapper.classList.remove("hide");
-        tagsWrapper.classList.add("hide");
-    }
-}
-
 function generatePoll(results){
     var pollContainer = document.querySelector(".poll_container");
-    pollContainer.innerHTML = "<div class=\"poll_title\">Poll results</div>";
 
     if(results.length < 5){
         pollContainer.style.gridTemplateRows = "30px repeat(" + results.length + ", 60px) auto";
@@ -981,135 +799,21 @@ function generatePoll(results){
     }
 }
 
-function tagInserted(event) {
-    var tagsContainer = document.querySelector(".tags_container");
-    var inputElement = document.querySelector(".tags_insert");
-    var inputValue = inputElement.value.trim();
+function setTitleDesc(title, desc){
+    var pollContainer = document.querySelector(".poll_container");
+    pollContainer.innerHTML = "";
+    
+    var pollTitle = document.createElement('div');
+    var pollDesc = document.createElement('div');
 
-    // Check if the entered tag is valid
-    if (event.key === "Enter" && inputValue !== "" && validTags.includes(inputValue)) {
-        var tag = document.createElement("div");
-        var tagName = document.createElement("div");
-        var icon = document.createElement("i");
+    pollTitle.classList.add("poll_title");
+    pollDesc.classList.add("poll_desc");
 
-        tag.className = "tag";
-        tagName.className = "tag_name";
-        icon.className = "fa-solid fa-x";
+    pollContainer.appendChild(pollTitle);
+    pollContainer.appendChild(pollDesc);
 
-        tagName.textContent = inputValue;
-
-        tag.addEventListener("click", function () {
-            tagsContainer.removeChild(tag);
-        });
-
-        tag.appendChild(tagName);
-        tag.appendChild(icon);
-        tagsContainer.appendChild(tag);
-        inputElement.value = "";
-    }
-}
-
-function suggestTag(event) {
-    var inputElement = document.querySelector(".tags_insert");
-    var inputValue = inputElement.value.trim().toLowerCase();
-
-    var suggestionsContainer = document.querySelector(".suggestions_container");
-    clearSuggestions(suggestionsContainer);
-
-    const matchingTags = validTags.filter(tag => tag.toLowerCase().includes(inputValue));
-
-    const availableSpace = suggestionsContainer.offsetWidth;
-    let totalWidth = 0;
-
-    matchingTags.some(tag => {
-        const suggestionWidth = calculateTextWidth(tag) + 16; // Add padding
-        if (totalWidth + suggestionWidth <= availableSpace) {
-            createSuggestion(suggestionsContainer, tag);
-            totalWidth += suggestionWidth;
-            return false; 
-        }
-        return true; 
-    });
-}
-
-function createSuggestion(container, tag) {
-    var suggestionDiv = document.createElement("div");
-    var tagsInsert = document.querySelector(".tags_insert");    
-    suggestionDiv.className = "suggestion";
-    suggestionDiv.textContent = tag;
-
-    // Add click event listener to add the clicked tag to tags
-    suggestionDiv.addEventListener("click", function () {
-        addTagFromSuggestion(tag);
-        clearSuggestions(container);
-        tagsInsert.value = "";
-    });
-
-    container.appendChild(suggestionDiv);
-}
-
-function addTagFromCookie(videoId, disabled = false, first = false){
-    var cookieValue = getCookie(videoId);
-    var suggestionsContainer = document.querySelector(".suggestions_container");  
-    var tagsContainer = document.querySelector(".tags_container");  
-
-    console.log("First: " + first);
-    if (cookieValue === null && first){
-        suggestionsContainer.innerHTML = "<grey>Seed: </grey> <cursive>submit to generate.</cursive>";        
-        return
-    }
-    if (cookieValue === null){
-        suggestionsContainer.innerHTML = "<grey>Seed: </grey> <cursive>missing cookies.</cursive>";
-        tagsContainer.innerHTML = "<cursive>missing cookies.</cursive>";
-        return
-    }
-
-    var integers = cookieValue.list;
-    var seed = cookieValue.seed;        
-
-    suggestionsContainer.innerHTML = "<grey>Seed: </grey>" + seed;
-    var tagList = integers.map(index => validTags[index - 1]);
-    tagList.forEach(tag => {
-        addTagFromSuggestion(tag, disabled);
-      });    
-}
-
-function addTagFromSuggestion(tag, disabled=false) {
-    var tagsContainer = document.querySelector(".tags_container");
-    var tagElement = document.createElement("div");
-    var tagName = document.createElement("div");
-    var icon = document.createElement("i");
-
-    tagElement.className = "tag";
-    tagName.className = "tag_name";
-    icon.className = "fa-solid fa-x";
-
-    tagName.textContent = tag;
-
-    if(!disabled){
-        tagElement.addEventListener("click", function () {
-            tagsContainer.removeChild(tagElement);
-        });
-    }
-
-    tagElement.appendChild(tagName);
-    tagElement.appendChild(icon);
-    tagsContainer.appendChild(tagElement);
-}
-
-function clearSuggestions(container) {
-    container.innerHTML = ""; // Clear existing suggestions
-}
-
-function calculateTextWidth(text) {
-    const span = document.createElement("span");
-    span.style.visibility = "hidden";
-    span.style.whiteSpace = "nowrap";
-    span.textContent = text;
-    document.body.appendChild(span);
-    const width = span.offsetWidth;
-    document.body.removeChild(span);
-    return width;
+    pollTitle.innerHTML = title;
+    pollDesc.innerHTML = desc;
 }
 
 function getTagByIndex(index) {    

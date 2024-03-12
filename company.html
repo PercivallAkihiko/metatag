@@ -117,8 +117,8 @@
                     </div>
                     <div class="filters">
                         <div class="filter_element filter_all filter_element_active">All</div>
-                        <div class="filter_element filter_pending">Pending</div>
-                        <div class="filter_element filter_action">Action</div>         
+                        <div class="filter_element filter_vote">Vote</div>
+                        <div class="filter_element filter_reveal">Reveal</div>         
                         <div class="filter_element filter_completed">Completed</div>   
                         <div class="filter_element unclicked"></div>    
                     </div>
@@ -236,31 +236,13 @@
             <div class="overlay_wrapper">
                 <div class="overlay_content">                    
                     <iframe class="youtubeVideo" id="youtubeVideo" width="560" height="360" src="https://www.youtube.com/embed/vRG2kQDnpTc?si=EwWUd-wd4mxodglK" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-                    <div class="tags_wrapper">                                                
-                        <input class="tags_insert" type="text" placeholder="Insert tags" name="uname" onkeyup="tagInserted(event)" oninput="suggestTag(event)">
-                        <div class="suggestions_container">                            
-                        </div>
-                        <div class="tags_container_back">
-                            <div class="tags_container">
-                                
-                            </div>                   
-                        </div>
-                        <div class="tag_button"></div>
-                    </div>  
-                    <div class="poll_wrapper hide">
+                    <div class="poll_wrapper">
                         <div class="poll_container">
-                            <div class="poll_title">Poll results</div>
-                            <div class="result_element">
-                                <div class="result_name">Meccanica</div>
-                                <div class="result_vote">
-                                    <div class="result_full"> </div>
-                                    <div class="result_empty"> </div>
-                                </div>
-                                <div class="result_vote_value">25.5%</div>
-                            </div>
+                            <div class="poll_title"></div>
+                            <div class="poll_desc"></div>
                         </div>
-                    </div>
-                </div>
+                    </div>                                
+                </div>                
             </div>
         </div>
         <script src="https://cdn.jsdelivr.net/npm/web3@1.5.3/dist/web3.min.js"></script>

@@ -18,6 +18,14 @@ const pendingColor = "rgb(218, 253, 60)";
 const completedColor = "rgb(116, 196, 118)";
 const expiredColor = "rgb(251, 106, 74)";
 
+// 1 Start Vote
+// 2 Waiting Vote
+// 3 Start Reveal
+// 4 Waiting Reveal
+// 5 Claim
+// 6 Completed
+// 7 Expired
+
 var videoDB = [
     {
         hashId: "xxxr4J1fzvc",            
@@ -682,6 +690,13 @@ function loadVoteList(option){
         rewardDiv.classList.add('reward');       
 
         switch (video.status) {
+            // 1 Start Vote
+            // 2 Waiting Vote
+            // 3 Start Reveal
+            // 4 Waiting Reveal
+            // 5 Claim
+            // 6 Completed
+            // 7 Expired
             case 1:
                 if(option == 2){return;} //Pending
                 //if(option == 3){return;} //Action
