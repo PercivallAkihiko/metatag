@@ -239,7 +239,7 @@ contract MetaTagTest is DSTest {
         vm.stopPrank();
 
         vm.startPrank(user3);
-        tag.submitHash(company, 12, 0x94759a906497aab2e5670a365581a96c39a6c5a99946763dcd3417f34b779d9a);
+        tag.submitHash(company, 12, 0x2461c2c84fe27cc2cb440ca8492e4edb7c75018db8364a68401a96e6ac60119a);
         vm.stopPrank();
 
         vm.startPrank(user4);
@@ -289,10 +289,17 @@ contract MetaTagTest is DSTest {
         vm.stopPrank();
 
         vm.startPrank(user3);
-        uint256[] memory inputArray3 = new uint256[](3);
-        inputArray3[0] = 7;
+        uint256[] memory inputArray3 = new uint256[](10);
+        inputArray3[0] = 10;
         inputArray3[1] = 9;
-        inputArray3[2] = 10;
+        inputArray3[2] = 2;
+        inputArray3[3] = 3;
+        inputArray3[4] = 4;
+        inputArray3[5] = 5;
+        inputArray3[6] = 6;
+        inputArray3[7] = 7;
+        inputArray3[8] = 8;
+        inputArray3[9] = 11;
         tag.revealHash(company, 12, inputArray3, 0x4846756242686533716337); //HFubBhe3qc7
         vm.stopPrank();
         

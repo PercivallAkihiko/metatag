@@ -234,12 +234,32 @@ contract MetaTag {
         emit eventSubmitHash(msg.sender, company, videoId, hash);
     }
 
+    /// @notice Function to check if the array of tags submitted by the validator has repeated values
+    /// @param array Validator's array with his tags
+    /// @return boolean value true or false
+    function hasDuplicate(uint[] memory array) internal pure returns (bool) {
+        for (uint i = 0; i < array.length - 1; i++) {
+            for (uint j = i + 1; j < array.length; j++) {
+                if (array[i] == array[j]) {
+                    // Duplicate found
+                    return true;
+                }
+            }
+        }
+        // No duplicates found
+        return false;
+    }
+
     /// @notice Function for validators to reveal their original value for a video
     /// @param company The address of the company uploading the video
     /// @param videoId The ID of the video for which the hash is being revealed
     /// @param tags The tags revealed by the validator for the video
     /// @param seed The seed used for hashing
     function revealHash(address company, uint videoId, uint[] memory tags, bytes11 seed) public {
+        // Check on the number of tags submitted by the validator (max 10)
+        require(tags.length <= tagsNumber/2, "You can submit at most half of the available tags!");
+        // Check if the array of tags has duplicated tags
+        require(hasDuplicate(tags) == false, "Your array has repeated values!");
         // Encode the first tag into bytes
         bytes memory result = abi.encodePacked(Strings.toString(tags[0]));
         // Ensure the first tag is within the legal range
@@ -287,7 +307,7 @@ contract MetaTag {
             }
         }
         // Ensure the validator has not already withdrawn rewards for this video
-        require(check, "You cannot withdraw twice!");
+        require(check, "You cannot withdraw the reward twice!");
         // Number of validators that revealed their tags in time
         uint totalValidators = videos[company][videoId].revValidators.length;
         // Tags that reached 80% of votes

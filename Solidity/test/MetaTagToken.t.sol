@@ -38,7 +38,7 @@ contract MetaTagTokenTest is DSTest {
         vm.startPrank(user); // The next actions will be performed with the specified user
         token.buyTokens{value: amountEth}(); // buyTokens function does not take in input any value, you only send ETH
         assertEq(token.balanceOf(user), expectedTokenAmount);
-        console.log(token.balanceOf(user));
+        //console.log(token.balanceOf(user));
         vm.stopPrank();
     }
 
