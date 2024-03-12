@@ -215,7 +215,7 @@ html{
 }
 
 .second_container{
-    height:     450px;
+    height: 375px;
 }
 
 .main_column2 {
@@ -229,5 +229,5 @@ html{
     line-height: 36px;
     font-weight: 700;
 
-    margin: 21px 0px;
+    margin: 10px 0px;
 }
