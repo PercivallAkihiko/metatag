@@ -947,7 +947,6 @@ function hideShowVote(element){
     tagsWrapper.classList.add("hide");
 
     element.classList.remove("hide");
-
 }
 
 function generatePoll(results){

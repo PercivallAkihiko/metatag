@@ -372,7 +372,7 @@ var ethereumPrice = 1;
 document.addEventListener("DOMContentLoaded", function() {    
 
     initMenu();
-    initVoteList();
+    initVoteSection();
     initEthPrice();
     initProfile();
 
@@ -421,13 +421,15 @@ function initMenu(){
     setItemMenuListener(buy, buyWrapper, "Buy")
 }
 
-function initVoteList(){
+function initVoteSection(){
     var all = document.querySelector('.filter_all');    
     var vote = document.querySelector(".filter_vote");    
     var reveal = document.querySelector(".filter_reveal");
     var completed = document.querySelector(".filter_completed");
 
     var overlay = document.querySelector(".overlay");
+    var addVideoButton = document.querySelector(".add_video_button_cointainer");
+    var insertWrapper = document.querySelector(".insert_wrapper");
 
     loadVoteList(1);
 
@@ -441,6 +443,14 @@ function initVoteList(){
             overlay.classList.toggle("active");
         }
     });
+
+    var completed = document.querySelector(".filter_completed");
+
+    addVideoButton.addEventListener("click" , () => {
+        hideShowVote(insertWrapper)
+        changeVideoID("");
+        overlay.classList.toggle("active");  
+    }); 
 }
 
 function initEthPrice(){
@@ -718,9 +728,10 @@ function resetListeners(element){
 }
 
 function generateDiv(videoId, status, results, leftVote) {       
-
     var overlay = document.querySelector(".overlay");
-        
+    var pollWrapper = document.querySelector(".poll_wrapper");
+
+    hideShowVote(pollWrapper);
     switch (status) {
         case 2:
             //Waiting Vote  
@@ -737,8 +748,12 @@ function generateDiv(videoId, status, results, leftVote) {
             generatePoll(results);        
       }
                   
-    document.getElementById('youtubeVideo').src = "https://www.youtube.com/embed/" + videoId + "?si=EwWUd-wd4mxodglK"
+    changeVideoID(videoId)
     overlay.classList.toggle("active");  
+}
+
+function changeVideoID(id){
+    document.getElementById('youtubeVideo').src = "https://www.youtube.com/embed/" + id + "?si=EwWUd-wd4mxodglK"
 }
 
 function generatePoll(results){
@@ -824,6 +839,16 @@ function getTagByIndex(index) {
     } else {
         return "Invalid TAG";
     }
+}
+
+function hideShowVote(element){
+    var pollWrapper = document.querySelector(".poll_wrapper");  
+    var insertWrapper = document.querySelector(".insert_wrapper");  
+
+    pollWrapper.classList.add("hide");
+    insertWrapper.classList.add("hide");
+
+    element.classList.remove("hide");
 }
 
 //Input validation form

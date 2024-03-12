@@ -464,6 +464,10 @@ white{
     cursor: pointer;
 }
 
+.add_video_button_cointainer:hover{
+    background-color: var(--special-variant);
+}
+
 .claim_all_button_cointainer:hover{
     background-color: var(--special-variant);
 }
@@ -651,18 +655,18 @@ cursive{
     display: none;
 }
 
-.poll_wrapper{
+.poll_wrapper, .insert_wrapper{
     padding: 15px;   
     width: 560px; 
 }
 
-.poll_title, .poll_desc{
+.poll_title, .poll_desc, .insert_title{
     display: flex;
     align-items: center;     
     border-bottom: 1px solid rgb(62, 63, 75);
 }
 
-.poll_title{
+.poll_title, .insert_title{
     font-size: 1.1rem;
     font-weight: bold;    
 }
@@ -711,6 +715,47 @@ cursive{
 
 .status_wrapper{
     grid-row: 2;
+}
+
+.insert_container{
+    display: grid;    
+    grid-template-rows: 30px 45px 45px auto 40px;
+    height: 100%;
+}
+
+.insert_element{
+    display: grid;    
+    grid-template-columns: 150px auto;
+    height: 100%;
+}
+
+.insert_title_element{
+    display: flex;
+    align-items: center;
+}
+
+.insert_input{
+    background: transparent;
+    border: none;
+    outline: none;
+
+    color: var(--text-color);
+}
+
+.insert_button{           
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    background-color: var(--special);
+    border-radius: 5px;   
+    color: white;
+
+    cursor: pointer;
+    grid-row: 5;
+}
+
+.insert_button:hover{
+    background-color: var(--special-variant);
 }
 
 /* !!!! ---- STAKE PART ---- !!!! */

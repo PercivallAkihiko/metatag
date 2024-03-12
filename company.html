@@ -235,13 +235,27 @@
         <div class="overlay">
             <div class="overlay_wrapper">
                 <div class="overlay_content">                    
-                    <iframe class="youtubeVideo" id="youtubeVideo" width="560" height="360" src="https://www.youtube.com/embed/vRG2kQDnpTc?si=EwWUd-wd4mxodglK" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                    <iframe class="youtubeVideo" id="youtubeVideo" width="560" height="360" src="" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                     <div class="poll_wrapper">
                         <div class="poll_container">
                             <div class="poll_title"></div>
                             <div class="poll_desc"></div>
                         </div>
-                    </div>                                
+                    </div> 
+                    <div class="insert_wrapper hide">
+                        <div class="insert_container">
+                            <div class="insert_title">Add video</div>
+                            <div class="insert_element">
+                                <div class="insert_title_element">Video ID:</div>
+                                <input class="insert_input" type="text" placeholder="xxxxxxx" name="uname" oninput="changeVideoID(this.value)">                                
+                            </div>   
+                            <div class="insert_element">
+                                <div class="insert_title_element">Length:</div>
+                                <input class="insert_input" type="text" placeholder="0" name="uname" oninput="">                                
+                            </div>      
+                            <div class="insert_button">Insert video</div>                                                                     
+                        </div>
+                    </div>                               
                 </div>                
             </div>
         </div>
