@@ -84,7 +84,10 @@ var videoDB = [
         status: 5,
         leftvote: 0,
         reward: "0.3 MTG",
-        results: []
+        results: [
+            [15, 91],
+            [20, 90]
+        ]
     },
     {
         hashId: "xxxr4J1fzvc",
@@ -107,7 +110,10 @@ var videoDB = [
         status: 7,
         leftvote: 0,
         reward: "0.3 MTG",
-        results: []
+        results: [
+            [15, 91],
+            [20, 90]
+        ]
     },
     {
         hashId: "95Bbjmwlnss",
@@ -169,7 +175,12 @@ var videoDB = [
         status: 5,
         leftvote: 0,
         reward: "0.3 MTG",
-        results: []
+        results: [
+            [5, 91],
+            [10, 12.2],
+            [11, 91],
+            [12, 12.2]
+        ]
     },
     {
         hashId: "95Bbjmwlnss",
@@ -195,7 +206,10 @@ var videoDB = [
         status: 7,
         leftvote: 0,
         reward: "0.3 MTG",
-        results: []
+        results: [
+            [15, 91],
+            [20, 90]
+        ]
     }
 ];
 
@@ -849,6 +863,9 @@ function generateDiv(videoId, status, results, leftVote) {
     var inputElement = document.querySelector(".tags_insert");  
     var suggestionsContainer = document.querySelector(".suggestions_container");  
 
+    var tagsWrapper = document.querySelector(".tags_wrapper");  
+    var pollWrapper = document.querySelector(".poll_wrapper");  
+
     suggestionsContainer.innerHTML = "";
     tagsContainer.innerHTML = "";
     inputElement.value = "";     
@@ -867,38 +884,40 @@ function generateDiv(videoId, status, results, leftVote) {
             tagButton.classList.remove("disabled");
             tagButton.innerHTML = "SEND VOTE";     
             
-            showTagOrPolls();
+            hideShowVote(tagsWrapper);
             break;
         case 2:        
             disableDiv(videoId);
-            showTagOrPolls();
+            hideShowVote(tagsWrapper);
             tagButton.innerHTML = "WAITING FOR " + leftVote + " VOTE";  
             break;
         case 3:
             disableDiv(videoId, true);
-            showTagOrPolls();
+            hideShowVote(tagsWrapper);
             tagButton.innerHTML = "REVEAL";  
             break;
         case 4:
             disableDiv(videoId);
-            showTagOrPolls();
+            hideShowVote(tagsWrapper);
             tagButton.innerHTML = "WAITING FOR " + leftVote + " REVEAL";  
             break;
         case 5:
             disableDiv(videoId, true);
-            showTagOrPolls();
+            generatePoll(results);
+            hideShowVote(pollWrapper);
             tagButton.innerHTML = "CLAIM";  
             break;
         case 6:
             //COMPLETED
             generatePoll(results);
             disableDiv(videoId);
-            showTagOrPolls(false);  
+            hideShowVote(pollWrapper); 
             break;                                              
         default:       
             //EXPIRED
             disableDiv(videoId);
-            showTagOrPolls(false);              
+            generatePoll(results);
+            hideShowVote(pollWrapper);             
       }
                   
     document.getElementById('youtubeVideo').src = "https://www.youtube.com/embed/" + videoId + "?si=EwWUd-wd4mxodglK"
@@ -920,18 +939,15 @@ function disableDiv(videoId, confirm=false){
     }
 }
 
-function showTagOrPolls(tags=true){
+function hideShowVote(element){
     var pollWrapper = document.querySelector(".poll_wrapper");  
     var tagsWrapper = document.querySelector(".tags_wrapper");  
 
-    if(tags){
-        pollWrapper.classList.add("hide");
-        tagsWrapper.classList.remove("hide");
-    }
-    else{
-        pollWrapper.classList.remove("hide");
-        tagsWrapper.classList.add("hide");
-    }
+    pollWrapper.classList.add("hide");
+    tagsWrapper.classList.add("hide");
+
+    element.classList.remove("hide");
+
 }
 
 function generatePoll(results){

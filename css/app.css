@@ -683,14 +683,13 @@ EXPIRED */
 }
 
 .overlay_wrapper {
-    background-color: var(--second-color);
-    width: 1066px;
+    background-color: var(--second-color);    
     height: 360px;
 }
 
 .overlay_content{
     display: grid;
-    grid-template-columns: min-content auto;      
+    grid-template-columns: min-content min-content;      
 }
 
 .youtubeVideo{
@@ -739,10 +738,12 @@ cursive{
     grid-row-gap: 5px;
 
     height: 100%;
-    width: 100%;
+    width: 560px;
 
     box-sizing: border-box; 
     grid-row-gap: 10px;
+
+    
 }
 
 .tags_container_back{        
@@ -810,7 +811,8 @@ cursive{
 }
 
 .poll_wrapper{
-    padding: 15px;    
+    padding: 15px;  
+    width: 560px; 
 }
 
 .poll_title{
