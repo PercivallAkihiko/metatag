@@ -920,8 +920,13 @@ function generateDiv(videoId, status, results, leftVote) {
             hideShowVote(pollWrapper);             
       }
                   
-    document.getElementById('youtubeVideo').src = "https://www.youtube.com/embed/" + videoId + "?si=EwWUd-wd4mxodglK"
+    changeVideoID(videoId)
     overlay.classList.toggle("active");  
+}
+
+function changeVideoID(id){
+    //document.getElementById('youtubeVideo').src = "https://www.youtube.com/embed/" + id + "?si=EwWUd-wd4mxodglK"
+    document.getElementById('youtubeVideo').src = "https://www.youtube.com/embed/" + id;    
 }
 
 function disableDiv(videoId, confirm=false){

@@ -753,7 +753,8 @@ function generateDiv(videoId, status, results, leftVote) {
 }
 
 function changeVideoID(id){
-    document.getElementById('youtubeVideo').src = "https://www.youtube.com/embed/" + id + "?si=EwWUd-wd4mxodglK"
+    //document.getElementById('youtubeVideo').src = "https://www.youtube.com/embed/" + id + "?si=EwWUd-wd4mxodglK"
+    document.getElementById('youtubeVideo').src = "https://www.youtube.com/embed/" + id;    
 }
 
 function generatePoll(results){
