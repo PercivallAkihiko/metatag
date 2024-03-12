@@ -376,8 +376,7 @@ html{
 }
 
 .dashboard_second_line{
-    grid-row: 4;    
-    height: 450px;
+    grid-row: 4;        
 
     display: grid;
     grid-template-columns: 1fr 2fr;
