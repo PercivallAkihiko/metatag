@@ -4,9 +4,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function initMenuButton(){
     var explanation = document.querySelector(".explanation");   
+    var team = document.querySelector(".team");  
 
-    explanation.addEventListener('click', function() {        
-        var targetElement = document.getElementById('scrollTarget');
-        targetElement.scrollIntoView({ behavior: 'smooth' });
-    });
+    var explanationTarget = document.getElementById('explanation_target');    
+    var teamTarget = document.getElementById('team_target');    
+
+    addScrollListener(explanation, explanationTarget);
+    addScrollListener(team, teamTarget);
+}
+
+function addScrollListener(element, target){
+    element.addEventListener('click', function() {                
+        target.scrollIntoView({ behavior: 'smooth' });
+    }); 
 }

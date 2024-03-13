@@ -1175,8 +1175,8 @@ function validateInput(input, crypto) {
     var ethInput = document.querySelectorAll(".eth_input");
     var mtgInput = document.querySelectorAll(".mtg_input");
 
-    var ethSell = document.querySelector(".eth_sell");
-    var mtgSell = document.querySelector(".mtg_sell");
+    //var ethSell = document.querySelector(".eth_sell");
+    //var mtgSell = document.querySelector(".mtg_sell");
 
     input.value = input.value.replace(/[^0-9.,]/g, '');
 
@@ -1194,7 +1194,7 @@ function validateInput(input, crypto) {
         formattedResult = result.toFixed(4);
         numericResult = parseFloat(formattedResult);
 
-        ethSell.value = floatValue;
+        //ethSell.value = floatValue;
 
         mtgInput.forEach(element => {
             element.value = floatValue / ethxmtg;
@@ -1205,7 +1205,7 @@ function validateInput(input, crypto) {
         formattedResult = result.toFixed(4);
         numericResult = parseFloat(formattedResult);
 
-        mtgSell.value = floatValue;
+        //mtgSell.value = floatValue;
 
         ethInput.forEach(element => {
             element.value = floatValue * ethxmtg;
