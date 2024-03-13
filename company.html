@@ -5,6 +5,7 @@
         <link href="https://fonts.cdnfonts.com/css/euclid-circular-b" rel="stylesheet">
         <script src="https://kit.fontawesome.com/0a2c0a85f0.js" crossorigin="anonymous"></script>
         <script src="js/company.js"></script>
+        <script src="js/appWeb3.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
     </head>
     <body>
@@ -210,7 +211,7 @@
                     <div class="swap_container">                    
                         <div class="ethereum money">
                             <div class="first_line">
-                                <input class="eth_input" type="text" placeholder="0.00" name="uname" oninput="validateInput(this, 'ethereum')"> 
+                                <input class="eth_input" id="ethToBuy" type="text" placeholder="0.00" name="uname" oninput="validateInput(this, 'ethereum')"> 
                                 <div class="crypto_icon"><i class="fa-brands fa-ethereum"></i></div>
                                 <div class="crypto_name">ETH</div>
                             </div>
