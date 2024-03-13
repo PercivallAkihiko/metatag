@@ -94,7 +94,7 @@ html{
 }
 
 .container, .wrapper{    
-    width: 100%;    
+    width: 100%;        
 }
 
 .container{
@@ -230,4 +230,46 @@ html{
     font-weight: 700;
 
     margin: 10px 0px;
+}
+
+.team_container{
+    height: 600px;    
+    box-sizing: border-box;
+}
+
+.team_wrapper{
+    grid-column: 2;
+
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-rows: auto min-content min-content auto;
+    grid-row-gap: 15px;
+}
+
+.person{
+    display: grid;
+    grid-template-columns: 150px auto;
+    grid-template-rows: 25px 25px auto;
+
+    grid-column-gap: 10px;
+    
+    height: 150px;    
+}
+
+.person_image{
+    grid-row: 1/4;
+}
+
+.person_image img{
+    width: 150px;
+    height: 150px;    
+    border-radius: 50%;
+}
+
+.first_person, .second_person{
+    grid-row: 2;
+}
+
+.third_person, .fourth_person{
+    grid-row: 3;
 }
