@@ -204,7 +204,7 @@
 
             <div class="buy_wrapper">
                 <div class="swapt_center">                                                             
-                    <form action="action_page.php" method="post" class="swap_container" class="swap_container">                    
+                    <div class="swap_container">                    
                         <div class="ethereum money">
                             <div class="first_line">
                                 <input class="eth_input" type="text" placeholder="0.00" name="uname" oninput="validateInput(this, 'ethereum')"> 
@@ -219,7 +219,7 @@
                         </div>
                         <div class="mtg money">
                             <div class="first_line">
-                                <input class="mtg_input mtg_sell" type="text" placeholder="0.00" name="uname" readonly> 
+                                <input class="mtg_input mtg_sell" type="text" placeholder="0.00" name="uname" oninput="validateInput(this, 'mtg')"> 
                                 <div class="crypto_icon"><i class="fa-solid fa-m"></i></div>
                                 <div class="crypto_name">MTG</div>
                             </div>
@@ -228,7 +228,7 @@
                             </div>                            
                         </div>                      
                         <button type="submit" class="buy_button" id="buy_button">Buy</button>
-                    </form>
+                    </div>
                 </div>
             </div>
 
