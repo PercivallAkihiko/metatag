@@ -5,7 +5,7 @@
         <link href="https://fonts.cdnfonts.com/css/euclid-circular-b" rel="stylesheet">
         <script src="https://kit.fontawesome.com/0a2c0a85f0.js" crossorigin="anonymous"></script>
         <script src="js/company.js"></script>
-        <script src="js/appWeb3.js"></script>
+        <script src="js/CompanyWeb3.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
     </head>
     <body>
@@ -187,7 +187,7 @@
                         <div class="deposit_title">Lock</div>
                         <div class="mtg_lock_wrapper mtg_input">
                             <div class="mtg_first_line">                                
-                                <input class="mtg_input" type="text" placeholder="0.00" name="uname" oninput="validateInputLock(this)">                                 
+                                <input id="MTGLockAmount" class="mtg_input" type="text" placeholder="0.00" name="uname" oninput="validateInputLock(this)">                                 
                                 <div class="crypto_icon"><i class="fa-solid fa-m"></i></div>
                                 <div class="crypto_name">MTG</div>
                             </div>
@@ -199,7 +199,7 @@
                         </div>
                         
                         <div class="deposit_submit_wrapper">
-                            <div class="deposit_submit">Confirm</div>
+                            <div class="deposit_submit" id="lockCompany">Confirm</div>
                         </div>
                     </div>    
                     </form>
