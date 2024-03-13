@@ -3,6 +3,7 @@
     --special: rgb(3, 125, 214);
     --special-variant: rgb(21, 101, 192);
     --text-color: white;
+    --text-color-variant: rgb(134, 163, 184);
 }
 
 *, html {
@@ -243,7 +244,8 @@ html{
     display: grid;
     grid-template-columns: auto auto;
     grid-template-rows: auto min-content min-content auto;
-    grid-row-gap: 15px;
+    grid-row-gap: 30px;
+    grid-column-gap: 30px;
 }
 
 .person{
@@ -251,9 +253,28 @@ html{
     grid-template-columns: 150px auto;
     grid-template-rows: 25px 25px auto;
 
-    grid-column-gap: 10px;
+    grid-column-gap: 10px;    
     
     height: 150px;    
+}
+
+.person_title, .person_role{
+    display: flex;
+    align-items: center;
+}
+
+.person_title{
+    font-size: 1.3rem;
+    font-weight: bold;
+}
+
+.person_role{
+    color: var(--text-color-variant);
+    font-weight: bold;
+}
+
+.person_desc{    
+    padding-top: 7px;
 }
 
 .person_image{
