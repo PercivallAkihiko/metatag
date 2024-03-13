@@ -243,7 +243,8 @@ html{
     display: grid;
     grid-template-columns: auto auto;
     grid-template-rows: auto min-content min-content auto;
-    grid-row-gap: 15px;
+    grid-row-gap: 30px;
+    grid-column-gap: 30px;
 }
 
 .person{
