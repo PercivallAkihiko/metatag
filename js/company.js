@@ -457,12 +457,21 @@ function initVoteSection(){
     }); 
 }
 
-function initEthPrice(){
+function initEthPrice(){    
+    var ethPriceCookie = getCookie("ethPrice")
+    if(ethPriceCookie){
+        ethereumPrice = ethPriceCookie;
+        console.log("ETH price fetched from cookies: " + ethPriceCookie);
+        return;
+    }
+
+
     fetch(`https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd`)
     .then(response => response.json())
     .then(data => {
         ethereumPrice = data["ethereum"].usd;
-        console.log("Actual etherium price: " + ethereumPrice);
+        setCookie("ethPrice", ethereumPrice, 0.5);
+        console.log("Actual ETH price: " + ethereumPrice);
     })
     .catch(error => {
         console.error('Error fetching cryptocurrency price:', error);
@@ -721,10 +730,17 @@ function generateAlphanumericSeed() {
 }
 
 function setCookie(name, dataObject, daysToExpire) {
-    const expirationDate = new Date();
-    expirationDate.setDate(expirationDate.getDate() + daysToExpire);
+    var expirationDate = new Date();
+    if(daysToExpire == 0.5){
+        var minutesToExpire = 5;
+        var millisecondsPerMinute = 60000;
+        var expirationTime = minutesToExpire * millisecondsPerMinute;
+        expirationDate.setTime(expirationDate.getTime() + expirationTime);
+    }else{
+        expirationDate.setDate(expirationDate.getDate() + daysToExpire);
+    }    
   
-    const cookieValue = encodeURIComponent(name) + '=' + encodeURIComponent(JSON.stringify(dataObject)) + '; expires=' + expirationDate.toUTCString() + '; path=/';
+    var cookieValue = encodeURIComponent(name) + '=' + encodeURIComponent(JSON.stringify(dataObject)) + '; expires=' + expirationDate.toUTCString() + '; path=/';
   
     document.cookie = cookieValue;
 }
@@ -1017,6 +1033,12 @@ function generateChart(days, ethprice, tokens){
 }
 
 var fetchEthereumPrices = async () => {
+    var ethPrices = getCookie("ethPrices");
+    if(ethPrices){
+        console.log("Prices fetched from cookies.");
+        return ethPrices;
+    }
+
     const endDate = new Date(); 
     const startDate = new Date();
     startDate.setDate(endDate.getDate() - 91);
@@ -1026,10 +1048,6 @@ var fetchEthereumPrices = async () => {
 
 
     const apiUrl = `https://api.coingecko.com/api/v3/coins/ethereum/market_chart/range?vs_currency=usd&from=${startTimestamp}&to=${endTimestamp}&interval`;
-
-    console.log(endTimestamp);
-    console.log(startTimestamp);
-    console.log(apiUrl);
 
     try {
         var response = await fetch(apiUrl);
@@ -1053,6 +1071,8 @@ var fetchEthereumPrices = async () => {
 
             var months = datePricePairs.map(entry => entry.date);
             var prices = datePricePairs.map(entry => entry.price);
+            setCookie("ethPrices", [months, prices], 0.5);
+            console.log("Prices fetched from API.");
             return [months, prices];
 
         } else {
