@@ -38,36 +38,38 @@ html{
     z-index: 1000; 
 
     background-color: var(--main-color);
-    box-sizing: border-box;    
+    box-sizing: border-box;        
 }
 
-.header_wrapper {       
-    grid-column: 2;
-    display: grid;
-    grid-template-columns: auto 100px 100px 100px 100px 130px;
-    grid-template-rows: 46px;
-
-    justify-content: space-around;
-    align-items: center;
-    box-sizing: border-box;
+.header_wrapper{
     width: 100%;
+    grid-column: 2;
+
+    display: grid;
+    grid-template-columns: auto 100px 100px 100px 100px 120px;
+    grid-template-rows: 46px;
+    grid-column-gap: 15px;
+
+    padding: 0px 10px;
+    box-sizing: border-box;
 }
 
-.team,
-.explanation,
-.company,
-.explorer,
-.app_button,
-.contact {
-    display: flex;
-    justify-content: center;
-    align-items: center;    
-
+.explanation, .team, .contact, .explorer{
     cursor: pointer;
 }
 
-.app_button{    
+.explanation, .team, .contact, .explorer, .app_button{
+    display: flex;
+    align-items: center;
+    justify-content: center;    
+}
 
+.logo{
+    display: flex;
+    align-items: center;    
+}
+
+.app_button{    
     opacity: 1;
     background: var(--special);
     color: var(--text-color);
