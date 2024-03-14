@@ -330,6 +330,7 @@ var events = [
     // BuyTokens(                  address indexed purchaser, 					uint amount) 
     {
         name: "BuyTokens", 
+        emitter: "",
         validator: "",        
         purchaser: "0x9FC3da866e7DF3a1c57adE1a97c9f00a70f010c8",
         company: "",
@@ -341,6 +342,8 @@ var events = [
         tags: [],
         seed: "",
         rewardAmount: "",
+        timestamp: "",
+        chosenValidator: [],
 
         videoId: "",
         status: 1
@@ -348,6 +351,7 @@ var events = [
     // ReceiveTokensFromValidator( address indexed company, 					uint amount);
     {
         name: "ReceiveTokensFromValidator", 
+        emitter: "",
         validator: "",        
         purchaser: "",
         company: "0x07FAc54A901409Fe10E56c899Be3dCF2471ae321",
@@ -359,6 +363,8 @@ var events = [
         tags: [],
         seed: "",
         rewardAmount: "",
+        timestamp: "",
+        chosenValidator: [],
 
         videoId: "zTFBJgnNgU4",
         status: 2
@@ -366,6 +372,7 @@ var events = [
     // SetVariable(                address indexed validator, 					bool value);
     {
         name: "SetVariable", 
+        emitter: "",
         validator: "0x9138Cc7ff38D9DA8cb2102c920b36473736E6EA5",        
         purchaser: "",
         company: "",
@@ -377,6 +384,8 @@ var events = [
         tags: [],
         seed: "",
         rewardAmount: "",
+        timestamp: "",
+        chosenValidator: [],
 
         videoId: "",
         status: 3
@@ -384,6 +393,7 @@ var events = [
     // SubmitHash(                 address indexed validator, 	address indexed company, 	bytes32 hash, 				uint videoId, 
     {
         name: "SubmitHash", 
+        emitter: "",
         validator: "0xdbC3363De051550D122D9C623CBaff441AFb477C",        
         purchaser: "",
         company: "0xe67026A91CD57988626A2c4C6EB64c03cae20911",
@@ -395,6 +405,8 @@ var events = [
         tags: [],
         seed: "",
         rewardAmount: "",
+        timestamp: "",
+        chosenValidator: [],
 
         videoId: "95Bbjmwlnss",
         status: 4
@@ -402,6 +414,7 @@ var events = [
     // RevealHash(                 address indexed validator, 	address indexed company, 	uint[] tags, bytes11 seed uint, 	uint videoId, 
     {
         name: "RevealHash", 
+        emitter: "",
         validator: "0xB6E268B6675846104feeF5582D22f40723164d05",        
         purchaser: "",
         company: "0xB6E268B6675846104feeF5582D22f40723164d05",
@@ -413,6 +426,8 @@ var events = [
         tags: ["pippo", "caio", "sempronio"],
         seed: "rMFUws0juJn",
         rewardAmount: "",
+        timestamp: "",
+        chosenValidator: [],
 
         videoId: "95Bbjmwlnss",
         status: 5
@@ -420,6 +435,7 @@ var events = [
     // GetRewards(                 address indexed validator, 	address indexed company, 	uint rewardAmount, bool positive, 	uint videoId, 
     {
         name: "GetRewards", 
+        emitter: "",
         validator: "0xb7019c9184580b2E1f66fCDc3EB6c62621732064",        
         purchaser: "",
         company: "0xF5d958F6eD5170903752d04d3B2a9D355e87C87B",
@@ -431,6 +447,8 @@ var events = [
         tags: [],
         seed: "",
         rewardAmount: "",
+        timestamp: "",
+        chosenValidator: [],
 
         videoId: "xxxr4J1fzvc",
         status: 6
@@ -438,6 +456,7 @@ var events = [
     // WithdrawFundsValidator(     address indexed validator, 					uint amount
     {
         name: "WithdrawFundsValidator", 
+        emitter: "",
         validator: "0x388C818CA8B9251b393131C08a736A67ccB19297",        
         purchaser: "",
         company: "",
@@ -449,6 +468,8 @@ var events = [
         tags: [],
         seed: "",
         rewardAmount: "",
+        timestamp: "",
+        chosenValidator: [],
 
         videoId: "",
         status: 7
@@ -456,6 +477,7 @@ var events = [
     // MTGforVoucher(              address indexed validator);
     {
         name: "MTGforVoucher", 
+        emitter: "",
         validator: "0x388C818CA8B9251b393131C08a736A67ccB19297",        
         purchaser: "",
         company: "",
@@ -467,10 +489,12 @@ var events = [
         tags: [],
         seed: "",
         rewardAmount: "",
+        timestamp: "",
+        chosenValidator: [],
 
         videoId: "",
         status: 8
-    }            
+    },         
 ]
 
 var ethereumPrice = 1;
@@ -604,12 +628,15 @@ function initEventList(){
 
         var nameDiv = document.createElement('div');
         var addressDiv = document.createElement('div');
-        var valuesDiv = document.createElement('div');                
+        var valuesDiv = document.createElement('div'); 
+        
+        console.log(`Analyzing: ${event.name}, emitter: ${event.emitter}`)
         
         nameDiv.innerHTML = event.name;                   
         createMacroEventDiv(addressDiv, "Validator:", event.validator);
         createMacroEventDiv(addressDiv, "Purchaser:", event.purchaser);
         createMacroEventDiv(addressDiv, "Company:", event.company);         
+        createMacroEventDiv(addressDiv, "Emitter:", event.emitter);   
 
         createMacroEventDiv(valuesDiv, "Amount:", event.amount);                    
         createMacroEventDiv(valuesDiv, "Additional:", event.additional);
@@ -617,8 +644,9 @@ function initEventList(){
         createMacroEventDiv(valuesDiv, "Hash:", event.hash);                             
         createMacroEventDiv(valuesDiv, "Seed:", event.seed);
         createMacroEventDiv(valuesDiv, "Reward:", event.rewardAmount);                   
+        createMacroEventDiv(valuesDiv, "Validators:", event.chosenValidator, true); 
+        createMacroEventDiv(valuesDiv, "Timestamp", event.timestamp); 
         createMacroEventDiv(valuesDiv, "Video ID:", event.videoId); 
-
 
         createMacroEventDiv(valuesDiv, "Tags:", event.tags); 
         
@@ -660,21 +688,37 @@ function generateVoucher() {
     return code;
 }
 
-function createMacroEventDiv(div, name, value){
+function createMacroEventDiv(div, name, value, chosenValidator = false){
     if(value.length == 0){ return;}
     var macroElement = document.createElement('div');
     var nameDiv = document.createElement('div');
-    var valueDiv = document.createElement('div');
+    var valueDiv = document.createElement('div');       
 
-    nameDiv.innerHTML = "<grey>" + name + "</grey>";
-    valueDiv.innerHTML = value;
+    nameDiv.innerHTML = "<grey>" + name + "</grey>";        
+    if(chosenValidator){
+        valueDiv.innerHTML = value[0].substring(0, 6) + "...";
+        var chosenValidatorDiv = document.createElement('div');          
+        
+        value.forEach(function(validator) {   
+            var validatorDiv = document.createElement('div');    
+            validatorDiv.innerHTML = validator;
+            validatorDiv.classList.add("validator");
+            chosenValidatorDiv.appendChild(validatorDiv);        
+        });
 
-    macroElement.appendChild(nameDiv); 
-    macroElement.appendChild(valueDiv); 
+        valueDiv.classList.add("container-event");
+        chosenValidatorDiv.classList.add("hidden-div");
+        valueDiv.appendChild(chosenValidatorDiv);        
+    }
+    else{
+        valueDiv.innerHTML = value; 
+    }
+
+    macroElement.appendChild(nameDiv);
+    macroElement.appendChild(valueDiv);
     macroElement.classList.add('event_macro_element');
 
-    div.appendChild(macroElement);    
-    
+    div.appendChild(macroElement);        
 }
 
 function setItemMenuListener(button, wrapper, title){
