@@ -60,6 +60,11 @@ html{
     cursor: pointer;
 }
 
+.explorer{
+    text-decoration: none;
+    color: var(--text-color);
+}
+
 .explanation, .team, .contact, .explorer, .app_button{
     display: flex;
     align-items: center;
