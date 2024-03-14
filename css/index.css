@@ -34,26 +34,23 @@ html{
     width: 100%;
     display: grid;
     grid-template-columns: auto 992px auto;
-    padding: 24px 20px;
+    padding: 24px 0px;
     z-index: 1000; 
 
     background-color: var(--main-color);
+    box-sizing: border-box;    
 }
 
 .header_wrapper {       
-    grid-area: 1/2/1/2;
+    grid-column: 2;
     display: grid;
-    grid-template-columns: 210px auto 70px 70px 70px 70px 130px;
+    grid-template-columns: auto 100px 100px 100px 100px 130px;
     grid-template-rows: 46px;
-    grid-column-gap: 0px;
-    grid-row-gap: 0px;
 
     justify-content: space-around;
     align-items: center;
-}
-
-.logo { 
-    grid-area: 1 / 1 / 2 / 2; 
+    box-sizing: border-box;
+    width: 100%;
 }
 
 .team,
@@ -69,9 +66,7 @@ html{
     cursor: pointer;
 }
 
-
-.app_button{
-    grid-area: 1 / 7 / 2 / 8;
+.app_button{    
 
     opacity: 1;
     background: var(--special);
@@ -132,9 +127,8 @@ html{
 
 .main_title,
 .main_desc,
-.main_button {
-    /* Add styling for title, description, and button */
-    margin: 0; /* Reset default margin */
+.main_button {    
+    margin: 0; 
 }
 
 .main_title{
@@ -148,7 +142,7 @@ html{
 }
 
 .blackhole {    
-    height: 100%; /* Fill the remaining space */
+    height: 100%; 
 }
 
 .main_button_container{
@@ -234,7 +228,7 @@ html{
 }
 
 .team_container{
-    height: 600px;    
+    height: 100%;    
     box-sizing: border-box;
 }
 
