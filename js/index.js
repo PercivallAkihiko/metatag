@@ -13,8 +13,12 @@ function initMenuButton(){
     addScrollListener(team, teamTarget);
 }
 
-function addScrollListener(element, target){
-    element.addEventListener('click', function() {                
-        target.scrollIntoView({ behavior: 'smooth' });
-    }); 
+function addScrollListener(element, target, headerHeight=94) {
+    element.addEventListener('click', function() {
+        const offset = target.offsetTop - headerHeight;
+        window.scrollTo({
+            top: offset,
+            behavior: 'smooth'
+        });
+    });
 }

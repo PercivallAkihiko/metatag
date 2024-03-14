@@ -4,6 +4,8 @@
     --special-variant: rgb(21, 101, 192);
     --text-color: white;
     --text-color-variant: rgb(134, 163, 184);
+
+    --second-background: rgb(57, 62, 70);
 }
 
 *, html {
@@ -109,7 +111,7 @@ html{
 }
 
 .main_container{
-    height: 516px;    
+    height: calc(100% - 94px - 22px);    
     margin-top: 94px;
 }
 
@@ -230,8 +232,10 @@ html{
 }
 
 .team_container{
-    height: 100%;    
+    height: calc(100% - 94px);  
     box-sizing: border-box;
+
+    /* background-color: var(--second-background); */
 }
 
 .team_wrapper{
