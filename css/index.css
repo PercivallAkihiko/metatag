@@ -5,7 +5,7 @@
     --text-color: white;
     --text-color-variant: rgb(134, 163, 184);
 
-    --second-background: rgb(57, 62, 70);
+    --second-background: rgb(36, 41, 46);
 }
 
 *, html {
@@ -293,4 +293,109 @@ html{
 
 .third_person, .fourth_person{
     grid-row: 3;
+}
+
+.contact_container{
+    height: calc(100% - 94px); 
+}
+
+.contact_wrapper{
+    grid-column: 2;
+
+    display: grid;
+    grid-template-rows: auto min-content min-content auto;   
+    grid-row-gap: 50px; 
+}
+
+.contact_header{
+    grid-row: 2;    
+
+    display: grid;
+    grid-template-rows: min-content min-content;  
+    grid-row-gap: 10px;   
+}
+
+.contact_header_title, .contact_header_desc{
+    display: flex;
+    align-items: center;
+    justify-content: center;    
+}
+
+.contact_header_title{
+    font-size: 2.2rem;
+    font-weight: bold;
+}
+
+.contact_list{
+    grid-row: 3;    
+
+    display: grid;
+    grid-template-rows: repeat(3, 110px);
+    grid-template-columns: auto min-content auto;
+    grid-row-gap: 10px;
+}
+
+.contact_element{
+    grid-column: 2;
+    width: 550px;
+
+    display: grid;
+    grid-template-columns: 100px auto 150px;
+    grid-template-rows: auto min-content min-content auto;
+
+    background-color: var(--second-background);
+    border-radius: 5px;
+}
+
+.contact_icon_wrapper{
+    grid-row: 2/4;
+    grid-column: 1;
+
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+    
+    font-size: 2rem;
+}
+
+.contact_title{
+    grid-row: 2;
+    grid-column: 2;
+
+    font-weight: bold;
+}
+
+.contact_desc{
+    grid-row: 3;
+    grid-column: 2;
+}
+
+.contact_button_wrapper{
+    grid-row: 2/4;
+    grid-column: 3;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;    
+}
+
+.contact_button_container{
+    cursor: pointer;
+
+    background: var(--special);
+    color: var(--text-color);    
+    
+    transition: background-color 300ms ease 0s, border 300ms ease 0s, color 300ms ease 0s;
+    min-height: 40px;
+    width: 120px;
+    display: inline-flex;
+    -webkit-box-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    justify-content: center;    
+    border-radius: 999px;        
+}
+
+.contact_button_container:hover{    
+    background-color: var(--special-variant);
 }
