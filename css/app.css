@@ -67,8 +67,21 @@ html{
     position: relative;          
 }
 
-.logo {
-    z-index: 1; /* Set the z-index of the logo */
+.logo_wrapper{
+    display: flex;
+    align-items: center;
+    justify-content: center;   
+    padding-left: 16px; 
+
+    width: 100%;
+}
+
+.logo, .logo_name{
+    height: 15px;
+}
+
+.logo_name{
+    margin-left: 5px;
 }
 
 .menu_button {
@@ -96,8 +109,7 @@ html{
 }
 
 .menu_button:hover{
-    background-color: var(--special-variant);
-    border: none;
+    background-color: var(--special-variant);    
 }
 
 .menu_button i{
@@ -189,6 +201,10 @@ html{
 
 .item_container, .term_service{
     padding-left: 16px;
+}
+
+.term_service i{
+    color: rgb(248, 20, 20);
 }
 
 /* !!!! ---- CONTAINER PART ---- !!!! */
@@ -1271,9 +1287,14 @@ body.shrink .item_container{
     padding: 0px;
 }
 
-body.shrink .top_menu .logo{
+body.shrink .top_menu .logo_name{
     display: none;
 }
+
+body.shrink .logo{
+    height: 17px;
+}
+
 
 body.shrink .term_service{
     display: none;

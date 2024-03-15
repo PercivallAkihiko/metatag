@@ -42,15 +42,29 @@ html{
 .container{
     display: grid;
     grid-template-columns: auto min-content auto;
-    padding: 32px 0px;
+    grid-template-rows: min-content min-content min-content;
+    grid-row-gap: 36px;
+
+    padding: 32px 0px;    
 }
 
-.events_wrapper{
-    display: none; 
-}
-
-.events_container{    
+.title, .statistic, .events_container{
     grid-column: 2;
+}
+
+.title{
+    display: flex;
+    align-items: center;   
+
+    color: white;
+    font-size: 1.5rem;
+    line-height: 2rem;
+    font-weight: bold;
+
+    height: 50px;
+}
+
+.events_container{        
     border-radius: 12px;
     background-color: var(--second-color);
     padding: 20px 0px;

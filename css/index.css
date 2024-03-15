@@ -48,7 +48,7 @@ html{
     grid-column: 2;
 
     display: grid;
-    grid-template-columns: auto 100px 100px 100px 100px 120px;
+    grid-template-columns: 37px auto 100px 100px 100px 100px 120px;
     grid-template-rows: 46px;
     grid-column-gap: 15px;
 
@@ -71,9 +71,14 @@ html{
     justify-content: center;    
 }
 
-.logo{
+.logo_container, .logo_name_container{
     display: flex;
-    align-items: center;    
+    align-items: center;
+}
+
+.logo, .logo_name{ 
+    height: 30px;
+    cursor: pointer;
 }
 
 .app_button{    
