@@ -1,79 +1,86 @@
 document.addEventListener('DOMContentLoaded', async () => {
-    // Check if MetaMask is installed
     if (window.ethereum) {
         try {
-            // Request account access if needed
             const accounts = await window.ethereum.request({
                 method: 'eth_requestAccounts'
             });
-            // Get the first account
             const account = accounts[0];
-            // Format the address: first 6 characters + "..." + last 4 characters
             const shortAddress = `${account.substring(0, 6)}...${account.substring(account.length - 4)}`;
-
-            // Update the div with the formatted address
             document.getElementById('userAddress').textContent = shortAddress;
-            // Initialize web3 instance
             const web3 = new Web3(window.ethereum);
             const contractAddressToken = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
             const contractAddressDApp = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
+            // Define contract instances outside fetch scope for broader availability
+            let tokenContract, dAppContract; 
 
-            // Smart contract of the token (ABI and address)
+            // Fetch and setup the token contract instance
             fetch('../Solidity/out/MetaTagToken.sol/MetaTagToken.json')
                 .then(response => response.json())
                 .then(data => {
-                    const abi = data.abi;
-                    const contract = new web3.eth.Contract(abi, contractAddressToken);
+                    const tokenAbi = data.abi;
+                    tokenContract = new web3.eth.Contract(tokenAbi, contractAddressToken);
+                }).catch(console.error);
 
-                    // Function to call buyTokens
-                    document.getElementById('buy_button').addEventListener('click', async () => {
-                        const ethAmount = document.getElementById('ethToBuy').value; // Get the ETH amount from the input
-                        const weiValue = web3.utils.toWei(ethAmount, 'ether'); // Convert ETH to Wei
-
-                        try {
-                            const receipt = await contract.methods.buyTokens().send({
-                                from: account,
-                                value: weiValue
-                            });
-                            console.log('Transaction successful:', receipt);
-                        } catch (error) {
-                            console.error('Transaction failed:', error);
-                        }
-                    });
-                })
-                .catch(console.error);
-
-            // Smart contract of the DApp (ABI and address)
+            // Fetch and setup the DApp contract instance
             fetch('../Solidity/out/MetaTag.sol/MetaTag.json')
-            .then(response => response.json())
-            .then(data => {
-                const abi = data.abi;
-                const contract = new web3.eth.Contract(abi, contractAddressDApp);
+                .then(response => response.json())
+                .then(data => {
+                    const dAppAbi = data.abi;
+                    dAppContract = new web3.eth.Contract(dAppAbi, contractAddressDApp);
+                }).catch(console.error);
 
-                // Function to call buyTokens
-                document.getElementById('lockCompany').addEventListener('click', async () => {
-                    const MTGAmount = document.getElementById('MTGLockAmount').value; // Get the ETH amount from the input
-                    try {
-                        const receipt = await contract.methods.receiveTokensFromCompany(MTGAmount).send({
-                            from: account,
+            // Token purchase function
+            document.getElementById('buy_button').addEventListener('click', async () => {
+                 // Get the ETH amount from the input
+                const ethAmount = document.getElementById('ethToBuy').value;
+                // Convert ETH to Wei
+                const weiValue = web3.utils.toWei(ethAmount, 'ether');
+                try {
+                    const receipt = await tokenContract.methods.buyTokens().send({
+                        from: account,
+                        value: weiValue
+                    });
+                    console.log('Transaction successful:', receipt);
+                } catch (error) {
+                    console.error('Transaction failed:', error);
+                }
+            });
+
+            // Lock company tokens function with approval
+            document.getElementById('lockCompany').addEventListener('click', async () => {
+                // The amount in tokens
+                const MTGAmount = document.getElementById('MTGLockAmount').value;
+                // Convert amount to Wei for consistency with token decimals
+                const tokensInWei = web3.utils.toWei(MTGAmount, 'ether'); 
+                try {
+                    // Check current allowance
+                    const allowance = await tokenContract.methods.allowance(account, contractAddressDApp).call();
+                    if (new web3.utils.BN(allowance).lt(new web3.utils.BN(tokensInWei))) {
+                        // If allowance is less than the amount to be transferred, approve it
+                        await tokenContract.methods.approve(contractAddressDApp, tokensInWei).send({
+                            from: account
                         });
-                        console.log('Transaction successful:', receipt);
-                    } catch (error) {
-                        console.error('Transaction failed:', error);
+                        console.log('Approval successful');
+                    } else {
+                        console.log('Approval not needed, sufficient allowance.');
                     }
-                });
-            })
-            .catch(console.error);
 
+                    // Proceed with the function call after ensuring sufficient allowance
+                    const receipt = await dAppContract.methods.receiveTokensFromCompany(tokensInWei).send({
+                        from: account
+                    });
+                    console.log('Transaction successful:', receipt);
+                } catch (error) {
+                    console.error('Transaction failed:', error);
+                }
+            });
         } catch (error) {
             console.error('An error occurred:', error);
             document.getElementById('userAddress').textContent = 'Error fetching address.';
         }
     } else {
-        console.log('MetaMask is not installed. Please consider installing it.');
         document.getElementById('userAddress').textContent = 'MetaMask is not installed.';
     }
-
     // Event listener for the disconnect button
     document.getElementById('disconnectButton').addEventListener('click', () => {
         window.location.href = 'index.html';
