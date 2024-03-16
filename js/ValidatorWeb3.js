@@ -12,18 +12,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Load the contract addresses
             const contractAddressToken = "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9";
             const contractAddressDApp = "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9";
-             // Fetch and setup the token contract instance
-             const tokenData = await fetch('../Solidity/out/MetaTagToken.sol/MetaTagToken.json').then(response => response.json());
-             const tokenContract = new web3.eth.Contract(tokenData.abi, contractAddressToken);
-             // Similarly, fetch and setup the dApp contract instance
-             const dAppData = await fetch('../Solidity/out/MetaTag.sol/MetaTag.json').then(response => response.json());
-             const dAppContract = new web3.eth.Contract(dAppData.abi, contractAddressDApp);
+            // Fetch and setup the token contract instance
+            const tokenData = await fetch('../Solidity/out/MetaTagToken.sol/MetaTagToken.json').then(response => response.json());
+            const tokenContract = new web3.eth.Contract(tokenData.abi, contractAddressToken);
+            // Similarly, fetch and setup the dApp contract instance
+            const dAppData = await fetch('../Solidity/out/MetaTag.sol/MetaTag.json').then(response => response.json());
+            const dAppContract = new web3.eth.Contract(dAppData.abi, contractAddressDApp);
 
             // Check if validator variable is on or off
             setInitialSwitchState();
             // Get token amount displayed (both DApp and token)
             getTokensAmount();
-            
+
             // Check validator's variable function
             async function getTokensAmount() {
                 // Make sure dAppContract is defined and available here
@@ -31,8 +31,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const tokenValue = await tokenContract.methods.balanceOf(account).call();
                 const readableBalance = web3.utils.fromWei(dAppValue, 'ether');
                 const readableBalance2 = web3.utils.fromWei(tokenValue, 'ether');
-                document.getElementById('totalToken').innerHTML = parseFloat(readableBalance)+parseFloat(readableBalance2);
-                document.getElementById('totalLock').innerHTML = parseFloat(readableBalance)+parseFloat(readableBalance2);
+                document.getElementById('totalToken').innerHTML = parseFloat(readableBalance) + parseFloat(readableBalance2);
+                document.getElementById('totalLock').innerHTML = parseFloat(readableBalance) + parseFloat(readableBalance2);
                 document.getElementById('liquidTokens').innerHTML = parseFloat(readableBalance2);
                 document.getElementById('lockedTokens').innerHTML = parseFloat(readableBalance);
             }
@@ -43,60 +43,76 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const isValidator = await dAppContract.methods.variableValidators(account).call();
                 document.getElementById('toggleSwitch').checked = isValidator;
             }
-            
+
             // Listen for the eventBuyTokens event
             tokenContract.events.eventBuyTokens({
-                filter: { sender: account },
-                fromBlock: 'latest'
-            })
-            .on('data', function(event) {
-                const readableBalance = web3.utils.fromWei(event.returnValues.amount, 'ether');
-                document.getElementById('totalToken').innerHTML = parseFloat(document.getElementById('totalToken').innerHTML) + parseFloat(readableBalance);
-                document.getElementById('totalLock').innerHTML = parseFloat(document.getElementById('totalToken').innerHTML);
-                document.getElementById('liquidTokens').innerHTML = parseFloat(document.getElementById('liquidTokens').innerHTML) + parseFloat(readableBalance);
-            })
-            .on('error', console.error);
+                    filter: {
+                        sender: account
+                    },
+                    fromBlock: 'latest'
+                })
+                .on('data', function(event) {
+                    const readableBalance = web3.utils.fromWei(event.returnValues.amount, 'ether');
+                    document.getElementById('totalToken').innerHTML = parseFloat(document.getElementById('totalToken').innerHTML) + parseFloat(readableBalance);
+                    document.getElementById('totalLock').innerHTML = parseFloat(document.getElementById('totalToken').innerHTML);
+                    document.getElementById('liquidTokens').innerHTML = parseFloat(document.getElementById('liquidTokens').innerHTML) + parseFloat(readableBalance);
+                })
+                .on('error', console.error);
 
             // Listen for the MTGforVoucher event
             dAppContract.events.eventMTGforVoucher({
-                filter: { sender: account },
-                fromBlock: 'latest'
-            })
-            .on('data', function(event) {
-                console.log(event);
-                document.getElementById('totalToken').innerHTML = parseFloat(document.getElementById('totalToken').innerHTML) - 100;
-                document.getElementById('totalLock').innerHTML = parseFloat(document.getElementById('totalToken').innerHTML);
-                document.getElementById('liquidTokens').innerHTML = parseFloat(document.getElementById('liquidTokens').innerHTML) - 100;
-            })
-            .on('error', console.error);
+                    filter: {
+                        sender: account
+                    },
+                    fromBlock: 'latest'
+                })
+                .on('data', function(event) {
+                    console.log(event);
+                    document.getElementById('totalToken').innerHTML = parseFloat(document.getElementById('totalToken').innerHTML) - 100;
+                    document.getElementById('totalLock').innerHTML = parseFloat(document.getElementById('totalToken').innerHTML);
+                    document.getElementById('liquidTokens').innerHTML = parseFloat(document.getElementById('liquidTokens').innerHTML) - 100;
+                })
+                .on('error', console.error);
 
             // Listen for the eventReceiveTokensFromValidator event
             dAppContract.events.eventReceiveTokensFromValidator({
-                filter: { sender: account },
-                fromBlock: 'latest'
-            })
-            .on('data', function(event) {
-                console.log(event);
-                const readableBalance = web3.utils.fromWei(event.returnValues.amount, 'ether');
-                document.getElementById('liquidTokens').innerHTML = parseFloat(document.getElementById('liquidTokens').innerHTML) - parseFloat(readableBalance);
-                document.getElementById('lockedTokens').innerHTML = parseFloat(document.getElementById('lockedTokens').innerHTML) + parseFloat(readableBalance);
-            })
-            .on('error', console.error);
+                    filter: {
+                        sender: account
+                    },
+                    fromBlock: 'latest'
+                })
+                .on('data', function(event) {
+                    console.log(event);
+                    const readableBalance = web3.utils.fromWei(event.returnValues.amount, 'ether');
+                    document.getElementById('liquidTokens').innerHTML = parseFloat(document.getElementById('liquidTokens').innerHTML) - parseFloat(readableBalance);
+                    document.getElementById('lockedTokens').innerHTML = parseFloat(document.getElementById('lockedTokens').innerHTML) + parseFloat(readableBalance);
+                })
+                .on('error', console.error);
 
             // Listen for the eventWithdrawFundsValidator event
             dAppContract.events.eventWithdrawFundsValidator({
-                filter: { sender: account },
-                fromBlock: 'latest'
-            })
-            .on('data', function(event) {
-                console.log(event);
-                const readableBalance = web3.utils.fromWei(event.returnValues.amount, 'ether');
-                document.getElementById('liquidTokens').innerHTML = parseFloat(document.getElementById('liquidTokens').innerHTML) + parseFloat(readableBalance);
-                document.getElementById('lockedTokens').innerHTML = 0;
-                document.getElementById('totalToken').innerHTML = parseFloat(document.getElementById('liquidTokens').innerHTML);
-                document.getElementById('totalLock').innerHTML = parseFloat(document.getElementById('liquidTokens').innerHTML);
-            })
-            .on('error', console.error);
+                    filter: {
+                        sender: account
+                    },
+                    fromBlock: 'latest'
+                })
+                .on('data', function(event) {
+                    console.log(event);
+                    const readableBalance = web3.utils.fromWei(event.returnValues.amount, 'ether');
+                    document.getElementById('liquidTokens').innerHTML = parseFloat(document.getElementById('liquidTokens').innerHTML) + parseFloat(readableBalance);
+                    document.getElementById('lockedTokens').innerHTML = 0;
+                    document.getElementById('totalToken').innerHTML = parseFloat(document.getElementById('liquidTokens').innerHTML);
+                    document.getElementById('totalLock').innerHTML = parseFloat(document.getElementById('liquidTokens').innerHTML);
+                })
+                .on('error', console.error);
+
+            // Assuming you have an initialized contract instance `myContract`
+            dAppContract.getPastEvents('eventAddVideo', {
+                fromBlock: 0, // or the block number when your contract was deployed
+                toBlock: 'latest' // you can specify a block number here
+            }).then(events => {
+                console.log(events);
+            }).catch(err => console.error(err));
 
             // Token purchase function
             document.getElementById('buy_button').addEventListener('click', async () => {
