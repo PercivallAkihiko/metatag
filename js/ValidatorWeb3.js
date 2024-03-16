@@ -1,3 +1,7 @@
+const companies = {
+    "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC": 'YouTube'
+  };
+
 document.addEventListener('DOMContentLoaded', async () => {
     if (window.ethereum) {
         try {
@@ -6,6 +10,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
             // Get first account loaded by Metamask
             const account = accounts[0];
+            
             // Write the short address in the display
             document.getElementById('userAddress').textContent = `${account.substring(0, 6)}...${account.substring(account.length - 4)}`;
             const web3 = new Web3(window.ethereum);
@@ -106,12 +111,37 @@ document.addEventListener('DOMContentLoaded', async () => {
                 })
                 .on('error', console.error);
 
-            // Assuming you have an initialized contract instance `myContract`
+            // Event to get list of videos for tagging
             dAppContract.getPastEvents('eventAddVideo', {
-                fromBlock: 0, // or the block number when your contract was deployed
-                toBlock: 'latest' // you can specify a block number here
+                filter: {
+                    sender: account
+                },
+                fromBlock: 0,
+                toBlock: 'latest'
             }).then(events => {
-                console.log(events);
+                // make it 0 not 1!!! FIX
+                for (let i = 1; i < events.length; i++) {
+                let asciiString = '';
+                let video = events[i].returnValues[1];
+                let firstCharLength = video.length % 3 === 0 ? 3 : 2;
+                asciiString += String.fromCharCode(parseInt(video.substr(0, firstCharLength), 10));
+                for (let i = firstCharLength; i < video.length; i += 3) {
+                    let charCodeStr = video.substr(i, 3);
+                    asciiString += String.fromCharCode(parseInt(charCodeStr, 10));
+                }
+                const newVideoEntry = {
+                    hashId: asciiString,
+                    title: "Bitcoin On-Chain Analysis: Value Days Destroyed Multiple",
+                    company: companies[events[i].returnValues[0]],
+                    link: "www.google.it",            
+                    status: 1,
+                    leftvote: 0,
+                    reward: "-",
+                    results: []
+                }
+                console.log(events[i].returnValues[0]);
+                videoDB.push(newVideoEntry);
+                ;}
             }).catch(err => console.error(err));
 
             // Token purchase function

@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             // Companies addVideo
             document.getElementById('videoInput').addEventListener('click', async () => {
-                const videoIdI = ASCIIToString(document.getElementById('videoIDInput').value);
+                const videoIdI = asciiToDecimal(document.getElementById('videoIDInput').value);
                 const videoLengthI = document.getElementById('videoLengthInput').value;
                 try {
                     const receipt = await dAppContract.methods.addVideo(videoIdI, videoLengthI).send({
@@ -142,12 +142,18 @@ function generateVoucher() {
 }
 
 // Function used to transfor an ASCII string into Integer to pass as input at the addVideo function of the smart contract
-function ASCIIToString(inputString) {
-    let output = "";
-    for (let i = 0; i < inputString.length; i++) {
-        const asciiValue = inputString.charCodeAt(i);
-        output += asciiValue.toString();
+function asciiToDecimal(asciiString) {
+    let decimalString = '';
+
+    for (let i = 0; i < asciiString.length; i++) {
+        let decimalValue = asciiString.charCodeAt(i).toString();
+        
+        // Add a leading 0 if the decimalValue length is 2, except for the first character
+        if (decimalValue.length === 2 && i !== 0) {
+            decimalValue = '0' + decimalValue;
+        }
+        decimalString += decimalValue;
     }
-    // Return the concatenated string of ASCII values
-    return output; 
+
+    return decimalString;
 }
