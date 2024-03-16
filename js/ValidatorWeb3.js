@@ -84,8 +84,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
             });
 
-            // Validators variable
-            document.getElementById('toggleSwitch').addEventListener('change', async function() {
+            // Validators setVariable
+            document.getElementById('toggleSwitch').addEventListener('click', async () => {
                 try {
                     const receipt = await dAppContract.methods.setVariable().send({
                         from: account
@@ -93,6 +93,20 @@ document.addEventListener('DOMContentLoaded', async () => {
                     console.log('setVariable transaction successful:', receipt);
                 } catch (error) {
                     console.error('Failed to send setVariable transaction:', error);
+                    const checkbox = document.getElementById('toggleSwitch');
+                    checkbox.checked = !checkbox.checked;
+                }
+            });
+
+            // Validators withdraw
+            document.getElementById('withdrawValidator').addEventListener('click', async () => {
+                try {
+                    const receipt = await dAppContract.methods.withdrawFundsValidator().send({
+                        from: account
+                    });
+                    console.log('withdrawFundsValidator transaction successful:', receipt);
+                } catch (error) {
+                    console.error('Failed to send withdrawFundsValidator transaction:', error);
                 }
             });
         } catch (error) {
