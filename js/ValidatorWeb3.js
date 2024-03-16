@@ -1,43 +1,103 @@
 document.addEventListener('DOMContentLoaded', async () => {
-
     if (window.ethereum) {
         try {
             const accounts = await window.ethereum.request({
                 method: 'eth_requestAccounts'
             });
+            // Get first account loaded by Metamask
             const account = accounts[0];
-            const shortAddress = `${account.substring(0, 6)}...${account.substring(account.length - 4)}`;
-            document.getElementById('userAddress').textContent = shortAddress;
+            // Write the short address in the display
+            document.getElementById('userAddress').textContent = `${account.substring(0, 6)}...${account.substring(account.length - 4)}`;
             const web3 = new Web3(window.ethereum);
+            // Load the contract addresses
             const contractAddressToken = "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9";
             const contractAddressDApp = "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9";
-            // Define contract instances outside fetch scope for broader availability
-            let tokenContract, dAppContract;
+             // Fetch and setup the token contract instance
+             const tokenData = await fetch('../Solidity/out/MetaTagToken.sol/MetaTagToken.json').then(response => response.json());
+             const tokenContract = new web3.eth.Contract(tokenData.abi, contractAddressToken);
+             // Similarly, fetch and setup the dApp contract instance
+             const dAppData = await fetch('../Solidity/out/MetaTag.sol/MetaTag.json').then(response => response.json());
+             const dAppContract = new web3.eth.Contract(dAppData.abi, contractAddressDApp);
 
-            // Fetch and setup the token contract instance
-            fetch('../Solidity/out/MetaTagToken.sol/MetaTagToken.json')
-                .then(response => response.json())
-                .then(data => {
-                    const tokenAbi = data.abi;
-                    tokenContract = new web3.eth.Contract(tokenAbi, contractAddressToken);
-                }).catch(console.error);
-
-            // Fetch and setup the DApp contract instance
-            fetch('../Solidity/out/MetaTag.sol/MetaTag.json')
-                .then(response => response.json())
-                .then(data => {
-                    const dAppAbi = data.abi;
-                    dAppContract = new web3.eth.Contract(dAppAbi, contractAddressDApp);
-                    // Check if validator variable is on or off
-                    setInitialSwitchState();
-                }).catch(console.error);
-
+            // Check if validator variable is on or off
+            setInitialSwitchState();
+            // Get token amount displayed (both DApp and token)
+            getTokensAmount();
+            
             // Check validator's variable function
+            async function getTokensAmount() {
+                // Make sure dAppContract is defined and available here
+                const dAppValue = await dAppContract.methods.balanceValidators(account).call();
+                const tokenValue = await tokenContract.methods.balanceOf(account).call();
+                const readableBalance = web3.utils.fromWei(dAppValue, 'ether');
+                const readableBalance2 = web3.utils.fromWei(tokenValue, 'ether');
+                document.getElementById('totalToken').innerHTML = parseFloat(readableBalance)+parseFloat(readableBalance2);
+                document.getElementById('totalLock').innerHTML = parseFloat(readableBalance)+parseFloat(readableBalance2);
+                document.getElementById('liquidTokens').innerHTML = parseFloat(readableBalance2);
+                document.getElementById('lockedTokens').innerHTML = parseFloat(readableBalance);
+            }
+
+            // Get validator's total token amount
             async function setInitialSwitchState() {
                 // Make sure dAppContract is defined and available here
                 const isValidator = await dAppContract.methods.variableValidators(account).call();
                 document.getElementById('toggleSwitch').checked = isValidator;
             }
+            
+            // Listen for the eventBuyTokens event
+            tokenContract.events.eventBuyTokens({
+                filter: { sender: account },
+                fromBlock: 'latest'
+            })
+            .on('data', function(event) {
+                const readableBalance = web3.utils.fromWei(event.returnValues.amount, 'ether');
+                document.getElementById('totalToken').innerHTML = parseFloat(document.getElementById('totalToken').innerHTML) + parseFloat(readableBalance);
+                document.getElementById('totalLock').innerHTML = parseFloat(document.getElementById('totalToken').innerHTML);
+                document.getElementById('liquidTokens').innerHTML = parseFloat(document.getElementById('liquidTokens').innerHTML) + parseFloat(readableBalance);
+            })
+            .on('error', console.error);
+
+            // Listen for the MTGforVoucher event
+            dAppContract.events.eventMTGforVoucher({
+                filter: { sender: account },
+                fromBlock: 'latest'
+            })
+            .on('data', function(event) {
+                console.log(event);
+                document.getElementById('totalToken').innerHTML = parseFloat(document.getElementById('totalToken').innerHTML) - 100;
+                document.getElementById('totalLock').innerHTML = parseFloat(document.getElementById('totalToken').innerHTML);
+                document.getElementById('liquidTokens').innerHTML = parseFloat(document.getElementById('liquidTokens').innerHTML) - 100;
+            })
+            .on('error', console.error);
+
+            // Listen for the eventReceiveTokensFromValidator event
+            dAppContract.events.eventReceiveTokensFromValidator({
+                filter: { sender: account },
+                fromBlock: 'latest'
+            })
+            .on('data', function(event) {
+                console.log(event);
+                const readableBalance = web3.utils.fromWei(event.returnValues.amount, 'ether');
+                document.getElementById('liquidTokens').innerHTML = parseFloat(document.getElementById('liquidTokens').innerHTML) - parseFloat(readableBalance);
+                document.getElementById('lockedTokens').innerHTML = parseFloat(document.getElementById('lockedTokens').innerHTML) + parseFloat(readableBalance);
+            })
+            .on('error', console.error);
+
+            // Listen for the eventWithdrawFundsValidator event
+            dAppContract.events.eventWithdrawFundsValidator({
+                filter: { sender: account },
+                fromBlock: 'latest'
+            })
+            .on('data', function(event) {
+                console.log(event);
+                const readableBalance = web3.utils.fromWei(event.returnValues.amount, 'ether');
+                document.getElementById('liquidTokens').innerHTML = parseFloat(document.getElementById('liquidTokens').innerHTML) + parseFloat(readableBalance);
+                document.getElementById('lockedTokens').innerHTML = 0;
+                document.getElementById('totalToken').innerHTML = parseFloat(document.getElementById('liquidTokens').innerHTML);
+                document.getElementById('totalLock').innerHTML = parseFloat(document.getElementById('liquidTokens').innerHTML);
+            })
+            .on('error', console.error);
+
             // Token purchase function
             document.getElementById('buy_button').addEventListener('click', async () => {
                 // Get the ETH amount from the input
@@ -55,7 +115,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
             });
 
-            // Lock company tokens function with approval
+            // Lock validator tokens function with approval
             document.getElementById('lockValidator').addEventListener('click', async () => {
                 // The amount in tokens
                 const MTGAmount = document.getElementById('MTGLockAmount').value;
@@ -84,7 +144,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
             });
 
-            // Validators setVariable
+            // Validator's setVariable
             document.getElementById('toggleSwitch').addEventListener('click', async () => {
                 try {
                     const receipt = await dAppContract.methods.setVariable().send({
@@ -98,7 +158,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
             });
 
-            // Validators withdrawFundsValidator
+            // Validator's withdrawFundsValidator
             document.getElementById('withdrawValidator').addEventListener('click', async () => {
                 try {
                     const receipt = await dAppContract.methods.withdrawFundsValidator().send({
@@ -110,7 +170,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
             });
 
-            // Validators buyVoucher
+            // Validator's buyVoucher
             document.getElementById('buyVoucher').addEventListener('click', async () => {
                 // The amount in tokens
                 const MTGAmount = "100";
@@ -150,6 +210,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 });
 
+// Function used to generate a random voucher (normally it should be retrieved with an API from YouTube)
 function generateVoucher() {
     let code = '';
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
