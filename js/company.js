@@ -542,11 +542,7 @@ function initVoucherListener(){
 
     voucherCopy.addEventListener("click" , () => {
         navigator.clipboard.writeText(voucherValue.innerHTML);        
-    });  
-
-    voucherGenerate.addEventListener("click" , () => {
-        voucherValue.innerHTML = generateVoucher();
-    });     
+    });   
 }
 
 function generateVoucher() {

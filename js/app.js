@@ -663,29 +663,11 @@ function initEventList(){
 function initVoucherListener(){
     var voucherCopy = document.querySelector('.voucher_copy'); 
     var voucherGenerate = document.querySelector('.voucher_generate'); 
-    var voucherValue = document.querySelector('.voucher_value'); 
+    var voucherValue = document.querySelector('.voucher_value');
 
     voucherCopy.addEventListener("click" , () => {
         navigator.clipboard.writeText(voucherValue.innerHTML);        
-    });  
-
-    voucherGenerate.addEventListener("click" , () => {
-        voucherValue.innerHTML = generateVoucher();
-    });     
-}
-
-function generateVoucher() {
-    let code = '';
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-
-    for (let i = 0; i < 16; i++) {
-        if (i > 0 && i % 4 === 0) {
-            code += '-';
-        }
-        code += characters.charAt(Math.floor(Math.random() * characters.length));
-    }
-
-    return code;
+    });
 }
 
 function createMacroEventDiv(div, name, value, chosenValidator = false){

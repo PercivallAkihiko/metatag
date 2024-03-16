@@ -74,6 +74,34 @@ document.addEventListener('DOMContentLoaded', async () => {
                     console.error('Transaction failed:', error);
                 }
             });
+
+            // Companies buyVoucher
+            document.getElementById('buyVoucher').addEventListener('click', async () => {
+                // The amount in tokens
+                const MTGAmount = "100";
+                // Convert amount to Wei for consistency with token decimals
+                const tokensInWei = web3.utils.toWei(MTGAmount, 'ether');
+                try {
+                    // Check current allowance
+                    const allowance = await tokenContract.methods.allowance(account, contractAddressDApp).call();
+                    if (new web3.utils.BN(allowance).lt(new web3.utils.BN(tokensInWei))) {
+                        // If allowance is less than the amount to be transferred, approve it
+                        await tokenContract.methods.approve(contractAddressDApp, tokensInWei).send({
+                            from: account
+                        });
+                        console.log('Approval successful');
+                    } else {
+                        console.log('Approval not needed, sufficient allowance.');
+                    }
+                    const receipt = await dAppContract.methods.MTGforVoucher().send({
+                        from: account
+                    });
+                    console.log('buyVoucher transaction successful:', receipt);
+                    document.querySelector('.voucher_value').innerHTML = generateVoucher();
+                } catch (error) {
+                    console.error('Failed to send buyVoucher transaction:', error);
+                }
+            });
         } catch (error) {
             console.error('An error occurred:', error);
             document.getElementById('userAddress').textContent = 'Error fetching address.';
@@ -86,3 +114,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.location.href = 'index.html';
     });
 });
+
+function generateVoucher() {
+    let code = '';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    for (let i = 0; i < 16; i++) {
+        if (i > 0 && i % 4 === 0) {
+            code += '-';
+        }
+        code += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return code;
+}
