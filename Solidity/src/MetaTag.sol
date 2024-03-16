@@ -67,9 +67,9 @@ contract MetaTag {
     /// @notice Percetage of ambiguity for a tag
     uint constant ambiguousTags = 30;
     /// @notice Minimum needed number of validators to accept a new video for tagging by a company
-    uint constant minimumReadyValidators = 15;
+    uint constant minimumReadyValidators = 2;
     /// @notice Number of validators to choose tags for a video
-    uint constant validatorsQuantity = 10;
+    uint constant validatorsQuantity = 2;
     /// @notice Predefined value to calculate rewards for validators
     uint constant rewardVariable = 2000;
     /// @notice Slashing quantity x * 1e18 tokens for not submitting the tag in time (for a single validator) or not a single confirmed tag for all validators (no agreement)

@@ -9,8 +9,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             const shortAddress = `${account.substring(0, 6)}...${account.substring(account.length - 4)}`;
             document.getElementById('userAddress').textContent = shortAddress;
             const web3 = new Web3(window.ethereum);
-            const contractAddressToken = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
-            const contractAddressDApp = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
+            const contractAddressToken = "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9";
+            const contractAddressDApp = "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9";
             // Define contract instances outside fetch scope for broader availability
             let tokenContract, dAppContract;
 

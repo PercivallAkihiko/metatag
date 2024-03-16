@@ -8,8 +8,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             const shortAddress = `${account.substring(0, 6)}...${account.substring(account.length - 4)}`;
             document.getElementById('userAddress').textContent = shortAddress;
             const web3 = new Web3(window.ethereum);
-            const contractAddressToken = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
-            const contractAddressDApp = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
+            const contractAddressToken = "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9";
+            const contractAddressDApp = "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9";
             // Define contract instances outside fetch scope for broader availability
             let tokenContract, dAppContract; 
 
@@ -102,6 +102,20 @@ document.addEventListener('DOMContentLoaded', async () => {
                     console.error('Failed to send buyVoucher transaction:', error);
                 }
             });
+
+            // Companies addVideo
+            document.getElementById('videoInput').addEventListener('click', async () => {
+                const videoIdI = ASCIIToString(document.getElementById('videoIDInput').value);
+                const videoLengthI = document.getElementById('videoLengthInput').value;
+                try {
+                    const receipt = await dAppContract.methods.addVideo(videoIdI, videoLengthI).send({
+                        from: account
+                    });
+                    console.log('addVideo transaction successful:', receipt);
+                } catch (error) {
+                    console.error('Failed to send addVideo transaction:', error);
+                }
+            });
         } catch (error) {
             console.error('An error occurred:', error);
             document.getElementById('userAddress').textContent = 'Error fetching address.';
@@ -125,4 +139,15 @@ function generateVoucher() {
         code += characters.charAt(Math.floor(Math.random() * characters.length));
     }
     return code;
+}
+
+// Function used to transfor an ASCII string into Integer to pass as input at the addVideo function of the smart contract
+function ASCIIToString(inputString) {
+    let output = "";
+    for (let i = 0; i < inputString.length; i++) {
+        const asciiValue = inputString.charCodeAt(i);
+        output += asciiValue.toString();
+    }
+    // Return the concatenated string of ASCII values
+    return output; 
 }
