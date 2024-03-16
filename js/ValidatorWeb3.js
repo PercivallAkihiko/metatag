@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', async () => {
+
     if (window.ethereum) {
         try {
             const accounts = await window.ethereum.request({
@@ -11,7 +12,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const contractAddressToken = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
             const contractAddressDApp = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
             // Define contract instances outside fetch scope for broader availability
-            let tokenContract, dAppContract; 
+            let tokenContract, dAppContract;
 
             // Fetch and setup the token contract instance
             fetch('../Solidity/out/MetaTagToken.sol/MetaTagToken.json')
@@ -27,11 +28,19 @@ document.addEventListener('DOMContentLoaded', async () => {
                 .then(data => {
                     const dAppAbi = data.abi;
                     dAppContract = new web3.eth.Contract(dAppAbi, contractAddressDApp);
+                    // Check if validator variable is on or off
+                    setInitialSwitchState();
                 }).catch(console.error);
 
+            // Check validator's variable function
+            async function setInitialSwitchState() {
+                // Make sure dAppContract is defined and available here
+                const isValidator = await dAppContract.methods.variableValidators(account).call();
+                document.getElementById('toggleSwitch').checked = isValidator;
+            }
             // Token purchase function
             document.getElementById('buy_button').addEventListener('click', async () => {
-                 // Get the ETH amount from the input
+                // Get the ETH amount from the input
                 const ethAmount = document.getElementById('ethToBuy').value;
                 // Convert ETH to Wei
                 const weiValue = web3.utils.toWei(ethAmount, 'ether');
@@ -51,7 +60,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 // The amount in tokens
                 const MTGAmount = document.getElementById('MTGLockAmount').value;
                 // Convert amount to Wei for consistency with token decimals
-                const tokensInWei = web3.utils.toWei(MTGAmount, 'ether'); 
+                const tokensInWei = web3.utils.toWei(MTGAmount, 'ether');
                 try {
                     // Check current allowance
                     const allowance = await tokenContract.methods.allowance(account, contractAddressDApp).call();
@@ -72,6 +81,18 @@ document.addEventListener('DOMContentLoaded', async () => {
                     console.log('Transaction successful:', receipt);
                 } catch (error) {
                     console.error('Transaction failed:', error);
+                }
+            });
+
+            // Validators variable
+            document.getElementById('toggleSwitch').addEventListener('change', async function() {
+                try {
+                    const receipt = await dAppContract.methods.setVariable().send({
+                        from: account
+                    });
+                    console.log('setVariable transaction successful:', receipt);
+                } catch (error) {
+                    console.error('Failed to send setVariable transaction:', error);
                 }
             });
         } catch (error) {
