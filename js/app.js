@@ -833,7 +833,7 @@ function loadVoteList(option){
         videolistDiv.appendChild(elementDiv);       
         
         elementDiv.addEventListener('click', function () {                        
-            generateDiv(video.hashId, video.status, video.results, video.leftvote);                   
+            generateDiv(video.hashId, video.status, video.results, video.leftvote, video.company);                   
         });             
 
         videoCounter += 1;
@@ -925,7 +925,7 @@ function resetListeners(element){
     element.parentNode.replaceChild(new_element, element);
 }
 
-function generateDiv(videoId, status, results, leftVote) {   
+function generateDiv(videoId, status, results, leftVote, company) {   
     resetListeners(".tag_button");
 
     var overlay = document.querySelector(".overlay");
@@ -946,7 +946,7 @@ function generateDiv(videoId, status, results, leftVote) {
             tagButton.addEventListener('click', function () {   
                 var seed = generateAlphanumericSeed() 
                 var tagList = getTagPositions();  
-                externalSubmitHash(seed, tagList, videoId);
+                externalSubmitHash(seed, tagList, videoId, company);
                 suggestionsContainer.innerHTML = "<grey>Seed: </grey>" + seed;        
                 setCookie(videoId, { list: tagList, seed: seed } , 1);                        
             });
