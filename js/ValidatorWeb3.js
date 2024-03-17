@@ -2,7 +2,12 @@ const companies = {
     "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC": 'YouTube'
 };
 
+const companiesReverse = {
+    'YouTube': "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+};
+
 var dAppExternal;
+var accountExternal;
 document.addEventListener('DOMContentLoaded', async () => {
     if (window.ethereum) {
         try {
@@ -11,7 +16,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
             // Get first account loaded by Metamask
             const account = accounts[0];
-
+            accountExternal = account;
             // Write the short address in the display
             document.getElementById('userAddress').textContent = `${account.substring(0, 6)}...${account.substring(account.length - 4)}`;
             const web3 = new Web3(window.ethereum);
@@ -292,15 +297,43 @@ async function fetchYouTubeVideoTitle(videoId) {
     }
 }
 
-async function externalSubmitHash(seed, tagList)
+async function externalSubmitHash(seed, tagList, videoId, company)
 {
     try {
-
-        const receipt = await dAppExternal.methods.submitHash().send({
-            from: account
+        const receipt = await dAppExternal.methods.submitHash(companiesReverse[company], asciiToDecimal(videoId), hashTagListAndSeed(tagList, seed)).send({
+            from: accountExternal
         });
         console.log('submitHash transaction successful:', receipt);
     } catch (error) {
         console.error('Failed to send submitHash transaction:', error);
     }
 }
+
+// Function used to transfor an ASCII string into Integer to pass as input at the addVideo function of the smart contract
+function asciiToDecimal(asciiString) {
+    let decimalString = '';
+    for (let i = 0; i < asciiString.length; i++) {
+        let decimalValue = asciiString.charCodeAt(i).toString();
+        // Add a leading 0 if the decimalValue length is 2, except for the first character
+        if (decimalValue.length === 2 && i !== 0) {
+            decimalValue = '0' + decimalValue;
+        }
+        decimalString += decimalValue;
+    }
+    return decimalString;
+}
+
+// Function to calculate the kecca256 to pass as input to submitHash
+function hashTagListAndSeed(tagList, seed) {
+    // Ensure the seed length is 11
+    if (seed.length !== 11) {
+      throw new Error('Seed must have a length of 11 characters');
+    }
+    // Convert the array of integers to a string, with elements separated by spaces
+    const tagListString = tagList.join(' ');
+    // Concatenate the tagList string and the seed, separated by a space
+    const inputString = `${tagListString} ${seed}`;
+    // Compute and return the Keccak-256 hash
+    return "0x" + keccak256(inputString);
+  }
+  

@@ -154,6 +154,5 @@ function asciiToDecimal(asciiString) {
         }
         decimalString += decimalValue;
     }
-
     return decimalString;
 }
