@@ -1,7 +1,8 @@
 const companies = {
     "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC": 'YouTube'
-  };
+};
 
+var dAppExternal;
 document.addEventListener('DOMContentLoaded', async () => {
     if (window.ethereum) {
         try {
@@ -10,19 +11,20 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
             // Get first account loaded by Metamask
             const account = accounts[0];
-            
+
             // Write the short address in the display
             document.getElementById('userAddress').textContent = `${account.substring(0, 6)}...${account.substring(account.length - 4)}`;
             const web3 = new Web3(window.ethereum);
             // Load the contract addresses
-            const contractAddressToken = "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9";
-            const contractAddressDApp = "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9";
+            const contractAddressToken = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+            const contractAddressDApp = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
             // Fetch and setup the token contract instance
             const tokenData = await fetch('../Solidity/out/MetaTagToken.sol/MetaTagToken.json').then(response => response.json());
             const tokenContract = new web3.eth.Contract(tokenData.abi, contractAddressToken);
             // Similarly, fetch and setup the dApp contract instance
             const dAppData = await fetch('../Solidity/out/MetaTag.sol/MetaTag.json').then(response => response.json());
-            const dAppContract = new web3.eth.Contract(dAppData.abi, contractAddressDApp);
+            var dAppContract = new web3.eth.Contract(dAppData.abi, contractAddressDApp);
+            dAppExternal = dAppContract;
 
             // Check if validator variable is on or off
             setInitialSwitchState();
@@ -113,35 +115,37 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             // Event to get list of videos for tagging
             dAppContract.getPastEvents('eventAddVideo', {
-                filter: {
-                    sender: account
-                },
                 fromBlock: 0,
                 toBlock: 'latest'
             }).then(events => {
-                // make it 0 not 1!!! FIX
-                for (let i = 1; i < events.length; i++) {
-                let asciiString = '';
-                let video = events[i].returnValues[1];
-                let firstCharLength = video.length % 3 === 0 ? 3 : 2;
-                asciiString += String.fromCharCode(parseInt(video.substr(0, firstCharLength), 10));
-                for (let i = firstCharLength; i < video.length; i += 3) {
-                    let charCodeStr = video.substr(i, 3);
-                    asciiString += String.fromCharCode(parseInt(charCodeStr, 10));
+                for (let i = 0; i < events.length; i++) {
+                    if (events[i].returnValues[2].map(v => v.toLowerCase()).includes(account)) {
+                        let asciiString = '';
+                        let video = events[i].returnValues[1];
+                        let firstCharLength = video.length % 3 === 0 ? 3 : 2;
+                        asciiString += String.fromCharCode(parseInt(video.substr(0, firstCharLength), 10));
+                        for (let i = firstCharLength; i < video.length; i += 3) {
+                            let charCodeStr = video.substr(i, 3);
+                            asciiString += String.fromCharCode(parseInt(charCodeStr, 10));
+                        }
+                        fetchYouTubeVideoTitle(asciiString)
+                            .then(title => {
+                                const newVideoEntry = {
+                                    hashId: asciiString,
+                                    title: title,
+                                    company: companies[events[i].returnValues[0]],
+                                    link: "www.google.it",
+                                    status: 1,
+                                    leftvote: 0,
+                                    reward: "-",
+                                    results: []
+                                };
+                                // Push the new entry into videoDB
+                                videoDB.push(newVideoEntry);
+                            })
+                            .catch(error => console.error(error));;
+                    }
                 }
-                const newVideoEntry = {
-                    hashId: asciiString,
-                    title: "Bitcoin On-Chain Analysis: Value Days Destroyed Multiple",
-                    company: companies[events[i].returnValues[0]],
-                    link: "www.google.it",            
-                    status: 1,
-                    leftvote: 0,
-                    reward: "-",
-                    results: []
-                }
-                console.log(events[i].returnValues[0]);
-                videoDB.push(newVideoEntry);
-                ;}
             }).catch(err => console.error(err));
 
             // Token purchase function
@@ -267,4 +271,36 @@ function generateVoucher() {
         code += characters.charAt(Math.floor(Math.random() * characters.length));
     }
     return code;
+}
+
+// API call to retrieve the Youtube video title
+async function fetchYouTubeVideoTitle(videoId) {
+    const apiKey = 'AIzaSyCac5ikDuUb0bSNO1KtbiEdNp7fycWtn78';
+    const apiUrl = `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&key=${apiKey}&part=snippet`;
+
+    try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        if (data.items.length > 0) {
+            return data.items[0].snippet.title;
+        } else {
+            return 'Title not found';
+        }
+    } catch (error) {
+        console.error('Error fetching video title:', error);
+        return 'Error fetching title';
+    }
+}
+
+async function externalSubmitHash(seed, tagList)
+{
+    try {
+
+        const receipt = await dAppExternal.methods.submitHash().send({
+            from: account
+        });
+        console.log('submitHash transaction successful:', receipt);
+    } catch (error) {
+        console.error('Failed to send submitHash transaction:', error);
+    }
 }

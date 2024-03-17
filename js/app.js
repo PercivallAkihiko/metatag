@@ -946,10 +946,11 @@ function generateDiv(videoId, status, results, leftVote) {
             tagButton.addEventListener('click', function () {   
                 var seed = generateAlphanumericSeed() 
                 var tagList = getTagPositions();  
+                externalSubmitHash(seed, tagList, videoId);
                 suggestionsContainer.innerHTML = "<grey>Seed: </grey>" + seed;        
                 setCookie(videoId, { list: tagList, seed: seed } , 1);                        
-            });  
-            addTagFromCookie(videoId, false, true);            
+            });
+            addTagFromCookie(videoId, false, true); 
             inputElement.disabled = false;
             tagsContainer.classList.remove("disabled")
             tagButton.classList.remove("disabled");
