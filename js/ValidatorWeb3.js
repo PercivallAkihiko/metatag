@@ -6,6 +6,8 @@ const companiesReverse = {
     'YouTube': "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
 };
 
+const numberOfValidators = 2;
+
 var dAppExternal;
 var accountExternal;
 document.addEventListener('DOMContentLoaded', async () => {
@@ -118,40 +120,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 })
                 .on('error', console.error);
 
-            // Event to get list of videos for tagging
-            dAppContract.getPastEvents('eventAddVideo', {
-                fromBlock: 0,
-                toBlock: 'latest'
-            }).then(events => {
-                for (let i = 0; i < events.length; i++) {
-                    if (events[i].returnValues[2].map(v => v.toLowerCase()).includes(account)) {
-                        let asciiString = '';
-                        let video = events[i].returnValues[1];
-                        let firstCharLength = video.length % 3 === 0 ? 3 : 2;
-                        asciiString += String.fromCharCode(parseInt(video.substr(0, firstCharLength), 10));
-                        for (let i = firstCharLength; i < video.length; i += 3) {
-                            let charCodeStr = video.substr(i, 3);
-                            asciiString += String.fromCharCode(parseInt(charCodeStr, 10));
-                        }
-                        fetchYouTubeVideoTitle(asciiString)
-                            .then(title => {
-                                const newVideoEntry = {
-                                    hashId: asciiString,
-                                    title: title,
-                                    company: companies[events[i].returnValues[0]],
-                                    link: "www.google.it",
-                                    status: 1,
-                                    leftvote: 0,
-                                    reward: "-",
-                                    results: []
-                                };
-                                // Push the new entry into videoDB
-                                videoDB.push(newVideoEntry);
-                            })
-                            .catch(error => console.error(error));;
-                    }
-                }
-            }).catch(err => console.error(err));
+            waitForEvents();
 
             // Token purchase function
             document.getElementById('buy_button').addEventListener('click', async () => {
@@ -297,10 +266,29 @@ async function fetchYouTubeVideoTitle(videoId) {
     }
 }
 
-async function externalSubmitHash(seed, tagList, videoId, company)
-{
+async function externalSubmitHash(seed, tagList, videoId, company) {
     try {
         const receipt = await dAppExternal.methods.submitHash(companiesReverse[company], asciiToDecimal(videoId), hashTagListAndSeed(tagList, seed)).send({
+            from: accountExternal
+        });
+        console.log('submitHash transaction successful:', receipt);
+    } catch (error) {
+        console.error('Failed to send submitHash transaction:', error);
+    }
+}
+
+// Validator's revealHash
+async function externalRevealHash(videoId, company)
+{
+    try {
+        const videoCookie = getCookie(videoId);
+        const seed = stringToBytes11(videoCookie["seed"]);
+        const tagList = videoCookie["list"];
+        console.log(tagList);
+        console.log(seed);
+        console.log(asciiToDecimal(videoId));
+        console.log(companiesReverse[company]);
+        const receipt = await dAppExternal.methods.revealHash(companiesReverse[company], asciiToDecimal(videoId), tagList, seed).send({
             from: accountExternal
         });
         console.log('submitHash transaction successful:', receipt);
@@ -327,7 +315,7 @@ function asciiToDecimal(asciiString) {
 function hashTagListAndSeed(tagList, seed) {
     // Ensure the seed length is 11
     if (seed.length !== 11) {
-      throw new Error('Seed must have a length of 11 characters');
+        throw new Error('Seed must have a length of 11 characters');
     }
     // Convert the array of integers to a string, with elements separated by spaces
     const tagListString = tagList.join(' ');
@@ -335,5 +323,104 @@ function hashTagListAndSeed(tagList, seed) {
     const inputString = `${tagListString} ${seed}`;
     // Compute and return the Keccak-256 hash
     return "0x" + keccak256(inputString);
-  }
-  
+}
+
+// Function to convert decimal videoID to string type
+function decimalToString(decimal) {
+    let asciiString = '';
+    let firstCharLength = decimal.length % 3 === 0 ? 3 : 2;
+    asciiString += String.fromCharCode(parseInt(decimal.substr(0, firstCharLength), 10));
+    for (let i = firstCharLength; i < decimal.length; i += 3) {
+        let charCodeStr = decimal.substr(i, 3);
+        asciiString += String.fromCharCode(parseInt(charCodeStr, 10));
+    }
+    return asciiString
+}
+
+// Function to retrieve addVideo events
+function waitForEvents() {
+    dAppExternal.getPastEvents('eventAddVideo', {
+        fromBlock: 0,
+        toBlock: 'latest'
+    }).then(events => {
+        for (let i = 0; i < events.length; i++) {
+            if (events[i].returnValues[2].map(v => v.toLowerCase()).includes(accountExternal)) {
+                let video = events[i].returnValues[1];
+                let asciiString = decimalToString(video);
+                fetchYouTubeVideoTitle(asciiString)
+                    .then(title => {
+                        const newVideoEntry = {
+                            hashId: asciiString,
+                            title: title,
+                            company: companies[events[i].returnValues[0]],
+                            link: "www.google.it",
+                            status: 1,
+                            leftvote: 0,
+                            reward: "-",
+                            results: []
+                        };
+                        // Push the new entry into videoDB
+                        videoDB.push(newVideoEntry);
+                        waitForEventSubmitHash();
+                    })
+                    .catch(error => console.error(error));;
+            }
+        }
+    }).catch(err => console.error(err));
+}
+
+// Event to get list of videos in which the validator has to wait
+function waitForEventSubmitHash() {
+    dAppExternal.getPastEvents('eventSubmitHash', {
+        filter: {
+            validator: accountExternal
+        },
+        fromBlock: 0,
+        toBlock: 'latest'
+    }).then(events => {
+        for (let i = 0; i < events.length; i++) {
+            updateVideoStatusByUniqueCompanyAndHashId(videoDB, events[i].returnValues[1], decimalToString(events[i].returnValues[2]));
+        }
+    }).catch(err => console.error(err));
+}
+
+// Update a video thanks to events when a user upload hash
+function updateVideoStatusByUniqueCompanyAndHashId(videoDB, company, videoId) {
+    for (let i = 0; i < videoDB.length; i++) {
+        if (videoDB[i].company === companies[company] && videoDB[i].hashId === videoId) {
+            videoDB[i].status = 2;
+            getHashedCounter(company, videoId).then(hashedCounter => {
+                videoDB[i].leftvote = numberOfValidators - hashedCounter;
+                if (numberOfValidators - hashedCounter == 0)
+                {
+                    videoDB[i].status = 3;
+                }
+            });
+            // Stop searching once the match is found and updated
+            break;
+        }
+    } 
+}
+
+// Retrieve number of validators that submitted their hash
+function getHashedCounter(address, videoId) {
+    const hashedCounter = dAppExternal.methods.videos(address, asciiToDecimal(videoId)).call().then((video) => video.hashedCounter);
+    return hashedCounter;
+}
+
+// Convert string into Bytes11
+function stringToBytes11(str) {
+    // Convert the string to a hex string
+    let hex = '';
+    for(let i = 0; i < str.length; i++) {
+        hex += str.charCodeAt(i).toString(16);
+    }
+    // Ensure the hex string is no longer than 22 characters (11 bytes)
+    hex = hex.slice(0, 22);
+
+    // Pad the hex string to ensure it represents exactly 11 bytes
+    while(hex.length < 22) {
+        hex += '0'; // Pad with trailing zeros (adjust if different padding is required)
+    }
+    return '0x' + hex; // Prefix with '0x' to denote a hex string
+}
