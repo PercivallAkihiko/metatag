@@ -38,17 +38,50 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Get token amount displayed (both DApp and token)
             getTokensAmount();
 
+
+            async function findLatestTrueEventTimestamp(account) {
+                const formatDate = (timestamp) => {
+                    // Convert to milliseconds
+                    const date = new Date(timestamp * 1000);
+                    const day = date.getDate();
+                    // 'short' gives the abbreviated month name
+                    const month = date.toLocaleString('default', { month: 'short' }); 
+                    const year = date.getFullYear();
+                    return `${day}, ${month} ${year}`;
+                };
+                try {
+                    const events = await dAppContract.getPastEvents('eventSetVariable', {
+                        filter: {validator: account, value: true},
+                        // Consider using a more recent block number to reduce the search scope
+                        fromBlock: 0, 
+                        toBlock: 'latest'
+                    });
+                    if (events.length === 0) {
+                        console.log("0");
+                        return;
+                    }
+                    // Find the latest event (assuming events are ordered by block number)
+                    const latestEvent = events[events.length - 1];
+                    // Get the block details to find the timestamp
+                    const block = await web3.eth.getBlock(latestEvent.blockNumber);
+                    const timestamp = block.timestamp;
+                    return formatDate(timestamp);
+                } catch (error) {
+                    console.error("Error fetching events:", error);
+                }
+            }
+
             // Check validator's variable function
             async function getTokensAmount() {
                 // Make sure dAppContract is defined and available here
-                const dAppValue = await dAppContract.methods.balanceValidators(account).call();
-                const tokenValue = await tokenContract.methods.balanceOf(account).call();
-                const readableBalance = web3.utils.fromWei(dAppValue, 'ether');
-                const readableBalance2 = web3.utils.fromWei(tokenValue, 'ether');
+                const readableBalance = web3.utils.fromWei(await dAppContract.methods.balanceValidators(account).call(), 'ether');
+                const readableBalance2 = web3.utils.fromWei(await tokenContract.methods.balanceOf(account).call(), 'ether');
                 document.getElementById('totalToken').innerHTML = parseFloat(readableBalance) + parseFloat(readableBalance2);
                 document.getElementById('totalLock').innerHTML = parseFloat(readableBalance) + parseFloat(readableBalance2);
                 document.getElementById('liquidTokens').innerHTML = parseFloat(readableBalance2);
                 document.getElementById('lockedTokens').innerHTML = parseFloat(readableBalance);
+                document.getElementById('max_eth').innerHTML = "Balance " + parseFloat(web3.utils.fromWei(await web3.eth.getBalance(account), 'ether'));
+                document.getElementById('mtg_balancio').innerHTML = "Balance " + readableBalance;
             }
 
             // Get validator's total token amount
@@ -56,6 +89,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 // Make sure dAppContract is defined and available here
                 const isValidator = await dAppContract.methods.variableValidators(account).call();
                 document.getElementById('toggleSwitch').checked = isValidator;
+                if (isValidator) {
+                    document.getElementById('lockDate').innerHTML = await findLatestTrueEventTimestamp(account);
+                }
             }
 
             // Listen for the eventBuyTokens event
@@ -102,6 +138,26 @@ document.addEventListener('DOMContentLoaded', async () => {
                     document.getElementById('lockedTokens').innerHTML = parseFloat(document.getElementById('lockedTokens').innerHTML) + parseFloat(readableBalance);
                 })
                 .on('error', console.error);
+
+            // Listen for the eventSetVariable event
+            dAppContract.events.eventSetVariable({
+                filter: {
+                    validator: account,
+                },
+                fromBlock: 'latest'
+            })
+            .on('data', function(event) {
+                const value = event.returnValues.value;
+                if (value)
+                {
+                document.getElementById('lockDate').innerHTML = getCurrentDateFormatted();
+                }
+                else
+                {
+                    document.getElementById('lockDate').innerHTML = "-";
+                }
+            })
+            .on('error', console.error);
 
             // Listen for the eventWithdrawFundsValidator event
             dAppContract.events.eventWithdrawFundsValidator({
@@ -167,6 +223,20 @@ document.addEventListener('DOMContentLoaded', async () => {
                     console.error('Transaction failed:', error);
                 }
             });
+
+            // Click max_ETH
+            document.getElementById('press_max').addEventListener('click', async () => {
+                const parts = document.getElementById('max_eth').innerHTML.split(" "); 
+                document.getElementById('ethToBuy').value = parts[parts.length - 1];
+                validateInput(document.getElementById('ethToBuy'), 'ethereum');
+            });
+
+            // Click MTGLockAmount
+            document.getElementById('mtg_maximo').addEventListener('click', async () => {
+                document.getElementById('MTGLockAmount').value = document.getElementById('lockedTokens').innerHTML;
+                validateInputLock(document.getElementById('MTGLockAmount'));
+            });
+
 
             // Validator's setVariable
             document.getElementById('toggleSwitch').addEventListener('click', async () => {
@@ -549,4 +619,13 @@ function calculateTagPercentages(votes) {
         return [tag, percentage.toString()];
     });
     return result;
+}
+
+function getCurrentDateFormatted() {
+    const date = new Date(); // Creates a Date object for the current date and time
+    const day = date.getDate(); // Gets the day of the month
+    const month = date.toLocaleString('default', { month: 'short' }); // Gets the abbreviated month name
+    const year = date.getFullYear(); // Gets the full year
+
+    return `${day}, ${month} ${year}`; // Formats and returns the date as a string
 }
