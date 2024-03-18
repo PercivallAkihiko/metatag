@@ -380,10 +380,12 @@ document.addEventListener("DOMContentLoaded", function() {
     initVoucherListener();
     
     //Generating chart
-    fetchEthereumPrices().then(monthxprice => {
-        generateChart(monthxprice[0], monthxprice[1], [2.4, 2.5, 2.4, 2.7, 1,3,10,5,2.3,4.2, 15, 20, 13.4, 15,5.5, 19, 20, 21.2, 30, 24, 45, 45, 70]);
+    /* fetchEthereumPrices().then(monthxprice => {
+        generateChart(monthxprice[0], monthxprice[1], [2000, 2000, 2000, 2000, 2000, 2000, 1800, 1800, 1600]);
     });   
+     */
     
+    generateChart();
     
 });
 
@@ -962,7 +964,7 @@ function validateInputLock(input) {
 }
 
 //Chart generation in profile
-function generateChart(days, ethprice, tokens){
+/* function generateChart(days, ethprice, tokens){
 
     var fill = Array.from({ length: Math.max(30 - tokens.length, 0) }, () => 0).concat(tokens);
     var values = ethprice.map((price, index) => fill[index] * price * 0.001);
@@ -1026,9 +1028,86 @@ function generateChart(days, ethprice, tokens){
         }
     }
     });
+} */
+
+let chartInstance;
+
+function generateChart() {
+    const ctx = document.getElementById("balance_chart").getContext('2d');
+    const initialTotalTokensValue = parseFloat(document.getElementById('lockedTokens').innerText) || 0;
+    const initialLiquidTokensValue = parseFloat(document.getElementById('liquidTokens').innerText) || 0;
+    const initialDataArray = Array(5).fill(initialTotalTokensValue);
+    const initialLiquidDataArray = Array(5).fill(initialLiquidTokensValue);
+    const initialTimeArray = Array(5).fill(new Date());
+
+    if (!chartInstance) {
+        chartInstance = new Chart(ctx, {
+            type: "line",
+            data: {
+                labels: initialTimeArray,
+                datasets: [
+                    {
+                        label: "Locked Tokens",
+                        backgroundColor: "rgba(3, 125, 214, 0.25)",
+                        borderColor: "rgba(3, 125, 214, 1)",
+                        data: initialDataArray,
+                        fill: false,
+                    },
+                    {
+                        label: "Liquid Tokens",
+                        backgroundColor: "rgba(116, 196, 118, 0.25)",
+                        borderColor: "rgba(116, 196, 118, 1)",
+                        data: initialLiquidDataArray,
+                        fill: false,
+                    }
+                ]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }],
+                    xAxes: [{
+                        type: 'time',
+                        time: {
+                            unit: 'minute',
+                            displayFormats: {
+                                minute: 'h:mm a'
+                            },
+                            tooltipFormat: 'h:mm a'
+                        }
+                    }]
+                }
+            }
+        });
+    }
+
+    // Function to update chart data
+    function updateChartData() {
+        const totalTokens = parseFloat(document.getElementById('lockedTokens').innerText) || 0;
+        const liquidTokens = parseFloat(document.getElementById('liquidTokens').innerText) || 0;
+        const currentTime = new Date();
+
+        chartInstance.data.labels.push(currentTime);
+        chartInstance.data.datasets[0].data.push(totalTokens);
+        chartInstance.data.datasets[1].data.push(liquidTokens);
+
+        const maxTokenValue = Math.max(...chartInstance.data.datasets[0].data, ...chartInstance.data.datasets[1].data);
+        chartInstance.options.scales.yAxes[0].ticks.max = maxTokenValue + (maxTokenValue * 0.1); // Add 10% padding
+
+        chartInstance.update();
+    }
+
+    // Update the chart data every 2 minutes
+    setInterval(updateChartData, 5000);
 }
 
-var fetchEthereumPrices = async () => {
+
+
+
+/* var fetchEthereumPrices = async () => {
     var ethPrices = getCookie("ethPrices");
     if(ethPrices){
         console.log("Prices fetched from cookies.");
@@ -1077,4 +1156,4 @@ var fetchEthereumPrices = async () => {
     } catch (error) {
         console.error('Error fetching Ethereum prices:', error);
     }
-};
+}; */

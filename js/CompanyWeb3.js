@@ -1,33 +1,109 @@
+
+var dAppExternal;
+var accountExternal;
+
 document.addEventListener('DOMContentLoaded', async () => {
     if (window.ethereum) {
         try {
             const accounts = await window.ethereum.request({
                 method: 'eth_requestAccounts'
             });
+            // Get first account loaded by Metamask
             const account = accounts[0];
-            const shortAddress = `${account.substring(0, 6)}...${account.substring(account.length - 4)}`;
-            document.getElementById('userAddress').textContent = shortAddress;
+            accountExternal = account;
+            // Write the short address in the display
+            document.getElementById('userAddress').textContent = `${account.substring(0, 6)}...${account.substring(account.length - 4)}`;
             const web3 = new Web3(window.ethereum);
+            // Load the contract addresses
             const contractAddressToken = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
             const contractAddressDApp = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
-            // Define contract instances outside fetch scope for broader availability
-            let tokenContract, dAppContract; 
-
             // Fetch and setup the token contract instance
-            fetch('../Solidity/out/MetaTagToken.sol/MetaTagToken.json')
-                .then(response => response.json())
-                .then(data => {
-                    const tokenAbi = data.abi;
-                    tokenContract = new web3.eth.Contract(tokenAbi, contractAddressToken);
-                }).catch(console.error);
+            const tokenData = await fetch('../Solidity/out/MetaTagToken.sol/MetaTagToken.json').then(response => response.json());
+            const tokenContract = new web3.eth.Contract(tokenData.abi, contractAddressToken);
+            // Similarly, fetch and setup the dApp contract instance
+            const dAppData = await fetch('../Solidity/out/MetaTag.sol/MetaTag.json').then(response => response.json());
+            var dAppContract = new web3.eth.Contract(dAppData.abi, contractAddressDApp);
+            dAppExternal = dAppContract;
 
-            // Fetch and setup the DApp contract instance
-            fetch('../Solidity/out/MetaTag.sol/MetaTag.json')
-                .then(response => response.json())
-                .then(data => {
-                    const dAppAbi = data.abi;
-                    dAppContract = new web3.eth.Contract(dAppAbi, contractAddressDApp);
-                }).catch(console.error);
+            // Get token amount displayed (both DApp and token)
+            getTokensAmount();
+
+            // Check validator's variable function
+            async function getTokensAmount() {
+                // Make sure dAppContract is defined and available here
+                const dAppValue = await dAppContract.methods.balanceCompanies(account).call();
+                const tokenValue = await tokenContract.methods.balanceOf(account).call();
+                const readableBalance = web3.utils.fromWei(dAppValue, 'ether');
+                const readableBalance2 = web3.utils.fromWei(tokenValue, 'ether');
+                document.getElementById('totalToken').innerHTML = parseFloat(readableBalance) + parseFloat(readableBalance2);
+                document.getElementById('totalLock').innerHTML = parseFloat(readableBalance) + parseFloat(readableBalance2);
+                document.getElementById('liquidTokens').innerHTML = parseFloat(readableBalance2);
+                document.getElementById('lockedTokens').innerHTML = parseFloat(readableBalance);
+            }
+
+             // Listen for the eventBuyTokens event
+             tokenContract.events.eventBuyTokens({
+                filter: {
+                    sender: account
+                },
+                fromBlock: 'latest'
+            })
+            .on('data', function(event) {
+                const readableBalance = web3.utils.fromWei(event.returnValues.amount, 'ether');
+                document.getElementById('totalToken').innerHTML = parseFloat(document.getElementById('totalToken').innerHTML) + parseFloat(readableBalance);
+                document.getElementById('totalLock').innerHTML = parseFloat(document.getElementById('totalToken').innerHTML);
+                document.getElementById('liquidTokens').innerHTML = parseFloat(document.getElementById('liquidTokens').innerHTML) + parseFloat(readableBalance);
+            })
+            .on('error', console.error);
+
+            // Listen for the MTGforVoucher event
+            dAppContract.events.eventMTGforVoucher({
+                    filter: {
+                        sender: account
+                    },
+                    fromBlock: 'latest'
+                })
+                .on('data', function(event) {
+                    //console.log(event);
+                    document.getElementById('totalToken').innerHTML = parseFloat(document.getElementById('totalToken').innerHTML) - 100;
+                    document.getElementById('totalLock').innerHTML = parseFloat(document.getElementById('totalToken').innerHTML);
+                    document.getElementById('liquidTokens').innerHTML = parseFloat(document.getElementById('liquidTokens').innerHTML) - 100;
+                })
+                .on('error', console.error);
+
+            // Listen for the eventReceiveTokensFromCompany event
+            dAppContract.events.eventReceiveTokensFromCompany({
+                    filter: {
+                        sender: account
+                    },
+                    fromBlock: 'latest'
+                })
+                .on('data', function(event) {
+                    //console.log(event);
+                    const readableBalance = web3.utils.fromWei(event.returnValues.amount, 'ether');
+                    document.getElementById('liquidTokens').innerHTML = parseFloat(document.getElementById('liquidTokens').innerHTML) - parseFloat(readableBalance);
+                    document.getElementById('lockedTokens').innerHTML = parseFloat(document.getElementById('lockedTokens').innerHTML) + parseFloat(readableBalance);
+                })
+                .on('error', console.error);
+
+            // Listen for the eventWithdrawFundsCompany event
+            dAppContract.events.eventWithdrawFundsCompany({
+                    filter: {
+                        sender: account
+                    },
+                    fromBlock: 'latest'
+                })
+                .on('data', function(event) {
+                    //console.log(event);
+                    const readableBalance = web3.utils.fromWei(event.returnValues.amount, 'ether');
+                    document.getElementById('liquidTokens').innerHTML = parseFloat(document.getElementById('liquidTokens').innerHTML) + parseFloat(readableBalance);
+                    document.getElementById('lockedTokens').innerHTML = 0;
+                    document.getElementById('totalToken').innerHTML = parseFloat(document.getElementById('liquidTokens').innerHTML);
+                    document.getElementById('totalLock').innerHTML = parseFloat(document.getElementById('liquidTokens').innerHTML);
+                })
+                .on('error', console.error);
+
+            //waitForEvents();
 
             // Token purchase function
             document.getElementById('buy_button').addEventListener('click', async () => {
@@ -129,6 +205,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 });
 
+
+
+
+
 function generateVoucher() {
     let code = '';
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -156,3 +236,4 @@ function asciiToDecimal(asciiString) {
     }
     return decimalString;
 }
+

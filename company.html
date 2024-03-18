@@ -4,6 +4,11 @@
         <link href='https://unpkg.com/css.gg@2.0.0/icons/css/chevron-left.css' rel='stylesheet'>
         <link href="https://fonts.cdnfonts.com/css/euclid-circular-b" rel="stylesheet">
         <script src="https://kit.fontawesome.com/0a2c0a85f0.js" crossorigin="anonymous"></script>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-adapter-moment/1.0.0/chartjs-adapter-moment.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+
         <script src="js/company.js"></script>
         <script src="js/CompanyWeb3.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
@@ -63,7 +68,7 @@
                     <div class="dashboard_first_line">
                         <div class="dashboard_item total_token_container">
                             <div class="dashboard_item_title">Total token</div>
-                            <div class="dashboard_item_value">0.045 MTG</div>
+                            <div id="totalToken" class="dashboard_item_value">0.045 MTG</div>
                             <div class="dashboard_item_icon"><i class="fa-solid fa-m"></i></div>
                         </div>
                         <div class="dashboard_item pending_container">
@@ -146,11 +151,11 @@
                 <div class="lock_container">
                     <div class="liquid_wrapper lock_element">
                         <div class="lock_element_title">Liquid tokens</div>
-                        <div class="lock_element_value">5 MTG</div>
+                        <div id="liquidTokens"  class="lock_element_value">5 MTG</div>
                     </div>
                     <div class="locked_wrapper lock_element">
                         <div class="lock_element_title">Locked tokens</div>
-                        <div class="lock_element_value lock_element_value_locked">10.3 MTG</div>
+                        <div id="lockedTokens" class="lock_element_value lock_element_value_locked">10.3 MTG</div>
                     </div>
                     <div class="penalty_wrapper lock_element">
                         <div class="lock_element_title">Your penalty</div>
@@ -159,7 +164,7 @@
                     <div class="statistic_wrapper lock_element">
                         <div class="static_container">
                             <div class="static_title">Total token</div>
-                            <div class="static_value">14.5 MTG</div>
+                            <div id="totalLock" class="static_value">14.5 MTG</div>
                         </div>
                         <!-- <div class="static_container">
                             <div class="static_title">Total earn</div>
