@@ -297,6 +297,20 @@ async function externalRevealHash(videoId, company)
     }
 }
 
+// Validator's getRewards
+async function externalGetRewards(videoId, company)
+{
+    try {
+        const receipt = await dAppExternal.methods.getRewards(companiesReverse[company], asciiToDecimal(videoId)).send({
+            from: accountExternal
+        });
+
+    } catch (error) {
+        console.error('Failed to send submitHash transaction:', error);
+    }
+}
+
+
 // Function used to transfor an ASCII string into Integer to pass as input at the addVideo function of the smart contract
 function asciiToDecimal(asciiString) {
     let decimalString = '';
@@ -389,12 +403,11 @@ function waitForEventRevealHash(company1, video1) {
                         if (numberOfValidators - RevealedCounter == 0)
                         {
                             videoDB[i].status = 5;
-                            videoDB[i].reward = 5;
                         }
                     });
                     break;
                 }
-            } 
+            }
         }
     }).catch(err => console.error(err));
 }

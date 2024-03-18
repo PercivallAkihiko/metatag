@@ -977,6 +977,9 @@ function generateDiv(videoId, status, results, leftVote, company) {
             tagButton.innerHTML = "WAITING FOR " + leftVote + " REVEAL";  
             break;
         case 5:
+            tagButton.addEventListener('click', function () {
+                externalGetRewards(videoId, company);
+            });
             disableDiv(videoId, true);
             generatePoll(results);
             hideShowVote(tagsWrapper);
