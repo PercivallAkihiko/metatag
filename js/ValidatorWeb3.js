@@ -361,38 +361,60 @@ function waitForEvents() {
                         };
                         // Push the new entry into videoDB
                         videoDB.push(newVideoEntry);
-                        waitForEventSubmitHash();
+                        waitForEventSubmitHash(events[i].returnValues[0], video);
                     })
                     .catch(error => console.error(error));;
             }
         }
-        //waitForEventRevealHash();
     }).catch(err => console.error(err));
 }
 
 // Event to get list of videos in which the validator has to wait
-function waitForEventRevealHash() {
+function waitForEventRevealHash(company1, video1) {
     dAppExternal.getPastEvents('eventRevealHash', {
         filter: {
-            validator: accountExternal
+            validator: accountExternal,
+            company: company1,
+            videoId: video1
         },
         fromBlock: 0,
         toBlock: 'latest'
     }).then(events => {
+        if (events.length != 0) {
+            for (let i = 0; i < videoDB.length; i++) {
+                if (videoDB[i].company === companies[company1] && videoDB[i].hashId === decimalToString(video1)) {
+                    videoDB[i].status = 4;
+                    getRevealedCounter(company1, videoDB[i].hashId).then(RevealedCounter => {
+                        console.log(RevealedCounter);
+                    });
+                    /* getRevealedCounter(company1, videoDB[i].hashId).then(revealedCounter => {
+                        videoDB[i].leftvote = numberOfValidators - revealedCounter;
+                        if (numberOfValidators - revealedCounter == 0)
+                        {
+                            videoDB[i].status = 5;
+                        }
+                    }); */
+                    break;
+                }
+            } 
+        }
     }).catch(err => console.error(err));
 }
 
 // Event to get list of videos in which the validator has to wait
-function waitForEventSubmitHash() {
+function waitForEventSubmitHash(company, video) {
     dAppExternal.getPastEvents('eventSubmitHash', {
         filter: {
-            validator: accountExternal
+            validator: accountExternal,
+            company: company,
+            videoId: video
         },
         fromBlock: 0,
         toBlock: 'latest'
     }).then(events => {
-        for (let i = 0; i < events.length; i++) {
-            updateVideoStatusByUniqueCompanyAndHashId(videoDB, events[i].returnValues[1], decimalToString(events[i].returnValues[2]));
+        if (events.length != 0) {
+        updateVideoStatusByUniqueCompanyAndHashId(videoDB, events[0].returnValues[1], decimalToString(events[0].returnValues[2]));
+        waitForEventRevealHash(events[0].returnValues[1], events[0].returnValues[2]);
         }
     }).catch(err => console.error(err));
 }
@@ -415,10 +437,16 @@ function updateVideoStatusByUniqueCompanyAndHashId(videoDB, company, videoId) {
     } 
 }
 
-// Retrieve number of validators that submitted their hash
+// Retrieve number of validators that submitted their hashes
 function getHashedCounter(address, videoId) {
     const hashedCounter = dAppExternal.methods.videos(address, asciiToDecimal(videoId)).call().then((video) => video.hashedCounter);
     return hashedCounter;
+}
+
+// Retrieve number of validators that revealed their hashes
+function getRevealedCounter(address, videoId) {
+    const RevealedCounter = dAppExternal.methods.videos(address, asciiToDecimal(videoId)).call().then((video) => video.revValidators);
+    return RevealedCounter;
 }
 
 // Convert string into Bytes11

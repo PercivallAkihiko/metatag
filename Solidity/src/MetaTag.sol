@@ -84,17 +84,17 @@ contract MetaTag {
     /// @notice Event emitted when a validator modifies its participation variable
     event eventSetVariable(address indexed validator, bool value);
     /// @notice Event emitted when a validator submits a hash for a video
-    event eventSubmitHash(address indexed validator, address indexed company, uint videoId, bytes32 hash);
+    event eventSubmitHash(address indexed validator, address indexed company, uint indexed videoId, bytes32 hash);
     /// @notice Event emitted when a validator reveals their hash for a video
-    event eventRevealHash(address indexed validator, address indexed company, uint videoId, uint[] tags, bytes11 seed);
+    event eventRevealHash(address indexed validator, address indexed company, uint indexed videoId, uint[] tags, bytes11 seed);
     /// @notice Event emitted when a validator withdraws its rewards for participating in video tagging
-    event eventGetRewards(address indexed validator, address indexed company, uint videoId, uint rewardAmount, bool positive);
+    event eventGetRewards(address indexed validator, address indexed company, uint indexed videoId, uint rewardAmount, bool positive);
     /// @notice Event emitted when a validator withdraws their funds from the contract
     event eventWithdrawFundsValidator(address indexed validator, uint amount);
     /// @notice Event emitted when tokens are received from a company
     event eventReceiveTokensFromCompany(address indexed company, uint amount);
     /// @notice Event emitted when a company adds a video for tagging
-    event eventAddVideo(address indexed emitter, uint videoId, address[] chosenValidators, uint timestamp);
+    event eventAddVideo(address indexed emitter, uint indexed videoId, address[] chosenValidators, uint timestamp);
     /// @notice Event emitted when a company withdraws their funds from the contract
     event eventWithdrawFundsCompany(address indexed company, uint amount);
     /// @notice Event emitted when tokens are exchanged for a voucher
