@@ -979,7 +979,7 @@ function generateDiv(videoId, status, results, leftVote, company) {
         case 5:
             disableDiv(videoId, true);
             generatePoll(results);
-            hideShowVote(pollWrapper);
+            hideShowVote(tagsWrapper);
             tagButton.innerHTML = "CLAIM";  
             break;
         case 6:
