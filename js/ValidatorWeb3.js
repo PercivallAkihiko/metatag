@@ -375,6 +375,7 @@ function waitForEvents() {
                         };
                         // Push the new entry into videoDB
                         videoDB.push(newVideoEntry);
+                        loadVoteList(1);
                         waitForEventSubmitHash(events[i].returnValues[0], video);
                     })
                     .catch(error => console.error(error));;
@@ -398,13 +399,43 @@ function waitForEventRevealHash(company1, video1) {
             for (let i = 0; i < videoDB.length; i++) {
                 if (videoDB[i].company === companies[company1] && videoDB[i].hashId === decimalToString(video1)) {
                     videoDB[i].status = 4;
+                    loadVoteList(1);
                     getRevealedCounter(company1, videoDB[i].hashId).then(RevealedCounter => {
                         videoDB[i].leftvote = numberOfValidators - RevealedCounter;
                         if (numberOfValidators - RevealedCounter == 0)
                         {
                             videoDB[i].status = 5;
+                            loadVoteList(1);
+                            waitForEventGetRewards(video1, company1);
                         }
                     });
+                    break;
+                }
+            }
+        }
+    }).catch(err => console.error(err));
+}
+
+// Event to get list of videos in which the validator has to wait
+function waitForEventGetRewards(video1, company1) {
+    dAppExternal.getPastEvents('eventGetRewards', {
+        filter: {
+            validator: accountExternal,
+            company: company1,
+            videoId: video1
+        },
+        fromBlock: 0,
+        toBlock: 'latest'
+    }).then(events => {
+        if (events.length != 0) {
+            for (let i = 0; i < videoDB.length; i++) {
+                if (videoDB[i].company === companies[company1] && videoDB[i].hashId === decimalToString(video1)) {
+                    videoDB[i].status = 6;
+                    EventsRevealHash(video1, company1).then(output => {
+                        videoDB[i].results = output;
+                    })
+                    .catch(error => console.error(error));;
+                    loadVoteList(1);
                     break;
                 }
             }
@@ -435,11 +466,13 @@ function updateVideoStatusByUniqueCompanyAndHashId(videoDB, company, videoId) {
     for (let i = 0; i < videoDB.length; i++) {
         if (videoDB[i].company === companies[company] && videoDB[i].hashId === videoId) {
             videoDB[i].status = 2;
+            loadVoteList(1);
             getHashedCounter(company, videoId).then(hashedCounter => {
                 videoDB[i].leftvote = numberOfValidators - hashedCounter;
                 if (numberOfValidators - hashedCounter == 0)
                 {
                     videoDB[i].status = 3;
+                    loadVoteList(1);
                 }
             });
             // Stop searching once the match is found and updated
@@ -469,10 +502,56 @@ function stringToBytes11(str) {
     }
     // Ensure the hex string is no longer than 22 characters (11 bytes)
     hex = hex.slice(0, 22);
-
     // Pad the hex string to ensure it represents exactly 11 bytes
     while(hex.length < 22) {
         hex += '0'; // Pad with trailing zeros (adjust if different padding is required)
     }
     return '0x' + hex; // Prefix with '0x' to denote a hex string
+}
+
+// To get the tags voted by the validators
+function EventsRevealHash(video1, company1) {
+    // Return the promise chain
+    return dAppExternal.getPastEvents('eventRevealHash', {
+        filter: {
+            company: company1,
+            videoId: video1
+        },
+        fromBlock: 0,
+        toBlock: 'latest'
+    }).then(events => {
+        if (events.length != 0) {
+            let combined = [];
+            for (let i = 0; i < events.length; i++) {
+                // Assuming events[i].returnValues[3] is the tag
+                // and you need to combine them into a single array
+                combined = combined.concat(events[i].returnValues[3]);
+            }
+            // Calculate and return tag percentages after processing all events
+            return calculateTagPercentages(combined);
+        } else {
+            // Handle the case where no events are found
+            return []; // Return an empty array or any appropriate default value
+        }
+    }).catch(err => {
+        console.error(err);
+        throw err; // Re-throw the error to be caught by the caller
+    });
+}
+
+function calculateTagPercentages(votes) {
+    // Object to keep track of tag counts
+    const tagCounts = {};
+    // Total number of validators
+    const totalValidators = 2; 
+    // Count the occurrences of each tag in the votes list
+    votes.forEach(tag => {
+        tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+    });
+    // Map the tagCounts object to an array of [tag, percentage] pairs
+    const result = Object.entries(tagCounts).map(([tag, count]) => {
+        const percentage = (count / totalValidators) * 100;
+        return [tag, percentage.toString()];
+    });
+    return result;
 }
