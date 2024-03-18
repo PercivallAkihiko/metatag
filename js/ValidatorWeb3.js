@@ -7,9 +7,9 @@ const companiesReverse = {
 };
 
 const numberOfValidators = 2;
-
 var dAppExternal;
 var accountExternal;
+
 document.addEventListener('DOMContentLoaded', async () => {
     if (window.ethereum) {
         try {
@@ -278,8 +278,7 @@ async function externalSubmitHash(seed, tagList, videoId, company) {
 }
 
 // Validator's revealHash
-async function externalRevealHash(videoId, company)
-{
+async function externalRevealHash(videoId, company) {
     try {
         const videoCookie = getCookie(videoId);
         const seed = stringToBytes11(videoCookie["seed"]);
@@ -298,8 +297,7 @@ async function externalRevealHash(videoId, company)
 }
 
 // Validator's getRewards
-async function externalGetRewards(videoId, company)
-{
+async function externalGetRewards(videoId, company) {
     try {
         const receipt = await dAppExternal.methods.getRewards(companiesReverse[company], asciiToDecimal(videoId)).send({
             from: accountExternal
@@ -402,8 +400,7 @@ function waitForEventRevealHash(company1, video1) {
                     loadVoteList(1);
                     getRevealedCounter(company1, videoDB[i].hashId).then(RevealedCounter => {
                         videoDB[i].leftvote = numberOfValidators - RevealedCounter;
-                        if (numberOfValidators - RevealedCounter == 0)
-                        {
+                        if (numberOfValidators - RevealedCounter == 0) {
                             videoDB[i].status = 5;
                             loadVoteList(1);
                             waitForEventGetRewards(video1, company1);
@@ -432,9 +429,9 @@ function waitForEventGetRewards(video1, company1) {
                 if (videoDB[i].company === companies[company1] && videoDB[i].hashId === decimalToString(video1)) {
                     videoDB[i].status = 6;
                     EventsRevealHash(video1, company1).then(output => {
-                        videoDB[i].results = output;
-                    })
-                    .catch(error => console.error(error));;
+                            videoDB[i].results = output;
+                        })
+                        .catch(error => console.error(error));;
                     loadVoteList(1);
                     break;
                 }
@@ -455,8 +452,8 @@ function waitForEventSubmitHash(company, video) {
         toBlock: 'latest'
     }).then(events => {
         if (events.length != 0) {
-        updateVideoStatusByUniqueCompanyAndHashId(videoDB, events[0].returnValues[1], decimalToString(events[0].returnValues[2]));
-        waitForEventRevealHash(events[0].returnValues[1], events[0].returnValues[2]);
+            updateVideoStatusByUniqueCompanyAndHashId(videoDB, events[0].returnValues[1], decimalToString(events[0].returnValues[2]));
+            waitForEventRevealHash(events[0].returnValues[1], events[0].returnValues[2]);
         }
     }).catch(err => console.error(err));
 }
@@ -469,16 +466,14 @@ function updateVideoStatusByUniqueCompanyAndHashId(videoDB, company, videoId) {
             loadVoteList(1);
             getHashedCounter(company, videoId).then(hashedCounter => {
                 videoDB[i].leftvote = numberOfValidators - hashedCounter;
-                if (numberOfValidators - hashedCounter == 0)
-                {
+                if (numberOfValidators - hashedCounter == 0) {
                     videoDB[i].status = 3;
                     loadVoteList(1);
                 }
             });
-            // Stop searching once the match is found and updated
             break;
         }
-    } 
+    }
 }
 
 // Retrieve number of validators that submitted their hashes
@@ -497,13 +492,13 @@ function getRevealedCounter(address, videoId) {
 function stringToBytes11(str) {
     // Convert the string to a hex string
     let hex = '';
-    for(let i = 0; i < str.length; i++) {
+    for (let i = 0; i < str.length; i++) {
         hex += str.charCodeAt(i).toString(16);
     }
     // Ensure the hex string is no longer than 22 characters (11 bytes)
     hex = hex.slice(0, 22);
     // Pad the hex string to ensure it represents exactly 11 bytes
-    while(hex.length < 22) {
+    while (hex.length < 22) {
         hex += '0'; // Pad with trailing zeros (adjust if different padding is required)
     }
     return '0x' + hex; // Prefix with '0x' to denote a hex string
@@ -543,7 +538,7 @@ function calculateTagPercentages(votes) {
     // Object to keep track of tag counts
     const tagCounts = {};
     // Total number of validators
-    const totalValidators = 2; 
+    const totalValidators = 2;
     // Count the occurrences of each tag in the votes list
     votes.forEach(tag => {
         tagCounts[tag] = (tagCounts[tag] || 0) + 1;
