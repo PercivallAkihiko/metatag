@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     fromBlock: 'latest'
                 })
                 .on('data', function(event) {
-                    console.log(event);
+                    //console.log(event);
                     document.getElementById('totalToken').innerHTML = parseFloat(document.getElementById('totalToken').innerHTML) - 100;
                     document.getElementById('totalLock').innerHTML = parseFloat(document.getElementById('totalToken').innerHTML);
                     document.getElementById('liquidTokens').innerHTML = parseFloat(document.getElementById('liquidTokens').innerHTML) - 100;
@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     fromBlock: 'latest'
                 })
                 .on('data', function(event) {
-                    console.log(event);
+                    //console.log(event);
                     const readableBalance = web3.utils.fromWei(event.returnValues.amount, 'ether');
                     document.getElementById('liquidTokens').innerHTML = parseFloat(document.getElementById('liquidTokens').innerHTML) - parseFloat(readableBalance);
                     document.getElementById('lockedTokens').innerHTML = parseFloat(document.getElementById('lockedTokens').innerHTML) + parseFloat(readableBalance);
@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     fromBlock: 'latest'
                 })
                 .on('data', function(event) {
-                    console.log(event);
+                    //console.log(event);
                     const readableBalance = web3.utils.fromWei(event.returnValues.amount, 'ether');
                     document.getElementById('liquidTokens').innerHTML = parseFloat(document.getElementById('liquidTokens').innerHTML) + parseFloat(readableBalance);
                     document.getElementById('lockedTokens').innerHTML = 0;
@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         from: account,
                         value: weiValue
                     });
-                    console.log('Transaction successful:', receipt);
+                    //console.log('Transaction successful:', receipt);
                 } catch (error) {
                     console.error('Transaction failed:', error);
                 }
@@ -153,16 +153,16 @@ document.addEventListener('DOMContentLoaded', async () => {
                         await tokenContract.methods.approve(contractAddressDApp, tokensInWei).send({
                             from: account
                         });
-                        console.log('Approval successful');
+                        //console.log('Approval successful');
                     } else {
-                        console.log('Approval not needed, sufficient allowance.');
+                        //console.log('Approval not needed, sufficient allowance.');
                     }
 
                     // Proceed with the function call after ensuring sufficient allowance
                     const receipt = await dAppContract.methods.receiveTokensFromValidator(tokensInWei).send({
                         from: account
                     });
-                    console.log('Transaction successful:', receipt);
+                    //console.log('Transaction successful:', receipt);
                 } catch (error) {
                     console.error('Transaction failed:', error);
                 }
@@ -174,7 +174,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const receipt = await dAppContract.methods.setVariable().send({
                         from: account
                     });
-                    console.log('setVariable transaction successful:', receipt);
+                    //console.log('setVariable transaction successful:', receipt);
                 } catch (error) {
                     console.error('Failed to send setVariable transaction:', error);
                     const checkbox = document.getElementById('toggleSwitch');
@@ -188,9 +188,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const receipt = await dAppContract.methods.withdrawFundsValidator().send({
                         from: account
                     });
-                    console.log('withdrawFundsValidator transaction successful:', receipt);
+                    //console.log('withdrawFundsValidator transaction successful:', receipt);
                 } catch (error) {
-                    console.error('Failed to send withdrawFundsValidator transaction:', error);
+                    //console.error('Failed to send withdrawFundsValidator transaction:', error);
                 }
             });
 
@@ -208,14 +208,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                         await tokenContract.methods.approve(contractAddressDApp, tokensInWei).send({
                             from: account
                         });
-                        console.log('Approval successful');
+                        //console.log('Approval successful');
                     } else {
-                        console.log('Approval not needed, sufficient allowance.');
+                        //console.log('Approval not needed, sufficient allowance.');
                     }
                     const receipt = await dAppContract.methods.MTGforVoucher().send({
                         from: account
                     });
-                    console.log('buyVoucher transaction successful:', receipt);
+                    //console.log('buyVoucher transaction successful:', receipt);
                     document.querySelector('.voucher_value').innerHTML = generateVoucher();
                 } catch (error) {
                     console.error('Failed to send buyVoucher transaction:', error);
@@ -268,10 +268,10 @@ async function fetchYouTubeVideoTitle(videoId) {
 
 async function externalSubmitHash(seed, tagList, videoId, company) {
     try {
-        const receipt = await dAppExternal.methods.submitHash(companiesReverse[company], asciiToDecimal(videoId), hashTagListAndSeed(tagList, seed)).send({
+        const receipt = await dAppExternal.methods.submitHash(companiesReverse[company], asciiToDecimal(videoId.toString()), hashTagListAndSeed(tagList, seed)).send({
             from: accountExternal
         });
-        console.log('submitHash transaction successful:', receipt);
+        //console.log('submitHash transaction successful:', receipt);
     } catch (error) {
         console.error('Failed to send submitHash transaction:', error);
     }
@@ -284,14 +284,14 @@ async function externalRevealHash(videoId, company)
         const videoCookie = getCookie(videoId);
         const seed = stringToBytes11(videoCookie["seed"]);
         const tagList = videoCookie["list"];
-        console.log(tagList);
-        console.log(seed);
-        console.log(asciiToDecimal(videoId));
-        console.log(companiesReverse[company]);
+        //console.log(companiesReverse[company]);
+        //console.log(asciiToDecimal(videoId));
+        //console.log(tagList);
+        //console.log(seed);
         const receipt = await dAppExternal.methods.revealHash(companiesReverse[company], asciiToDecimal(videoId), tagList, seed).send({
             from: accountExternal
         });
-        console.log('submitHash transaction successful:', receipt);
+        //console.log('submitHash transaction successful:', receipt);
     } catch (error) {
         console.error('Failed to send submitHash transaction:', error);
     }
@@ -366,6 +366,19 @@ function waitForEvents() {
                     .catch(error => console.error(error));;
             }
         }
+        //waitForEventRevealHash();
+    }).catch(err => console.error(err));
+}
+
+// Event to get list of videos in which the validator has to wait
+function waitForEventRevealHash() {
+    dAppExternal.getPastEvents('eventRevealHash', {
+        filter: {
+            validator: accountExternal
+        },
+        fromBlock: 0,
+        toBlock: 'latest'
+    }).then(events => {
     }).catch(err => console.error(err));
 }
 
