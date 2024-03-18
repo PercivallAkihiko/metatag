@@ -385,15 +385,13 @@ function waitForEventRevealHash(company1, video1) {
                 if (videoDB[i].company === companies[company1] && videoDB[i].hashId === decimalToString(video1)) {
                     videoDB[i].status = 4;
                     getRevealedCounter(company1, videoDB[i].hashId).then(RevealedCounter => {
-                        console.log(RevealedCounter);
-                    });
-                    /* getRevealedCounter(company1, videoDB[i].hashId).then(revealedCounter => {
-                        videoDB[i].leftvote = numberOfValidators - revealedCounter;
-                        if (numberOfValidators - revealedCounter == 0)
+                        videoDB[i].leftvote = numberOfValidators - RevealedCounter;
+                        if (numberOfValidators - RevealedCounter == 0)
                         {
                             videoDB[i].status = 5;
+                            videoDB[i].reward = 5;
                         }
-                    }); */
+                    });
                     break;
                 }
             } 
@@ -445,8 +443,8 @@ function getHashedCounter(address, videoId) {
 
 // Retrieve number of validators that revealed their hashes
 function getRevealedCounter(address, videoId) {
-    const RevealedCounter = dAppExternal.methods.videos(address, asciiToDecimal(videoId)).call().then((video) => video.revValidators);
-    return RevealedCounter;
+    const RevealedCounterino = dAppExternal.methods.videos(address, asciiToDecimal(videoId)).call().then((video) => video.revCounter);
+    return RevealedCounterino;
 }
 
 // Convert string into Bytes11

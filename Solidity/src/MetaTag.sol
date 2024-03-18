@@ -49,7 +49,7 @@ contract MetaTag {
         /// @notice Tags revealed by validators (if all validators publish their tags they can go to the next phase)
         mapping(address => uint[]) revealedTags;
         /// @notice Validators who revealed their tags (needed because validators that performed the reveal may be less than the selected validators for the video because of time limit)
-        address[] revValidators;
+        uint revCounter;
     }
     /// @notice Structure for storing validator's videos
     struct ValidatorVideo {
@@ -282,7 +282,7 @@ contract MetaTag {
         // Store the revealed tags for the validator
         videos[company][videoId].revealedTags[msg.sender] = tags;
         // Add the validator to the list of revealing validators (needed for the getRewards function)
-        videos[company][videoId].revValidators.push(msg.sender);
+        videos[company][videoId].revCounter+=1;
         // Emit an event indicating the hash reveal
         emit eventRevealHash(msg.sender, company, videoId, tags, seed);
     }
@@ -292,7 +292,7 @@ contract MetaTag {
     /// @param videoId The ID of the video for which rewards are claimed
     function getRewards(address company, uint videoId) public {
         // Ensure withdrawal is allowed (either time has passed or all validators have revealed their hashes)
-        require((block.number > videos[company][videoId].timestamp + 14400) || (videos[company][videoId].revValidators.length == videos[company][videoId].hashedCounter), "Withdraw not yet allowed!");
+        require((block.number > videos[company][videoId].timestamp + 14400) || (videos[company][videoId].revCounter == videos[company][videoId].hashedCounter), "Withdraw not yet allowed!");
         // Ensure the caller is a chosen validator for this video
         require(isValidatorChosenForVideo(company, videoId, msg.sender), "Not a chosen validator for this video!");
         bool check = false;
@@ -309,7 +309,7 @@ contract MetaTag {
         // Ensure the validator has not already withdrawn rewards for this video
         require(check, "You cannot withdraw the reward twice!");
         // Number of validators that revealed their tags in time
-        uint totalValidators = videos[company][videoId].revValidators.length;
+        uint totalValidators = videos[company][videoId].revCounter;
         // Tags that reached 80% of votes
         uint totalConfirmedTags = 0;
         // Tags that reached 30% of votes
@@ -327,7 +327,7 @@ contract MetaTag {
         // Tally votes for each tag by iterating through each validator's revealed tags
         for (uint i = 0; i < totalValidators; i++) {
             // Retrieve the tags revealed by the current validator
-            uint[] memory tags = videos[company][videoId].revealedTags[videos[company][videoId].revValidators[i]];
+            uint[] memory tags = videos[company][videoId].revealedTags[msg.sender];
             // Iterate through the revealed tags and update the count for each tag
             for (uint j = 0; j < tags.length; j++) {
                 tagCounts[tags[j]]++;
