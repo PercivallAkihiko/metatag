@@ -27,7 +27,7 @@ const expiredColor = "rgb(251, 106, 74)";
 // 7 Expired
 
 var videoDB = [
-    
+    /*
      {
         hashId: "xxxr4J1fzvc",            
         title: "Bitcoin On-Chain Analysis: Value Days Destroyed Multiple",
@@ -37,7 +37,7 @@ var videoDB = [
         leftvote: 0,
         reward: "-",
         results: []
-    }/*,
+    },
     {
         hashId: "xxxr4J1fzvc",
         company: "Youtube",
@@ -595,7 +595,7 @@ function initEthPrice(){
     .then(data => {
         ethereumPrice = data["ethereum"].usd;
         setCookie("ethPrice", ethereumPrice, 0.5);
-        console.log("Actual ETH price: " + ethereumPrice);
+        //console.log("Actual ETH price: " + ethereumPrice);
     })
     .catch(error => {
         console.error('Error fetching cryptocurrency price:', error);
@@ -1396,7 +1396,7 @@ var fetchEthereumPrices = async () => {
             var months = datePricePairs.map(entry => entry.date);
             var prices = datePricePairs.map(entry => entry.price);
             setCookie("ethPrices", [months, prices], 0.5);
-            console.log("Prices fetched from API.");
+            //console.log("Prices fetched from API.");
             return [months, prices];
 
         } else {

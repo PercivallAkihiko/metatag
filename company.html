@@ -4,13 +4,13 @@
         <link href='https://unpkg.com/css.gg@2.0.0/icons/css/chevron-left.css' rel='stylesheet'>
         <link href="https://fonts.cdnfonts.com/css/euclid-circular-b" rel="stylesheet">
         <script src="https://kit.fontawesome.com/0a2c0a85f0.js" crossorigin="anonymous"></script>
-
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-adapter-moment/1.0.0/chartjs-adapter-moment.min.js"></script>
+        <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-adapter-moment/1.0.0/chartjs-adapter-moment.min.js"></script> -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
-
+        <script src="https://cdn.jsdelivr.net/npm/web3@4.6.0/dist/web3.min.js"></script>
         <script src="js/company.js"></script>
-        <script src="js/CompanyWeb3.js"></script>
+        <script src="js/bothWeb3.js"></script>
+        <!-- <script src="js/CompanyWeb3.js"></script> -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
     </head>
     <body>
@@ -201,8 +201,8 @@
                             </div>
                             <div class="mtg_second_line">
                                 <div id="dollar_value_lock" class="dollar_value">0 $</div>
-                                <div class="total_balance total_balance_mtg_lock">Balance 0.00</div>
-                                <div class="max max_mtg">MAX</div>
+                                <div id="maxMTG" class="total_balance total_balance_mtg_lock">Balance 0.00</div>
+                                <div id="maxMTGButton" class="max max_mtg">MAX</div>
                             </div>                            
                         </div>
                         
@@ -219,14 +219,14 @@
                     <div class="swap_container">                    
                         <div class="ethereum money">
                             <div class="first_line">
-                                <input class="eth_input" id="ethToBuy" type="text" placeholder="0.00" name="uname" oninput="validateInput(this, 'ethereum')"> 
+                                <input id="ethToBuy" class="eth_input"  type="text" placeholder="0.00" name="uname" oninput="validateInput(this, 'ethereum')"> 
                                 <div class="crypto_icon"><i class="fa-brands fa-ethereum"></i></div>
                                 <div class="crypto_name">ETH</div>
                             </div>
                             <div class="second_line">
                                 <div class="dollar_value">0 $</div>
-                                <div class="total_balance">Balance 0.00</div>
-                                <div class="max max_eth">MAX</div>
+                                <div id="maxETH" class="total_balance">Balance 0.00</div>
+                                <div id="maxETHButton" class="max max_eth">MAX</div>
                             </div>
                         </div>
                         <div class="mtg money">
@@ -239,7 +239,7 @@
                                 <div class="dollar_value">0 $</div>
                             </div>                            
                         </div>                      
-                        <button type="submit" class="buy_button" id="buy_button">Buy</button>
+                        <button type="submit" id="buyTokensButton" class="buy_button">Buy</button>
                     </div>
                 </div>
             </div>
@@ -248,14 +248,14 @@
                 <div class="voucher_container">
                     <div class="voucher_div">
                         <div class="voucher_title">Generate your voucher</div>
-                        <div class="voucher_desc">This code only works to get premium youtube. Remember to keep the code somewhere, the site doesn't store it anywhere.</div>
+                        <div class="voucher_desc">This code only works to get premium YouTube. Remember to keep the code somewhere, the site doesn't store it anywhere.</div>
                         <div class="voucher_value_container">
-                            <div class="voucher_value"></div>
+                            <div id="voucherOutput" class="voucher_value"></div>
                             <div class="voucher_copy">
                                 <i class="fa-regular fa-copy copy_icon"></i>
                             </div>
                             <div class="voucher_generate generate_icon">
-                                <i class="fa-solid fa-rotate-right" id="buyVoucher"></i>
+                                <i id="buyVoucherButton" class="fa-solid fa-rotate-right"></i>
                             </div>                            
                         </div>
                     </div>
@@ -267,7 +267,7 @@
             <div class="overlay_wrapper">
                 <div class="overlay_content">                    
                     <!-- <iframe class="youtubeVideo" id="youtubeVideo" width="560" height="360" src="" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe> -->
-                    <iframe class="youtubeVideo" id="youtubeVideo" width="560" height="360" src="" frameborder="0" gesture="media" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                    <iframe class="youtubeVideo" id="youtubeVideo" width="560" height="360" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
                     <div class="poll_wrapper">
                         <div class="poll_container">
                             <div class="poll_title"></div>
@@ -291,7 +291,6 @@
                 </div>                
             </div>
         </div>
-        <script src="https://cdn.jsdelivr.net/npm/web3@1.5.3/dist/web3.min.js"></script>
     </body>
 </html>
 

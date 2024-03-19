@@ -455,7 +455,7 @@ function initVoteSection(){
     addVideoButton.addEventListener("click" , () => {
         hideShowVote(insertWrapper)
         changeVideoID("");
-        overlay.classList.toggle("active");  
+        overlay.classList.toggle("active");
     }); 
 }
 
@@ -463,7 +463,7 @@ function initEthPrice(){
     var ethPriceCookie = getCookie("ethPrice")
     if(ethPriceCookie){
         ethereumPrice = ethPriceCookie;
-        console.log("ETH price fetched from cookies: " + ethPriceCookie);
+        //console.log("ETH price fetched from cookies: " + ethPriceCookie);
         return;
     }
 
