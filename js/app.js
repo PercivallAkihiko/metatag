@@ -28,7 +28,7 @@ const expiredColor = "rgb(251, 106, 74)";
 
 var videoDB = [
     
-    /* {
+     {
         hashId: "xxxr4J1fzvc",            
         title: "Bitcoin On-Chain Analysis: Value Days Destroyed Multiple",
         company: "Youtube",
@@ -37,7 +37,7 @@ var videoDB = [
         leftvote: 0,
         reward: "-",
         results: []
-    },
+    }/*,
     {
         hashId: "xxxr4J1fzvc",
         company: "Youtube",
@@ -585,7 +585,7 @@ function initEthPrice(){
     var ethPriceCookie = getCookie("ethPrice")
     if(ethPriceCookie){
         ethereumPrice = ethPriceCookie;
-        console.log("ETH price fetched from cookies: " + ethPriceCookie);
+        //console.log("ETH price fetched from cookies: " + ethPriceCookie);
         return;
     }
 
@@ -631,7 +631,7 @@ function initEventList(){
         var addressDiv = document.createElement('div');
         var valuesDiv = document.createElement('div'); 
         
-        console.log(`Analyzing: ${event.name}, emitter: ${event.emitter}`)
+        //console.log(`Analyzing: ${event.name}, emitter: ${event.emitter}`)
         
         nameDiv.innerHTML = event.name;                   
         createMacroEventDiv(addressDiv, "Validator:", event.validator);
@@ -1359,7 +1359,7 @@ function generateChart(days, ethprice, tokens){
 var fetchEthereumPrices = async () => {
     var ethPrices = getCookie("ethPrices");
     if(ethPrices){
-        console.log("Prices fetched from cookies.");
+        //console.log("Prices fetched from cookies.");
         return ethPrices;
     }
 
