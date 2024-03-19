@@ -27,6 +27,7 @@ function mainWeb3Loading() {
         listenerDisconnectButton();
         listenerBuyTokensButton();
         listenerBuyVoucherButton();
+        document.dispatchEvent(new CustomEvent('sharedDataReady'));
     })
 }
 
