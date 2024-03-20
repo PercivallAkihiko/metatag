@@ -31,6 +31,8 @@ contract MetaTagToken is ERC20 {
     function buyTokens() public payable {
         /// @dev Require that ETH is sent along with the transaction
         require(msg.value > 0, "You need to send ETH to buy tokens!");
+        // The owner cannot buy his own tokens since by doing so he burns only ETH!
+        require(msg.sender != owner, "You cannot buy the tokens if you are the owner!");
         // Calculate the number of tokens to buy based on the sent ETH, in this case 1 ETH = 1000 MTG
         uint tokensToBuy = msg.value * 1e3;
         /// @dev Ensure that the contract owner has enough tokens to sell
