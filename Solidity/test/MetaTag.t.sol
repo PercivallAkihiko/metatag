@@ -392,7 +392,7 @@ contract MetaTagTest is DSTest {
 
         vm.startPrank(company);
         vm.roll(73000);
-        tag.withdrawFundsCompany();
+        tag.withdrawTokensCompany();
         vm.stopPrank();
     }
 

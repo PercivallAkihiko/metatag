@@ -9,24 +9,43 @@ async function loadTotalTokensAndLockedTokens() {
 
 // Function to display starting date of locking and number of days
 async function loadLockDateAndDays() {
-    const events = await dAppContract.getPastEvents('eventSetVariable', {
+    const events = await dAppContract.getPastEvents('eventReceiveTokensFromCompany', {
         filter: {
-            validator: account
+            company: account
         },
         fromBlock: 0,
         toBlock: 'latest'
     });
     if (events.length != 0) {
-        if (events[events.length - 1].returnValues[1]) {
-            const block = await web3.eth.getBlock(events[events.length - 1].blockNumber);
-            const actualDate = formatDate(Math.floor(Date.now() / 1000));
-            const blockDate = formatDate(block.timestamp);
-            document.getElementById('lockDate').textContent = blockDate;
-            document.getElementById('daysLocked').textContent = calculateDaysDifference(actualDate, blockDate) + " Days";
-        } else {
-            document.getElementById('lockDate').textContent = "-";
-            document.getElementById('daysLocked').textContent = "-";
-        }
+        const block = await web3.eth.getBlock(events[events.length - 1].blockNumber);
+        console.log(block.timestamp);
+        /* const actualDate = formatDate(Math.floor(Date.now() / 1000));
+        const blockDate = formatDate(block.timestamp);
+        document.getElementById('lockDate').textContent = blockDate;
+        document.getElementById('daysLocked').textContent = calculateDaysDifference(actualDate, blockDate) + " Days"; */
+    } else {
+        document.getElementById('lockDate').textContent = "-";
+        document.getElementById('daysLocked').textContent = "-";
+        return;
+    }
+    const events2 = await dAppContract.getPastEvents('eventWithdrawTokensCompany', {
+        filter: {
+            company: account
+        },
+        fromBlock: 0,
+        toBlock: 'latest'
+    });
+    if (events.length != 0) {
+        const block = await web3.eth.getBlock(events[events.length - 1].blockNumber);
+        console.log(block.timestamp);
+        /* const actualDate = formatDate(Math.floor(Date.now() / 1000));
+        const blockDate = formatDate(block.timestamp);
+        document.getElementById('lockDate').textContent = blockDate;
+        document.getElementById('daysLocked').textContent = calculateDaysDifference(actualDate, blockDate) + " Days"; */
+    } else {
+        document.getElementById('lockDate').textContent = "-";
+        document.getElementById('daysLocked').textContent = "-";
+        return;
     }
 }
 
@@ -127,7 +146,7 @@ function listenerAddVideoButton() {
 function listenerWithdrawCompanyButton() {
     document.getElementById('withdrawCompanyButton').addEventListener('click', async () => {
         try {
-            await dAppContract.methods.withdrawFundsCompany().send({
+            await dAppContract.methods.withdrawTokensCompany().send({
                 from: account
             })
         } catch (error) {
@@ -136,9 +155,9 @@ function listenerWithdrawCompanyButton() {
     });
 }
 
-// Listen for the eventWithdrawFundsCompany event
-async function eventWithdrawFundsCompany() {
-    dAppContract.events.eventWithdrawFundsCompany({
+// Listen for the eventWithdrawTokensCompany event
+async function eventWithdrawTokensCompany() {
+    dAppContract.events.eventWithdrawTokensCompany({
         filter: {
             sender: account
         },
@@ -157,12 +176,12 @@ async function eventWithdrawFundsCompany() {
 // It waits the event from "bothWeb3.js" generated as last and it calls functions related to the validator
 document.addEventListener('sharedDataReady', async () => {
     await loadTotalTokensAndLockedTokens()
-    //await loadLockDateAndDays();
+    await loadLockDateAndDays();
     listenerLockTokensButton();
     listenerAddVideoButton();
     listenerWithdrawCompanyButton();
     eventBuyTokens();
     eventMTGforVoucher()
     eventReceiveTokensFromCompany();
-    eventWithdrawFundsCompany();
+    eventWithdrawTokensCompany();
 });

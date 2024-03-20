@@ -149,7 +149,7 @@ async function eventSetVariable() {
 function listenerWithdrawValidatorButton() {
     document.getElementById('withdrawValidatorButton').addEventListener('click', async () => {
         try {
-            await dAppContract.methods.withdrawFundsValidator().send({
+            await dAppContract.methods.withdrawTokensValidator().send({
                 from: account
             })
         } catch (error) {
@@ -158,9 +158,9 @@ function listenerWithdrawValidatorButton() {
     });
 }
 
-// Listen for the eventWithdrawFundsValidator event
-async function eventWithdrawFundsValidator() {
-    dAppContract.events.eventWithdrawFundsValidator({
+// Listen for the eventWithdrawTokensValidator event
+async function eventWithdrawTokensValidator() {
+    dAppContract.events.eventWithdrawTokensValidator({
         filter: {
             validator: account
         },
@@ -188,5 +188,5 @@ document.addEventListener('sharedDataReady', async () => {
     eventMTGforVoucher();
     eventReceiveTokensFromValidator();
     eventSetVariable();
-    eventWithdrawFundsValidator()
+    eventWithdrawTokensValidator()
 });

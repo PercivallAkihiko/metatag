@@ -381,7 +381,7 @@ contract MetaTagTest is DSTest {
         //console.log(tag.balanceValidators(user7));
         tag.getRewards(company, 12);
         tag.setVariable();
-        tag.withdrawFundsValidator();
+        tag.withdrawTokensValidator();
         //tag.getRewards(company, 12);
         //(uint256 a, uint256 b, uint256 c) = tag.getRewards(company,12);
         //console.log(a, b, c);
@@ -394,7 +394,7 @@ contract MetaTagTest is DSTest {
 */
         vm.startPrank(company);
         vm.roll(73000);
-        tag.withdrawFundsCompany();
+        tag.withdrawTokensCompany();
         vm.stopPrank(); 
     }
 }

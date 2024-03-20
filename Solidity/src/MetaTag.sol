@@ -21,9 +21,9 @@ contract MetaTag {
     mapping(address => bool) public variableValidators;
     /// @notice List of ready validators to perform the pseudo random decision
     address[] public readyValidators;
-    /// @notice Mapping of validators' videos to keep track of the videos of every single validator (this is done mainly for the withdrawFundsValidator function)
+    /// @notice Mapping of validators' videos to keep track of the videos of every single validator (this is done mainly for the withdrawTokensValidator function)
     mapping(address => ValidatorVideo[]) public validatorVideos;
-    /// @notice Mapping of the last block number when a video was added by a company (for withdrawFundsValidator function)
+    /// @notice Mapping of the last block number when a video was added by a company (for withdrawTokensValidator function)
     mapping(address => uint) public lastVideoValidator;
     /// @notice Mapping of balances for companies
     mapping(address => uint) public balanceCompanies;
@@ -31,7 +31,7 @@ contract MetaTag {
     mapping(address => uint[]) public companyVideos;
     /// @notice Mapping of videos submitted by companies and their details
     mapping(address => mapping(uint => Video)) public videos;
-    /// @notice Mapping of the last block number when a video was added by a company (for withdrawFundsCompany function)
+    /// @notice Mapping of the last block number when a video was added by a company (for withdrawTokensCompany function)
     mapping(address => uint) public lastVideoCompany;
 
     /// @notice Structure for the video information given by the companies
@@ -91,14 +91,14 @@ contract MetaTag {
     event eventRevealHash(address indexed validator, address indexed company, uint indexed videoId, uint[] tags, bytes11 seed);
     /// @notice Event emitted when a validator withdraws its rewards for participating in video tagging
     event eventGetRewards(address indexed validator, address indexed company, uint indexed videoId, uint rewardAmount, bool positive);
-    /// @notice Event emitted when a validator withdraws their funds from the contract
-    event eventWithdrawFundsValidator(address indexed validator, uint amount);
+    /// @notice Event emitted when a validator withdraws their tokens from the contract
+    event eventWithdrawTokensValidator(address indexed validator, uint amount);
     /// @notice Event emitted when tokens are received from a company
     event eventReceiveTokensFromCompany(address indexed company, uint amount);
     /// @notice Event emitted when a company adds a video for tagging
     event eventAddVideo(address indexed company, uint indexed videoId, address[] indexed chosenValidators);
-    /// @notice Event emitted when a company withdraws their funds from the contract
-    event eventWithdrawFundsCompany(address indexed company, uint amount);
+    /// @notice Event emitted when a company withdraws their tokens from the contract
+    event eventWithdrawTokensCompany(address indexed company, uint amount);
     /// @notice Event emitted when tokens are exchanged for a voucher
     event eventMTGforVoucher(address indexed user);
 
@@ -298,7 +298,7 @@ contract MetaTag {
         // Ensure the caller is a chosen validator for this video
         require(isValidatorChosenForVideo(company, videoId, msg.sender), "Not a chosen validator for this video!");
         bool check = false;
-        // Find and remove the validator's entry for the chosen video (to ensure one getRewards for video), done in this way because of withdrawFundsValidator
+        // Find and remove the validator's entry for the chosen video (to ensure one getRewards for video), done in this way because of withdrawTokensValidator
         for (uint i = 0; i < validatorVideos[msg.sender].length; i++) {
             if (validatorVideos[msg.sender][i].companyChosen == company && validatorVideos[msg.sender][i].videoIdChosen == videoId) {
                 uint lastIndex = validatorVideos[msg.sender].length - 1;
@@ -435,8 +435,8 @@ contract MetaTag {
         emit eventGetRewards(msg.sender, company, videoId, rewardAmount, positive);
     }
 
-    /// @notice Allows validators to withdraw their accumulated rewards and funds from the smart contract
-    function withdrawFundsValidator() public {
+    /// @notice Allows validators to withdraw their accumulated rewards and tokens from the smart contract
+    function withdrawTokensValidator() public {
         // Ensure that the validator has turned off the variable
         require(!variableValidators[msg.sender], "You have to turn off the variable!");
         // Ensure that the validator cannot be slashed from videos
@@ -453,7 +453,7 @@ contract MetaTag {
         // Transfer 1% of the withdrawn amount to the MtgTeam address and 99% of the withdrawn amount to the validator
         require(mtgToken.transfer(mtgTeam, amount * 1/100) && mtgToken.transfer(msg.sender, amount * 99/100), "Transfer failed!");
         // Emit an event for the successful withdrawal
-        emit eventWithdrawFundsValidator(msg.sender, amount * 99/100);
+        emit eventWithdrawTokensValidator(msg.sender, amount * 99/100);
     }
 
     /// @notice Allows whitelisted companies to deposit tokens for video tagging
@@ -550,7 +550,7 @@ contract MetaTag {
         newVideo.length = videoLength;
         newVideo.chosenValidators = randomChooseValidators(videoId);
         newVideo.timestamp = block.number;
-        // Update the timestamp of the last submitted video for the company (needed for withdrawFundsCompany function)
+        // Update the timestamp of the last submitted video for the company (needed for withdrawTokensCompany function)
         lastVideoCompany[msg.sender] = block.number;
         // Require that the company has enough tokens deposited for the video tagging process
         require(balanceCompanies[msg.sender] >= calculateNeededTokens(), "Not enough MTG tokens in the smart contract, deposit the right amount!");
@@ -558,18 +558,18 @@ contract MetaTag {
         emit eventAddVideo(msg.sender, videoId, newVideo.chosenValidators);
     }
 
-    /// @notice Allows companies to withdraw their funds from the smart contract
-    function withdrawFundsCompany() public {
+    /// @notice Allows companies to withdraw their tokens from the smart contract
+    function withdrawTokensCompany() public {
         // Ensure that 10 days have passed since the last video was added to give enough time to validators to withdraw their rewards
         require(block.number >= lastVideoCompany[msg.sender] + 72000 || lastVideoCompany[msg.sender] == 0, "You have to wait 10 days since adding the last video!");
-        // Retrieve the amount of funds held by the company
+        // Retrieve the amount of tokens held by the company
         uint amount = balanceCompanies[msg.sender];
         // Deduct the withdrawn amount from the company's balance
         balanceCompanies[msg.sender] = 0;
         // Transfer 1% of the withdrawn amount to the contract owner (MTG Team) and 99% to the company's wallet
         require(mtgToken.transfer(mtgTeam, amount * 1/100) && mtgToken.transfer(msg.sender, amount * 99/100), "Transfer failed!");
-        // Emit an event to log the withdrawal of funds by the company
-        emit eventWithdrawFundsCompany(msg.sender, amount * 99/100);
+        // Emit an event to log the withdrawal of tokens by the company
+        emit eventWithdrawTokensCompany(msg.sender, amount * 99/100);
     }
 
     /// @notice Allows users to exchange 100 MTG tokens for a voucher
