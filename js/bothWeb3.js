@@ -78,19 +78,6 @@ function listenerBuyTokensButton() {
     });
 }
 
-// Function used to generate a random voucher (normally it should be retrieved with an API from YouTube)
-function generateVoucher() {
-    let code = '';
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    for (let i = 0; i < 16; i++) {
-        if (i > 0 && i % 4 === 0) {
-            code += '-';
-        }
-        code += characters.charAt(Math.floor(Math.random() * characters.length));
-    }
-    return code;
-}
-
 // Function to purchase a voucher
 function listenerBuyVoucherButton() {
     document.getElementById('buyVoucherButton').addEventListener('click', async () => {

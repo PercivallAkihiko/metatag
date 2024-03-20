@@ -86,7 +86,7 @@ async function eventReceiveTokensFromValidator() {
 function listenerChangeSwitch() {    
     document.getElementById('changeSwitch').addEventListener('click', async () => {
         try {
-            const receipt = await dAppContract.methods.setVariable().send({
+            const switchValue = await dAppContract.methods.setVariable().send({
                 from: account
             });
         } catch (error) {
@@ -98,18 +98,62 @@ function listenerChangeSwitch() {
 
 // Function to set the switch of the validator on or off depending on the state in the blockchain
 async function loadSetVariable() {
-    document.getElementById('changeSwitch').checked = await dAppContract.methods.variableValidators(account).call();
+    const checking = await dAppContract.methods.variableValidators(account).call();
+    document.getElementById('changeSwitch').checked = checking;
 }
 
+// Function to display starting date of locking
+async function loadLockDate() {
+    const events = await dAppContract.getPastEvents('eventSetVariable', {
+        filter: {validator: account},
+        fromBlock: 0, 
+        toBlock: 'latest'
+    });
+    if (events[events.length - 1].returnValues[1]) {
+        const block = await web3.eth.getBlock(events[events.length - 1].blockNumber);
+        const actualDate = formatDate(Math.floor(Date.now() / 1000));
+        const blockDate = formatDate(block.timestamp);
+        document.getElementById('lockDate').textContent = blockDate;
+        document.getElementById('daysLocked').textContent = calculateDaysDifference(actualDate,blockDate) + " Days";
+    }
+    else {
+        document.getElementById('lockDate').textContent = "-";
+        document.getElementById('daysLocked').textContent = "-";
+    }
+}
+
+// Listen for the eventSetVariable event
+async function eventSetVariable() {
+    dAppContract.events.eventSetVariable({
+       filter: {
+           sender: account
+       },
+       fromBlock: 'latest'
+   }).on('data', async function(event) {
+        if (event.returnValues[1]) {
+            const block = await web3.eth.getBlock(events[events.length - 1].blockNumber);
+            const actualDate = formatDate(Math.floor(Date.now() / 1000));
+            const blockDate = formatDate(block.timestamp);
+            document.getElementById('lockDate').textContent = blockDate;
+            document.getElementById('daysLocked').textContent = calculateDaysDifference(actualDate,blockDate) + " Days";
+        }
+        else {
+            document.getElementById('lockDate').textContent = "-";
+            document.getElementById('daysLocked').textContent = "-";
+        }
+     })
+}
 
 // It waits the event from "bothWeb3.js" generated as last and it calls functions related to the validator
 document.addEventListener('sharedDataReady', async () => {
     await loadTotalTokensAndLockedTokens();
     await loadSetVariable();
+    await loadLockDate();
     listenerLockTokensButton();
     listenerChangeSwitch();
     eventBuyTokens();
     eventMTGforVoucher();
     eventReceiveTokensFromValidator();
+    eventSetVariable();
 });
 
