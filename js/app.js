@@ -215,6 +215,7 @@ var videoDB = [
 ];
 
 const validTags = [
+    "michele",
     "adventure",
     "comedy",
     "diy",
@@ -314,8 +315,7 @@ const validTags = [
     "journey",
     "discovery",
     "transformation",
-    "breakthrough",
-    "michele"
+    "breakthrough"
 ];
 
 // 1 BuyTokens(                  address indexed purchaser, 					uint amount) 

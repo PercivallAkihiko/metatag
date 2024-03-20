@@ -16,7 +16,9 @@ const formatDate = (timestamp) => {
     const timestampNumber = Number(timestamp);
     const date = new Date(timestampNumber * 1000);
     const day = date.getDate();
-    const month = date.toLocaleString('default', { month: 'short' }); 
+    const month = date.toLocaleString('default', {
+        month: 'short'
+    });
     const year = date.getFullYear();
     return `${day}, ${month} ${year}`;
 };
