@@ -11,7 +11,7 @@ async function loadTotalTokensAndLockedTokens() {
 async function eventBuyTokens() {
     tokenContract.events.eventBuyTokens({
         filter: {
-            sender: account
+            user: account
         },
         fromBlock: 'latest'
     }).on('data', async function(event) {
@@ -29,7 +29,7 @@ async function eventBuyTokens() {
 async function eventMTGforVoucher() {
     dAppContract.events.eventMTGforVoucher({
         filter: {
-            sender: account
+            user: account
         },
         fromBlock: 'latest'
     }).on('data', async function(event) {
@@ -70,7 +70,7 @@ function listenerLockTokensButton() {
 async function eventReceiveTokensFromValidator() {
     dAppContract.events.eventReceiveTokensFromValidator({
         filter: {
-            sender: account
+            validator: account
         },
         fromBlock: 'latest'
     }).on('data', async function(event) {
@@ -128,7 +128,7 @@ async function loadLockDateAndDays() {
 async function eventSetVariable() {
     dAppContract.events.eventSetVariable({
         filter: {
-            sender: account
+            validator: account
         },
         fromBlock: 'latest'
     }).on('data', async function(event) {
@@ -162,7 +162,7 @@ function listenerWithdrawValidatorButton() {
 async function eventWithdrawFundsValidator() {
     dAppContract.events.eventWithdrawFundsValidator({
         filter: {
-            sender: account
+            validator: account
         },
         fromBlock: 'latest'
     }).on('data', async function(event) {

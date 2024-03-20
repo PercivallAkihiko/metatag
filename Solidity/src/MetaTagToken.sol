@@ -11,7 +11,7 @@ contract MetaTagToken is ERC20 {
     address public owner;
 
     // Event emitted when tokens are purchased
-    event eventBuyTokens(address indexed purchaser, uint amount);
+    event eventBuyTokens(address indexed user, uint amount);
 
     /// @notice Constructor to initialize the contract
     constructor() ERC20("MetaTag", "MTG") {

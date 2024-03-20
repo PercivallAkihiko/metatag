@@ -7,7 +7,7 @@ async function loadTotalTokensAndLockedTokens() {
     document.getElementById('lockedTokens').textContent = lockedTokens;
 }
 
-// Function to display starting date of locking and number of days TODO
+// Function to display starting date of locking and number of days
 async function loadLockDateAndDays() {
     const events = await dAppContract.getPastEvents('eventSetVariable', {
         filter: {
@@ -34,7 +34,7 @@ async function loadLockDateAndDays() {
 async function eventBuyTokens() {
     tokenContract.events.eventBuyTokens({
         filter: {
-            sender: account
+            user: account
         },
         fromBlock: 'latest'
     }).on('data', async function(event) {
@@ -52,7 +52,7 @@ async function eventBuyTokens() {
 async function eventMTGforVoucher() {
     dAppContract.events.eventMTGforVoucher({
         filter: {
-            sender: account
+            user: account
         },
         fromBlock: 'latest'
     }).on('data', async function(event) {
@@ -69,7 +69,7 @@ async function eventMTGforVoucher() {
 async function eventReceiveTokensFromCompany() {
     dAppContract.events.eventReceiveTokensFromCompany({
         filter: {
-            sender: account
+            company: account
         },
         fromBlock: 'latest'
     }).on('data', async function(event) {
@@ -112,15 +112,15 @@ function listenerLockTokensButton() {
 
 // Function for companies to add a new video for tagging
 function listenerAddVideoButton() {
-document.getElementById('addVideoButton').addEventListener('click', async () => {
-    try {
-        await dAppContract.methods.addVideo(asciiToDecimal(document.getElementById('videoIdInput').value), document.getElementById('videoLengthInput').value).send({
-            from: account
+    document.getElementById('addVideoButton').addEventListener('click', async () => {
+        try {
+            await dAppContract.methods.addVideo(asciiToDecimal(document.getElementById('videoIdInput').value), document.getElementById('videoLengthInput').value).send({
+                from: account
+            });
+        } catch (error) {
+            console.error('Failed to send addVideo transaction:', error);
+        }
     });
-    } catch (error) {
-        console.error('Failed to send addVideo transaction:', error);
-    }
-});
 }
 
 // Function for companies to withdraw their tokens from the smart contract
@@ -157,7 +157,7 @@ async function eventWithdrawFundsCompany() {
 // It waits the event from "bothWeb3.js" generated as last and it calls functions related to the validator
 document.addEventListener('sharedDataReady', async () => {
     await loadTotalTokensAndLockedTokens()
-    await loadLockDateAndDays();
+    //await loadLockDateAndDays();
     listenerLockTokensButton();
     listenerAddVideoButton();
     listenerWithdrawCompanyButton();
