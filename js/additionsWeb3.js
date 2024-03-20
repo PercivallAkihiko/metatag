@@ -45,3 +45,17 @@ function calculateDaysDifference(date1, date2) {
     const differenceInDays = differenceInMilliseconds / (1000 * 60 * 60 * 24);
     return Math.abs(Math.round(differenceInDays));
 }
+
+// Function used to transform an ASCII string into Integer to pass as input at the addVideo function of the smart contract
+function asciiToDecimal(asciiString) {
+    let decimalString = '';
+    for (let i = 0; i < asciiString.length; i++) {
+        let decimalValue = asciiString.charCodeAt(i).toString();
+        // Add a leading 0 if the decimalValue length is 2, except for the first character
+        if (decimalValue.length === 2 && i !== 0) {
+            decimalValue = '0' + decimalValue;
+        }
+        decimalString += decimalValue;
+    }
+    return decimalString;
+}

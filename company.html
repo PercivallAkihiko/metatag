@@ -9,7 +9,9 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/web3@4.6.0/dist/web3.min.js"></script>
         <script src="js/company.js"></script>
+        <script src="js/additionsWeb3.js"></script>
         <script src="js/bothWeb3.js"></script>
+        <script src="js/companyWeb3.js"></script>
         <!-- <script src="js/CompanyWeb3.js"></script> -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
     </head>
@@ -68,7 +70,7 @@
                     <div class="dashboard_first_line">
                         <div class="dashboard_item total_token_container">
                             <div class="dashboard_item_title">Total token</div>
-                            <div id="totalToken" class="dashboard_item_value">0.045 MTG</div>
+                            <div id="totalTokens" class="dashboard_item_value">0.045 MTG</div>
                             <div class="dashboard_item_icon"><i class="fa-solid fa-m"></i></div>
                         </div>
                         <div class="dashboard_item pending_container">
@@ -127,7 +129,7 @@
                         <div class="add_video_button_wrapper">
                             <div class="add_video_button_cointainer">Add video</div>
                         </div>
-                        <div class="withdraw_button_wrapper">
+                        <div id="withdrawCompanyButton" class="withdraw_button_wrapper">
                             <div class="withdraw_button_cointainer">Withdraw</div>
                         </div>
                     </div>
@@ -162,12 +164,12 @@
                     </div>
                     <div class="penalty_wrapper lock_element">
                         <div class="lock_element_title">Your penalty</div>
-                        <div class="lock_element_value">5%</div>
+                        <div class="lock_element_value">0%</div>
                     </div>
                     <div class="statistic_wrapper lock_element">
                         <div class="static_container">
                             <div class="static_title">Total token</div>
-                            <div id="totalLock" class="static_value">14.5 MTG</div>
+                            <div id="totalTokens2" class="static_value">14.5 MTG</div>
                         </div>
                         <!-- <div class="static_container">
                             <div class="static_title">Total earn</div>
@@ -179,19 +181,19 @@
                         </div> -->
                         <div class="static_container">
                             <div class="static_title">Starting date</div>
-                            <div class="static_value">26, Jan 2023</div>
+                            <div id="lockDate" class="static_value">26, Jan 2023</div>
                         </div>
                         <div class="static_container">
                             <div class="static_title">Days locked</div>
-                            <div class="static_value">5 days</div>
+                            <div id="daysLocked" class="static_value">5 days</div>
                         </div>
                         <!-- <div class="static_container">
                             <div class="static_title">Percentage earn</div>
                             <div class="static_value">5.2%</div>
                         </div> -->
                         <div class="static_container">
-                            <div class="static_title">Lock fees</div>
-                            <div class="static_value">2%</div>
+                            <div class="static_title">Unlock fees</div>
+                            <div class="static_value">1%</div>
                         </div>
                     </div>
                     <div class="deposit_wrapper lock_element">
@@ -210,7 +212,7 @@
                         </div>
                         
                         <div class="deposit_submit_wrapper">
-                            <div class="deposit_submit" id="lockCompany">Confirm</div>
+                            <div id="lockTokensButton" class="deposit_submit" >Confirm</div>
                         </div>
                     </div>    
                     </form>
@@ -282,13 +284,13 @@
                             <div class="insert_title">Add video</div>
                             <div class="insert_element">
                                 <div class="insert_title_element">Video ID:</div>
-                                <input id="videoIDInput" class="insert_input" type="text" placeholder="xxxxxxx" name="uname" oninput="changeVideoID(this.value)">                                
+                                <input id="videoIdInput" class="insert_input" type="text" placeholder="xxxxxxx" name="uname" oninput="changeVideoID(this.value)">                                
                             </div>   
                             <div class="insert_element">
                                 <div class="insert_title_element">Length:</div>
                                 <input id="videoLengthInput" class="insert_input" type="text" placeholder="0" name="uname" oninput="">                                
                             </div>      
-                            <div id="videoInput" class="insert_button">Insert video</div>                                                                     
+                            <div id="addVideoButton" class="insert_button">Insert video</div>                                                                     
                         </div>
                     </div>                               
                 </div>                

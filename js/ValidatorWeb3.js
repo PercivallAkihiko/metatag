@@ -57,7 +57,7 @@ function listenerLockTokensButton() {
                 });
             }
             // Proceed with the function call after ensuring sufficient allowance
-            const receipt = await dAppContract.methods.receiveTokensFromValidator(tokensInWei).send({
+            await dAppContract.methods.receiveTokensFromValidator(tokensInWei).send({
                 from: account
             });
         } catch (error) {
@@ -101,8 +101,8 @@ async function loadSetVariable() {
     document.getElementById('changeSwitch').checked = await dAppContract.methods.variableValidators(account).call();
 }
 
-// Function to display starting date of locking
-async function loadLockDate() {
+// Function to display starting date of locking and number of days
+async function loadLockDateAndDays() {
     const events = await dAppContract.getPastEvents('eventSetVariable', {
         filter: {
             validator: account
@@ -110,15 +110,17 @@ async function loadLockDate() {
         fromBlock: 0,
         toBlock: 'latest'
     });
-    if (events[events.length - 1].returnValues[1]) {
-        const block = await web3.eth.getBlock(events[events.length - 1].blockNumber);
-        const actualDate = formatDate(Math.floor(Date.now() / 1000));
-        const blockDate = formatDate(block.timestamp);
-        document.getElementById('lockDate').textContent = blockDate;
-        document.getElementById('daysLocked').textContent = calculateDaysDifference(actualDate, blockDate) + " Days";
-    } else {
-        document.getElementById('lockDate').textContent = "-";
-        document.getElementById('daysLocked').textContent = "-";
+    if (events.length != 0) {
+        if (events[events.length - 1].returnValues[1]) {
+            const block = await web3.eth.getBlock(events[events.length - 1].blockNumber);
+            const actualDate = formatDate(Math.floor(Date.now() / 1000));
+            const blockDate = formatDate(block.timestamp);
+            document.getElementById('lockDate').textContent = blockDate;
+            document.getElementById('daysLocked').textContent = calculateDaysDifference(actualDate, blockDate) + " Days";
+        } else {
+            document.getElementById('lockDate').textContent = "-";
+            document.getElementById('daysLocked').textContent = "-";
+        }
     }
 }
 
@@ -178,7 +180,7 @@ async function eventWithdrawFundsValidator() {
 document.addEventListener('sharedDataReady', async () => {
     await loadTotalTokensAndLockedTokens();
     await loadSetVariable();
-    await loadLockDate();
+    await loadLockDateAndDays();
     listenerLockTokensButton();
     listenerChangeSwitch();
     listenerWithdrawValidatorButton();

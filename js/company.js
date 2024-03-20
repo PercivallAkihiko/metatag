@@ -473,7 +473,7 @@ function initEthPrice(){
     .then(data => {
         ethereumPrice = data["ethereum"].usd;
         setCookie("ethPrice", ethereumPrice, 0.5);
-        console.log("Actual ETH price: " + ethereumPrice);
+        //console.log("Actual ETH price: " + ethereumPrice);
     })
     .catch(error => {
         console.error('Error fetching cryptocurrency price:', error);
