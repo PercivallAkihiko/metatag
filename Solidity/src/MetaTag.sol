@@ -161,6 +161,8 @@ contract MetaTag {
     /// @notice Function for validators to send their tokens to the smart contract to participate in the DApp
     /// @param amount The amount of tokens to be sent by the validator
     function receiveTokensFromValidator(uint amount) public notCompany {
+        // Amount must be greater than 0
+        require(amount > 0, "You cannot deposit 0!");
         // Transfer tokens from the validator's address to this contract and ensure the token transfer was successful, it requires the approve
         require(mtgToken.transferFrom(msg.sender, address(this), amount), "Token transfer failed!"); // 
         // Update the validator's token balance in this contract
@@ -459,6 +461,8 @@ contract MetaTag {
     /// @notice Allows whitelisted companies to deposit tokens for video tagging
     /// @param amount The amount of tokens to deposit
     function receiveTokensFromCompany(uint amount) public onlyWhitelist {
+        // Amount must be greater than 0
+        require(amount > 0, "You cannot deposit 0!");
         // Ensure that the company is not also registered as a validator
         require(!variableValidators[msg.sender], "You cannot be both a validator and a company!");
         // Transfer tokens from the company's address to this contract

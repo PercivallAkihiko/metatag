@@ -9,43 +9,35 @@ async function loadTotalTokensAndLockedTokens() {
 
 // Function to display starting date of locking and number of days
 async function loadLockDateAndDays() {
-    const events = await dAppContract.getPastEvents('eventReceiveTokensFromCompany', {
+    let blockReceiveTimestamp = 0;
+    let blockWithdrawTimestamp = 0;
+    const eventReceive = await dAppContract.getPastEvents('eventReceiveTokensFromCompany', {
         filter: {
             company: account
         },
         fromBlock: 0,
         toBlock: 'latest'
     });
-    if (events.length != 0) {
-        const block = await web3.eth.getBlock(events[events.length - 1].blockNumber);
-        console.log(block.timestamp);
-        /* const actualDate = formatDate(Math.floor(Date.now() / 1000));
-        const blockDate = formatDate(block.timestamp);
-        document.getElementById('lockDate').textContent = blockDate;
-        document.getElementById('daysLocked').textContent = calculateDaysDifference(actualDate, blockDate) + " Days"; */
-    } else {
-        document.getElementById('lockDate').textContent = "-";
-        document.getElementById('daysLocked').textContent = "-";
-        return;
+    const eventsWithdraw = await dAppContract.getPastEvents('eventWithdrawTokensCompany', {
+        filter: {
+            company: account
+        },
+        fromBlock: 0,
+        toBlock: 'latest'
+    });
+    if (eventReceive.length != 0) {
+        const blockReceive = await web3.eth.getBlock(eventReceive[eventReceive.length - 1].blockNumber);
+        blockReceiveTimestamp = blockReceive.timestamp;
     }
-    const events2 = await dAppContract.getPastEvents('eventWithdrawTokensCompany', {
-        filter: {
-            company: account
-        },
-        fromBlock: 0,
-        toBlock: 'latest'
-    });
-    if (events.length != 0) {
-        const block = await web3.eth.getBlock(events[events.length - 1].blockNumber);
-        console.log(block.timestamp);
-        /* const actualDate = formatDate(Math.floor(Date.now() / 1000));
-        const blockDate = formatDate(block.timestamp);
+    if (eventsWithdraw.length != 0) {
+        const blockWithdraw = await web3.eth.getBlock(eventsWithdraw[eventsWithdraw.length - 1].blockNumber);
+        blockWithdrawTimestamp = blockWithdraw.timestamp;
+    }
+    if (blockReceiveTimestamp > blockWithdrawTimestamp) {
+        const actualDate = formatDate(Math.floor(Date.now() / 1000));
+        const blockDate = formatDate(blockReceiveTimestamp);
         document.getElementById('lockDate').textContent = blockDate;
-        document.getElementById('daysLocked').textContent = calculateDaysDifference(actualDate, blockDate) + " Days"; */
-    } else {
-        document.getElementById('lockDate').textContent = "-";
-        document.getElementById('daysLocked').textContent = "-";
-        return;
+        document.getElementById('daysLocked').textContent = calculateDaysDifference(actualDate, blockDate) + " Days";
     }
 }
 
@@ -170,6 +162,8 @@ async function eventWithdrawTokensCompany() {
         document.getElementById('liquidTokens').textContent = liquidTokens;
         document.getElementById('lockedTokens').textContent = lockedTokens;
         document.getElementById('maxMTG').textContent = "Balance " + liquidTokens;
+        document.getElementById('lockDate').textContent = "-";
+        document.getElementById('daysLocked').textContent = "-";
     })
 }
 
