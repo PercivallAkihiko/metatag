@@ -374,6 +374,7 @@ contract MetaTag {
             if (balanceValidators[msg.sender] < 50 * 1e18 && variableValidators[msg.sender]) {
                 setVariable();
             }
+            emit eventGetRewards(msg.sender, company, videoId, 15000000000000000000, false);
             return;
         }
         // Calculate the number of confirmed, ambiguous, and wrong tags for the validator

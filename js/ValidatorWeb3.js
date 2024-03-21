@@ -286,7 +286,6 @@ async function eventPastRevealHash(company, video) {
         fromBlock: 0,
         toBlock: 'latest'
     })
-    console.log(events);
     if (events.length != 0) {
         for (let i = 0; i < videoDB.length; i++) {
             if (videoDB[i].company === companies[company] && videoDB[i].hashId === decimalToString(video)) {
