@@ -946,7 +946,7 @@ function generateDiv(videoId, status, results, leftVote, company) {
             tagButton.addEventListener('click', function () {   
                 var seed = generateAlphanumericSeed() 
                 var tagList = getTagPositions();
-                externalSubmitHash(seed, tagList, videoId, company);
+                externalListenerSubmitHash(seed, tagList, videoId, company);
                 suggestionsContainer.innerHTML = "<grey>Seed: </grey>" + seed;        
                 setCookie(videoId, { list: tagList, seed: seed } , 1);                        
             });
@@ -965,7 +965,7 @@ function generateDiv(videoId, status, results, leftVote, company) {
             break;
         case 3:
             tagButton.addEventListener('click', function () {
-                externalRevealHash(videoId, company);    
+                externalListenerRevealHash(videoId, company);    
             });
             disableDiv(videoId, true);
             hideShowVote(tagsWrapper);
@@ -978,7 +978,7 @@ function generateDiv(videoId, status, results, leftVote, company) {
             break;
         case 5:
             tagButton.addEventListener('click', function () {
-                externalGetRewards(videoId, company);
+                externalListenerGetRewards(videoId, company);
             });
             disableDiv(videoId, true);
             generatePoll(results);

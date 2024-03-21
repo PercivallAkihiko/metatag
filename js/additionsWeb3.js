@@ -59,3 +59,131 @@ function asciiToDecimal(asciiString) {
     }
     return decimalString;
 }
+
+// Function to convert decimal videoID to string type
+function decimalToString(decimal) {
+    let decimalStr = decimal.toString();
+    let asciiString = '';
+    let firstCharLength = decimalStr.length % 3 === 0 ? 3 : 2;
+    asciiString += String.fromCharCode(parseInt(decimalStr.substr(0, firstCharLength), 10));
+    for (let i = firstCharLength; i < decimalStr.length; i += 3) {
+        let charCodeStr = decimalStr.substr(i, 3);
+        asciiString += String.fromCharCode(parseInt(charCodeStr, 10));
+    }
+    return asciiString;
+}
+
+
+// API call to retrieve the YouTube video title
+async function fetchYouTubeVideoTitle(videoId) {
+    const apiKey = 'AIzaSyCac5ikDuUb0bSNO1KtbiEdNp7fycWtn78';
+    const apiUrl = `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&key=${apiKey}&part=snippet`;
+    try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        if (data.items.length > 0) {
+            return data.items[0].snippet.title;
+        } else {
+            return 'Title not found';
+        }
+    } catch (error) {
+        console.error('Error fetching video title:', error);
+        return 'Error fetching title';
+    }
+}
+
+// API call to retrieve the length of a YouTube video
+async function fetchYouTubeVideoLength(videoId) {
+    const apiKey = 'AIzaSyCac5ikDuUb0bSNO1KtbiEdNp7fycWtn78';
+    const url = `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&key=${apiKey}&part=contentDetails`;
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        if (data.items.length > 0) {
+            const duration = data.items[0].contentDetails.duration;
+            const seconds = convertISO8601ToSeconds(duration);
+            return seconds;
+        } else {
+            return null;
+        }
+    } catch (error) {
+        console.error('Error fetching video length:', error);
+    }
+}
+
+// Function to convert ISO8601 length of video to seconds
+function convertISO8601ToSeconds(input) {
+    let totalSeconds = 0;
+    let hours = input.match(/(\d+)H/);
+    let minutes = input.match(/(\d+)M/);
+    let seconds = input.match(/(\d+)S/);
+    if (hours) totalSeconds += parseInt(hours[1]) * 3600;
+    if (minutes) totalSeconds += parseInt(minutes[1]) * 60;
+    if (seconds) totalSeconds += parseInt(seconds[1]);
+    return totalSeconds;
+}
+
+// Function to retrieve the value from a dictionary
+function getKeyByValue(object, value) {
+    return Object.keys(object).find(key => object[key] === value);
+}
+
+// Function to calculate the kecca256 to pass as input to submitHash
+function hashTagListAndSeed(tagList, seed) {
+    // Ensure the seed length is 11
+    if (seed.length !== 11) {
+        throw new Error('Seed must have a length of 11 characters');
+    }
+    // Convert the array of integers to a string, with elements separated by spaces
+    const tagListString = tagList.join(' ');
+    // Concatenate the tagList string and the seed, separated by a space
+    const inputString = `${tagListString} ${seed}`;
+    // Compute and return the Keccak-256 hash
+    return "0x" + keccak256(inputString);
+}
+
+// Retrieve number of validators that submitted their hashes
+function getHashedCounter(address, videoId) {
+    const hashedCounter = dAppContract.methods.videos(address, asciiToDecimal(videoId)).call().then((video) => video.hashedCounter);
+    return hashedCounter;
+}
+
+// Retrieve number of validators that revealed their hashes
+function getRevealedCounter(address, videoId) {
+    const revealedCounter = dAppContract.methods.videos(address, asciiToDecimal(videoId)).call().then((video) => video.revCounter);
+    return revealedCounter;
+}
+
+// Convert string into Bytes11
+function stringToBytes11(str) {
+    // Convert the string to a hex string
+    let hex = '';
+    for (let i = 0; i < str.length; i++) {
+        hex += str.charCodeAt(i).toString(16);
+    }
+    // Ensure the hex string is no longer than 22 characters (11 bytes)
+    hex = hex.slice(0, 22);
+    // Pad the hex string to ensure it represents exactly 11 bytes
+    while (hex.length < 22) {
+        hex += '0'; // Pad with trailing zeros (adjust if different padding is required)
+    }
+    return '0x' + hex; // Prefix with '0x' to denote a hex string
+}
+
+// Funtion used to calcalte the percentages of tags voted
+function calculateTagPercentages(votes) {
+    // Object to keep track of tag counts
+    const tagCounts = {};
+    // Total number of validators
+    const totalValidators = 2;
+    // Count the occurrences of each tag in the votes list
+    votes.forEach(tag => {
+        tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+    });
+    // Map the tagCounts object to an array of [tag, percentage] pairs
+    const result = Object.entries(tagCounts).map(([tag, count]) => {
+        const percentage = (count / totalValidators) * 100;
+        return [tag, percentage.toString()];
+    });
+    return result;
+}

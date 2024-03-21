@@ -219,8 +219,8 @@ contract MetaTagTest is DSTest {
         token.buyTokens{value: amountEth}();
         token.approve(address(tag), 5000 * 1e18); // Before the token transfer we need to approve it
         tag.receiveTokensFromCompany(1e18 * 120);
-        tag.addVideo(12, 12000);
-        tag.addVideo(13, 12000);
+        tag.addVideo(12, 1389);
+        //tag.addVideo(13, 12000);
         vm.stopPrank(); // The actions will not anymore be executed as company
         
 
@@ -231,14 +231,14 @@ contract MetaTagTest is DSTest {
        //}
 
         vm.startPrank(user1);
-        tag.submitHash(company, 12, 0x4adaa3070110d4026c3e6f5288f9f23fd66b5e5e5438ed3bf7ef8c017a4c3c4f);
+        tag.submitHash(company, 12, 0x14148fdc77190ffb84f3c66611c05a5362a11abc394be633306c159269142aaf);
         vm.stopPrank();
 
         vm.startPrank(user2);
-        tag.submitHash(company, 12, 0x79e6b03012503efbdd4a2838f8186e52a2ba4ddc19d12e9866ec89ccc1b85d83);
+        tag.submitHash(company, 12, 0xac2011ca177532528992e24dabbe3d505af26b4d05f9a67b04ffdaeab34641a1);
         vm.stopPrank();
 
-        vm.startPrank(user3);
+/*         vm.startPrank(user3);
         tag.submitHash(company, 12, 0x2461c2c84fe27cc2cb440ca8492e4edb7c75018db8364a68401a96e6ac60119a);
         vm.stopPrank();
 
@@ -268,27 +268,23 @@ contract MetaTagTest is DSTest {
 
         vm.startPrank(user10);
         tag.submitHash(company, 12, 0x60e518a4dadd3715d5995c47d994c3a2cb1ec507e7edccfb1ab0ba18c0a5535d);
-        vm.stopPrank();
+        vm.stopPrank(); */
         
         //vm.roll(7304);
 
         vm.startPrank(user1);
-        uint256[] memory inputArray1 = new uint256[](3);
+        uint256[] memory inputArray1 = new uint256[](1);
         inputArray1[0] = 1;
-        inputArray1[1] = 8;
-        inputArray1[2] = 10;
-        tag.revealHash(company, 12, inputArray1, 0x4f6b32704865304d324b65); //Ok2pHe0M2Ke
+        tag.revealHash(company, 12, inputArray1, 0x6d4a4e3177443374324c4c); //mJN1wD3t2LL
         vm.stopPrank();
 
         vm.startPrank(user2);
-        uint256[] memory inputArray2 = new uint256[](3);
-        inputArray2[0] = 1;
-        inputArray2[1] = 8;
-        inputArray2[2] = 10;
-        tag.revealHash(company, 12, inputArray2, 0x466b44785a63374861764e); //FkDxZc7HavN
+        uint256[] memory inputArray2 = new uint256[](1);
+        inputArray2[0] = 2;
+        tag.revealHash(company, 12, inputArray2, 0x36324e6f6c4d775556546a); //62NolMwUVTj
         vm.stopPrank();
 
-        vm.startPrank(user3);
+        /* vm.startPrank(user3);
         uint256[] memory inputArray3 = new uint256[](10);
         inputArray3[0] = 10;
         inputArray3[1] = 9;
@@ -332,7 +328,7 @@ contract MetaTagTest is DSTest {
         inputArray8[0] = 1;
         tag.revealHash(company, 12, inputArray8, 0x5568334c6776337332736b); //Uh3Lgv3s2sk
         vm.stopPrank();
-
+ */
         /*
         vm.startPrank(user9);
         uint256[] memory inputArray9 = new uint256[](1);
@@ -358,7 +354,7 @@ contract MetaTagTest is DSTest {
         tag.getRewards(company,12);
         vm.stopPrank();
         
-        vm.startPrank(user3);
+/*         vm.startPrank(user3);
         tag.getRewards(company,12);
         vm.stopPrank();
 
@@ -388,7 +384,7 @@ contract MetaTagTest is DSTest {
 
         vm.startPrank(user10);
         tag.getRewards(company,12);
-        vm.stopPrank();
+        vm.stopPrank(); */
 
         vm.startPrank(company);
         vm.roll(73000);

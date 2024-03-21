@@ -804,7 +804,13 @@ function generateDiv(videoId, status, results, leftVote) {
 
 function changeVideoID(id){
     //document.getElementById('youtubeVideo').src = "https://www.youtube.com/embed/" + id + "?si=EwWUd-wd4mxodglK"
-    document.getElementById('youtubeVideo').src = "https://www.youtube.com/embed/" + id;    
+    document.getElementById('youtubeVideo').src = "https://www.youtube.com/embed/" + id;
+    fetchYouTubeVideoLength(id)
+        .then(lengthInSeconds => {
+            if (lengthInSeconds !== null) {
+                document.getElementById('videoLengthInput').value = lengthInSeconds;
+            }
+        })
 }
 
 function generatePoll(results){

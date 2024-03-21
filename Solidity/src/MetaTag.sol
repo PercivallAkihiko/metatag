@@ -96,7 +96,7 @@ contract MetaTag {
     /// @notice Event emitted when tokens are received from a company
     event eventReceiveTokensFromCompany(address indexed company, uint amount);
     /// @notice Event emitted when a company adds a video for tagging
-    event eventAddVideo(address indexed company, uint indexed videoId, address[] indexed chosenValidators);
+    event eventAddVideo(address indexed company, uint indexed videoId, address[] chosenValidators);
     /// @notice Event emitted when a company withdraws their tokens from the contract
     event eventWithdrawTokensCompany(address indexed company, uint amount);
     /// @notice Event emitted when tokens are exchanged for a voucher
@@ -329,12 +329,15 @@ contract MetaTag {
         // Status: 1 for confirmed, 2 for ambiguous, 3 for wrong
         uint[tagsNumber] memory tagStatus; 
         // Tally votes for each tag by iterating through each validator's revealed tags
-        for (uint i = 0; i < totalValidators; i++) {
-            // Retrieve the tags revealed by the current validator
-            uint[] memory tags = videos[company][videoId].revealedTags[msg.sender];
-            // Iterate through the revealed tags and update the count for each tag
-            for (uint j = 0; j < tags.length; j++) {
-                tagCounts[tags[j]]++;
+        for (uint i = 0; i < videos[company][videoId].chosenValidators.length; i++) {
+            // Retrieve the tags revealed by the validator
+            uint[] memory tags = videos[company][videoId].revealedTags[videos[company][videoId].chosenValidators[i]];
+            // Check if the validator has voted
+            if (tags.length != 0) {
+                // Iterate through the revealed tags and update the count for each tag
+                for (uint j = 0; j < tags.length; j++) {
+                    tagCounts[tags[j]]++;
+                }
             }
         }
         // Categorize tags and count totals for each category based on the accumulated tag counts
