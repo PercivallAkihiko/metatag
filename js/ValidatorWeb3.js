@@ -241,6 +241,7 @@ async function eventPastAddVideo() {
                         results: []
                     };
                     videoDB.push(newVideoEntry);
+                    loadVoteList(1);
                     eventPastSubmitHash(events[i].returnValues[0], videoId);
                 })
         }
@@ -262,10 +263,12 @@ async function eventPastSubmitHash(company, video) {
         for (let i = 0; i < videoDB.length; i++) {
             if (videoDB[i].company === companies[company] && videoDB[i].hashId === decimalToString(video)) {
                 videoDB[i].status = 2;
+                loadVoteList(1);
                 getHashedCounter(company, decimalToString(video)).then(hashedCounter => {
                     videoDB[i].leftvote = numberOfValidators - Number(hashedCounter);
                     if (numberOfValidators - Number(hashedCounter) == 0) {
                         videoDB[i].status = 3;
+                        loadVoteList(1);
                     }
                 });
                 break;
@@ -290,10 +293,12 @@ async function eventPastRevealHash(company, video) {
         for (let i = 0; i < videoDB.length; i++) {
             if (videoDB[i].company === companies[company] && videoDB[i].hashId === decimalToString(video)) {
                 videoDB[i].status = 4;
+                loadVoteList(1);
                 getRevealedCounter(company, videoDB[i].hashId).then(RevealedCounter => {
                     videoDB[i].leftvote = numberOfValidators - Number(RevealedCounter);
                     if (numberOfValidators - Number(RevealedCounter) == 0) {
                         videoDB[i].status = 5;
+                        loadVoteList(1);
                     }
                 });
                 break;
@@ -322,7 +327,13 @@ async function eventPastGetRewards(video, company) {
                         videoDB[i].results = output;
                     })
                     .catch(error => console.error(error));
-                videoDB[i].reward = web3.utils.fromWei(events[0].returnValues[3], 'ether');
+                if (events[0].returnValues[4]) {
+                    videoDB[i].reward = web3.utils.fromWei(events[0].returnValues[3], 'ether');
+                }
+                else {
+                    videoDB[i].reward = "- " + web3.utils.fromWei(events[0].returnValues[3], 'ether')
+                }
+                loadVoteList(1);
                 break;
             }
         }
@@ -345,7 +356,7 @@ async function retrieveTagsVoted(video, company) {
         for (let i = 0; i < events.length; i++) {
             combined = combined.concat(events[i].returnValues[3]);
         }
-        return calculateTagPercentages(combined);
+        return calculateTagPercentages(combined, numberOfValidators);
     }
     
 }
@@ -355,10 +366,10 @@ async function eventAddVideo() {
     dAppContract.events.eventAddVideo({
         fromBlock: 'latest'
     }).on('data', async function(event) {
+        let videoId = event.returnValues[1];
         if (event.returnValues[2].map(v => v.toLowerCase()).includes(account)) {
-            let videoId = event.returnValues[1];
             let asciiString = decimalToString(videoId);
-            fetchYouTubeVideoTitle(asciiString)
+            await fetchYouTubeVideoTitle(asciiString)
                 .then(title => {
                     const newVideoEntry = {
                         hashId: asciiString,
@@ -371,6 +382,8 @@ async function eventAddVideo() {
                         results: []
                     };
                     videoDB.push(newVideoEntry);
+                    videoDB = Array.from(videoDB.reduce((acc, item) => acc.set(`${item.hashId}-${item.company}`, item), new Map()).values());
+                    updateVotePage();
                 })
         }
     })
@@ -383,19 +396,90 @@ async function eventSubmitHash() {
     }).on('data', async function(event) {
         for (let i = 0; i < videoDB.length; i++) {
             if (videoDB[i].company === companies[event.returnValues[1]] && videoDB[i].hashId === decimalToString(event.returnValues[2])) {
-                if (event.returnValues[0] == account) {
-                videoDB[i].status = 2;
+                if (event.returnValues[0].toLowerCase() == account) {
+                    videoDB[i].status = 2;
                 }
                 getHashedCounter(event.returnValues[1], decimalToString(event.returnValues[2])).then(hashedCounter => {
                     videoDB[i].leftvote = numberOfValidators - Number(hashedCounter);
+                    updateVotePage();
                     if (numberOfValidators - Number(hashedCounter) == 0) {
                         videoDB[i].status = 3;
+                        updateVotePage();
                     }
                 });
                 break;
             }
         }
     })
+}
+
+// Listen for the eventRevealHash event
+async function eventRevealHash() {
+    dAppContract.events.eventRevealHash({
+        fromBlock: 'latest',
+    }).on('data', async function(event) {
+        for (let i = 0; i < videoDB.length; i++) {
+            if (videoDB[i].company === companies[event.returnValues[1]] && videoDB[i].hashId === decimalToString(event.returnValues[2])) {
+                if (event.returnValues[0].toLowerCase() == account) {
+                    videoDB[i].status = 4;
+                }
+                getRevealedCounter(event.returnValues[1], decimalToString(event.returnValues[2])).then(RevealedCounter => {
+                    videoDB[i].leftvote = numberOfValidators - Number(RevealedCounter);
+                    updateVotePage();
+                    if (numberOfValidators - Number(RevealedCounter) == 0) {
+                        videoDB[i].status = 5;
+                        updateVotePage();
+                    }
+                });
+                break;
+            }
+        }
+    })
+}
+
+// Listen for the eventGetRewards event
+async function eventGetRewards() {
+    dAppContract.events.eventGetRewards({
+        fromBlock: 'latest',
+    }).on('data', async function(event) {
+        for (let i = 0; i < videoDB.length; i++) {
+            if (videoDB[i].company === companies[event.returnValues[1]] && videoDB[i].hashId === decimalToString(event.returnValues[2])) {
+                if (event.returnValues[0].toLowerCase() == account) {
+                    videoDB[i].status = 6;
+                }
+                retrieveTagsVoted(event.returnValues[2], event.returnValues[1]).then(output => {
+                    videoDB[i].results = output;
+                })
+                .catch(error => console.error(error));
+                if (event.returnValues[4]) {
+                    videoDB[i].reward = web3.utils.fromWei(event.returnValues[3], 'ether');
+                }
+                else {
+                    videoDB[i].reward = "- " + web3.utils.fromWei(event.returnValues[3], 'ether')
+                }
+                updateVotePage();
+                break;
+            }
+        }
+    })
+}
+
+for (let i = 0; i < videoDB.length; i++) {
+    if (videoDB[i].company === companies[company] && videoDB[i].hashId === decimalToString(video)) {
+        videoDB[i].status = 6;
+        retrieveTagsVoted(video, company).then(output => {
+                videoDB[i].results = output;
+            })
+            .catch(error => console.error(error));
+        if (events[0].returnValues[4]) {
+            videoDB[i].reward = web3.utils.fromWei(events[0].returnValues[3], 'ether');
+        }
+        else {
+            videoDB[i].reward = "- " + web3.utils.fromWei(events[0].returnValues[3], 'ether')
+        }
+        loadVoteList(1);
+        break;
+    }
 }
 
 // It waits the event from "bothWeb3.js" generated as last and it calls functions related to the validator
@@ -412,6 +496,8 @@ document.addEventListener('sharedDataReady', async () => {
     eventReceiveTokensFromValidator();
     eventSetVariable();
     eventWithdrawTokensValidator();
-    //eventAddVideo();
-    //eventSubmitHash();
+    eventAddVideo();
+    eventSubmitHash();
+    eventRevealHash();
+    eventGetRewards();
 });

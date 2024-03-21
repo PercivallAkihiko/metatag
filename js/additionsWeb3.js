@@ -171,11 +171,9 @@ function stringToBytes11(str) {
 }
 
 // Funtion used to calcalte the percentages of tags voted
-function calculateTagPercentages(votes) {
+function calculateTagPercentages(votes, totalValidators) {
     // Object to keep track of tag counts
     const tagCounts = {};
-    // Total number of validators
-    const totalValidators = 2;
     // Count the occurrences of each tag in the votes list
     votes.forEach(tag => {
         tagCounts[tag] = (tagCounts[tag] || 0) + 1;
@@ -186,4 +184,18 @@ function calculateTagPercentages(votes) {
         return [tag, percentage.toString()];
     });
     return result;
+}
+
+// Function to update in real time the vote page
+function updateVotePage() {
+    loadVoteList(1);
+    var all = document.querySelector(".filter_all"); 
+    var pending = document.querySelector(".filter_pending"); 
+    var action = document.querySelector(".filter_action"); 
+    var completed = document.querySelector(".filter_completed");
+    all.classList.remove("filter_element_active");
+    pending.classList.remove("filter_element_active");
+    action.classList.remove("filter_element_active");
+    completed.classList.remove("filter_element_active");
+    all.classList.add("filter_element_active");
 }
