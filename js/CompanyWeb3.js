@@ -1,3 +1,9 @@
+var numberOfValidators;
+
+const companies = {
+    "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC": 'YouTube'
+};
+
 // Function to display total and locked validators' tokens
 async function loadTotalTokensAndLockedTokens() {
     const lockedTokens = parseFloat(web3.utils.fromWei(await dAppContract.methods.balanceCompanies(account).call(), 'ether'));
@@ -167,10 +173,42 @@ async function eventWithdrawTokensCompany() {
     })
 }
 
+// Function to retrieve past addVideo events
+async function eventPastAddVideo() {
+    const events = await dAppContract.getPastEvents('eventAddVideo', {
+        fromBlock: 0,
+        toBlock: 'latest',
+        filter: {
+            company: account
+        }
+    });
+    for (let i = 0; i < events.length; i++) {
+        let videoId = events[i].returnValues[1];
+        let asciiString = decimalToString(videoId);
+        fetchYouTubeVideoTitle(asciiString)
+            .then(title => {
+                const newVideoEntry = {
+                    hashId: asciiString,
+                    title: title,
+                    company: companies[events[i].returnValues[0]],
+                    link: "",
+                    status: 2,
+                    leftvote: numberOfValidators,
+                    reward: "-",
+                    results: []
+                };
+                videoDB.push(newVideoEntry);
+                loadVoteList(1);
+                //eventPastSubmitHash(events[i].returnValues[0], videoId);
+            })
+    }
+}
 // It waits the event from "bothWeb3.js" generated as last and it calls functions related to the validator
 document.addEventListener('sharedDataReady', async () => {
+    numberOfValidators = Number(await dAppContract.methods.validatorsQuantity().call());
     await loadTotalTokensAndLockedTokens()
     await loadLockDateAndDays();
+    await eventPastAddVideo();
     listenerLockTokensButton();
     listenerAddVideoButton();
     listenerWithdrawCompanyButton();

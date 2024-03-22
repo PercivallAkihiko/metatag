@@ -1,8 +1,9 @@
+var numberOfValidators;
+var limitExecution = true;
+
 const companies = {
     "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC": 'YouTube'
 };
-var numberOfValidators;
-var limitExecution = true;
 
 // Function to display total and locked validators' tokens
 async function loadTotalTokensAndLockedTokens() {
@@ -401,7 +402,7 @@ async function loadMainPage() {
         lastLock = 0;
         value = 0;
     }
-    document.getElementById('percentageEarned').innerHTML = 'Percentage earned: <white>' + limitDecimals(value * 100,4) + '%</white>';
+    document.getElementById('percentageEarned').innerHTML = 'Percentage earned: <white>' + limitDecimals(value * 100, 4) + '%</white>';
     const currentBlockNumber = await web3.eth.getBlockNumber();
     let blockCounter = currentBlockNumber - BigInt(7200);
     if (blockCounter < 0) {
