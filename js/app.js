@@ -318,22 +318,21 @@ const validTags = [
     "breakthrough"
 ];
 
-// 1 BuyTokens(                  address indexed purchaser, 					uint amount) 
-// 2 ReceiveTokensFromValidator( address indexed company, 					uint amount);
-// 3 SetVariable(                address indexed validator, 					bool value);
-// 4 SubmitHash(                 address indexed validator, 	address indexed company, 	bytes32 hash, 				uint videoId, 
-// 5 RevealHash(                 address indexed validator, 	address indexed company, 	uint[] tags, bytes11 seed uint, 	uint videoId, 
-// 6 GetRewards(                 address indexed validator, 	address indexed company, 	uint rewardAmount, bool positive, 	uint videoId, 
-// 7 WithdrawFundsValidator(     address indexed validator, 					uint amount
-// 8 MTGforVoucher(              address indexed validator);
+// 1 BuyTokens(                  address indexed user, 					uint amount,
+// 2 ReceiveTokensFromValidator( address indexed validator, 					uint amount,
+// 3 SetVariable(                address indexed validator, 					bool indexed value,
+// 4 SubmitHash(                 address indexed validator, 	address indexed company, 	bytes32 hash, 				uint indexed videoId, 
+// 5 RevealHash(                 address indexed validator, 	address indexed company, 	uint[] tags, bytes11 seed uint, 	uint indexed videoId, 
+// 6 GetRewards(                 address indexed validator, 	address indexed company, 	uint rewardAmount, bool positive, 	uint indexed videoId, 
+// 7 WithdrawTokensValidator(    address indexed validator, 					uint amount
+// 8 MTGforVoucher(              address indexed user,
 
-var events = [
-    // BuyTokens(                  address indexed purchaser, 					uint amount) 
+var eventsDB = [
+    /* // BuyTokens(                  address indexed user, 					uint amount
     {
         name: "BuyTokens", 
-        emitter: "",
         validator: "",        
-        purchaser: "0x9FC3da866e7DF3a1c57adE1a97c9f00a70f010c8",
+        user: "0x9FC3da866e7DF3a1c57adE1a97c9f00a70f010c8",
         company: "",
 
         amount: "5MTG",
@@ -349,12 +348,11 @@ var events = [
         videoId: "",
         status: 1
     },     
-    // ReceiveTokensFromValidator( address indexed company, 					uint amount);
+    // ReceiveTokensFromValidator( address indexed validator, 					uint amount
     {
         name: "ReceiveTokensFromValidator", 
-        emitter: "",
         validator: "",        
-        purchaser: "",
+        user: "",
         company: "0x07FAc54A901409Fe10E56c899Be3dCF2471ae321",
 
         amount: "5MTG",
@@ -370,12 +368,11 @@ var events = [
         videoId: "zTFBJgnNgU4",
         status: 2
     },    
-    // SetVariable(                address indexed validator, 					bool value);
+    // SetVariable(                address indexed validator, 					bool indexed value
     {
         name: "SetVariable", 
-        emitter: "",
         validator: "0x9138Cc7ff38D9DA8cb2102c920b36473736E6EA5",        
-        purchaser: "",
+        user: "",
         company: "",
 
         amount: "",
@@ -391,12 +388,10 @@ var events = [
         videoId: "",
         status: 3
     },    
-    // SubmitHash(                 address indexed validator, 	address indexed company, 	bytes32 hash, 				uint videoId, 
+    // SubmitHash(                 address indexed validator, 	address indexed company, 	bytes32 hash, 				uint indexed videoId
     {
         name: "SubmitHash", 
-        emitter: "",
         validator: "0xdbC3363De051550D122D9C623CBaff441AFb477C",        
-        purchaser: "",
         company: "0xe67026A91CD57988626A2c4C6EB64c03cae20911",
 
         amount: "",
@@ -412,12 +407,10 @@ var events = [
         videoId: "95Bbjmwlnss",
         status: 4
     },    
-    // RevealHash(                 address indexed validator, 	address indexed company, 	uint[] tags, bytes11 seed uint, 	uint videoId, 
+    // RevealHash(                 address indexed validator, 	address indexed company, 	uint[] tags, bytes11 seed uint, 	uint indexed videoId
     {
         name: "RevealHash", 
-        emitter: "",
         validator: "0xB6E268B6675846104feeF5582D22f40723164d05",        
-        purchaser: "",
         company: "0xB6E268B6675846104feeF5582D22f40723164d05",
 
         amount: "",
@@ -433,12 +426,10 @@ var events = [
         videoId: "95Bbjmwlnss",
         status: 5
     },    
-    // GetRewards(                 address indexed validator, 	address indexed company, 	uint rewardAmount, bool positive, 	uint videoId, 
+    // GetRewards(                 address indexed validator, 	address indexed company, 	uint rewardAmount, bool positive, 	uint indexed videoId
     {
         name: "GetRewards", 
-        emitter: "",
         validator: "0xb7019c9184580b2E1f66fCDc3EB6c62621732064",        
-        purchaser: "",
         company: "0xF5d958F6eD5170903752d04d3B2a9D355e87C87B",
 
         amount: "",
@@ -454,12 +445,10 @@ var events = [
         videoId: "xxxr4J1fzvc",
         status: 6
     },    
-    // WithdrawFundsValidator(     address indexed validator, 					uint amount
+    // WithdrawTokensValidator(    address indexed validator, 					uint amount
     {
-        name: "WithdrawFundsValidator", 
-        emitter: "",
+        name: "WithdrawTokensValidator", 
         validator: "0x388C818CA8B9251b393131C08a736A67ccB19297",        
-        purchaser: "",
         company: "",
 
         amount: "5MTG",
@@ -475,12 +464,10 @@ var events = [
         videoId: "",
         status: 7
     },    
-    // MTGforVoucher(              address indexed validator);
+    // MTGforVoucher(              address indexed validator,
     {
         name: "MTGforVoucher", 
-        emitter: "",
         validator: "0x388C818CA8B9251b393131C08a736A67ccB19297",        
-        purchaser: "",
         company: "",
 
         amount: "",
@@ -495,7 +482,7 @@ var events = [
 
         videoId: "",
         status: 8
-    },         
+    }      */   
 ]
 
 var ethereumPrice = 1;
@@ -623,7 +610,7 @@ function initEventList(){
 
     var eventCounter = 0;
 
-    events.forEach(function(event) {                
+    eventsDB.forEach(function(event) {                
         var elementDiv = document.createElement('div');  
         elementDiv.classList.add('event_element');
 
@@ -631,13 +618,10 @@ function initEventList(){
         var addressDiv = document.createElement('div');
         var valuesDiv = document.createElement('div'); 
         
-        //console.log(`Analyzing: ${event.name}, emitter: ${event.emitter}`)
-        
         nameDiv.innerHTML = event.name;                   
         createMacroEventDiv(addressDiv, "Validator:", event.validator);
-        createMacroEventDiv(addressDiv, "Purchaser:", event.purchaser);
-        createMacroEventDiv(addressDiv, "Company:", event.company);         
-        createMacroEventDiv(addressDiv, "Emitter:", event.emitter);   
+        createMacroEventDiv(addressDiv, "User:", event.user);
+        createMacroEventDiv(addressDiv, "Company:", event.company);          
 
         createMacroEventDiv(valuesDiv, "Amount:", event.amount);                    
         createMacroEventDiv(valuesDiv, "Additional:", event.additional);
@@ -1416,4 +1400,7 @@ document.addEventListener('DOMContentLoaded', function() {
             container.style.display = 'none';
         }, 50);
     });
-});
+    document.getElementById('metaIcon').addEventListener('click', function() {
+        location.reload();
+    })
+})

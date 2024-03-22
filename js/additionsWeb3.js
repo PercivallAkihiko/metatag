@@ -210,3 +210,20 @@ function limitDecimals(value, maxDecimals) {
     const regex = new RegExp(`^-?\\d+(?:\\.\\d{0,${maxDecimals}})?`);
     return value.toString().match(regex)[0];
 }
+
+// Function to remove duplicates from eventsDB
+function removeDuplicatesEventDB(list) {
+    const unique = {};
+    const result = list.filter(item => {
+      // Define a unique identifier for each item
+      const identifier = `${item.name}-${item.user}`;
+      // If it's not already in our 'unique' tracker, add it and keep this item
+      if (!unique[identifier]) {
+        unique[identifier] = true;
+        return true;
+      }
+      // Otherwise, it's a duplicate, and we filter it out
+      return false;
+    });
+    return result;
+  }

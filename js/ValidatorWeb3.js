@@ -39,12 +39,31 @@ async function eventMTGforVoucher() {
         },
         fromBlock: 'latest'
     }).on('data', async function(event) {
+        console.log(event);
         const lockedTokens = parseFloat(web3.utils.fromWei(await dAppContract.methods.balanceValidators(account).call(), 'ether'));
         const liquidTokens = parseFloat(web3.utils.fromWei(await tokenContract.methods.balanceOf(account).call(), 'ether'));
         document.getElementById('totalTokens').textContent = lockedTokens + liquidTokens;
         document.getElementById('totalTokens2').textContent = lockedTokens + liquidTokens;
         document.getElementById('liquidTokens').textContent = liquidTokens;
         document.getElementById('maxMTG').textContent = "Balance " + liquidTokens;
+        eventsDB.push({
+            name: "MTGforVoucher", 
+            validator: "",        
+            user: account,
+            company: "",
+            amount: "",
+            additional: "",
+            positive: "",
+            hash: "",
+            tags: [],
+            seed: "",
+            rewardAmount: "",
+            timestamp: "",
+            chosenValidator: [],
+            videoId: "",
+            status: 8
+        });
+        initEventList();
     })
 }
 
