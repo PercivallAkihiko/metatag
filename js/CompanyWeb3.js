@@ -198,7 +198,6 @@ async function eventPastAddVideo() {
                     results: []
                 };
                 videoDB.push(newVideoEntry);
-                loadVoteList(1);
             })
         await eventPastSubmitHash(events[i].returnValues[0], videoId);
     }
@@ -249,11 +248,9 @@ async function eventPastSubmitHash(company, video) {
             for (let i = 0; i < videoDB.length; i++) {
                 if (videoDB[i].company === companies[company] && videoDB[i].hashId === decimalToString(video)) {
                     videoDB[i].leftvote = videoDB[i].leftvote - 1;
-                    loadVoteList(1);
                     if (videoDB[i].leftvote == 0) {
                         videoDB[i].status = 4;
                         videoDB[i].leftvote = numberOfValidators;
-                        loadVoteList(1);
                     }
                     break;
                 }
@@ -304,7 +301,6 @@ async function eventPastRevealHash(company, video) {
             for (let i = 0; i < videoDB.length; i++) {
                 if (videoDB[i].company === companies[company] && videoDB[i].hashId === decimalToString(video)) {
                     videoDB[i].leftvote = videoDB[i].leftvote - 1;
-                    loadVoteList(1);
                     if (videoDB[i].leftvote == 0) {
                         videoDB[i].status = 6;
                         await retrieveTagsVoted(video, company).then(output => {
@@ -312,7 +308,6 @@ async function eventPastRevealHash(company, video) {
                         })
                         .catch(error => console.error(error));
                     }
-                loadVoteList(1);
                 break;
                 }
             }
@@ -374,6 +369,7 @@ document.addEventListener('sharedDataReady', async () => {
     await loadTotalTokensAndLockedTokens();
     await loadLockDateAndDays();
     await eventPastAddVideo();
+    loadVoteList(1);
     loadMainPage();
     eventAddVideo();
     eventSubmitHash();

@@ -358,7 +358,7 @@ async function eventPastGetRewards(video, company) {
                 break;
             }
         }
-        await sleep(5);
+        await sleep(50);
         await loadMainPage();
     }
 }
