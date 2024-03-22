@@ -766,7 +766,7 @@ cursive{
 }
 
 .tags_wrapper{
-    grid-template-rows: 30px 30px auto 35px;
+    grid-template-rows: 30px 30px auto min-content 35px;
 
     padding: 15px;   
     display: grid; 
@@ -795,6 +795,10 @@ cursive{
     flex-wrap: wrap;
     flex-direction: row; /* Arrange items in a row */
     max-width: 100%;     
+}
+
+.alert_div{
+    color: red;
 }
 
 .tag{

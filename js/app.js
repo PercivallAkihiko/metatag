@@ -26,8 +26,7 @@ const expiredColor = "rgb(251, 106, 74)";
 // 6 Completed
 // 7 Expired
 
-var videoDB = [
-    /*
+var videoDB = [    
      {
         hashId: "xxxr4J1fzvc",            
         title: "Bitcoin On-Chain Analysis: Value Days Destroyed Multiple",
@@ -211,7 +210,7 @@ var videoDB = [
             [15, 91],
             [20, 90]
         ]
-    } */
+    }
 ];
 
 const validTags = [
