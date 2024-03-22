@@ -18,16 +18,12 @@ const pendingColor = "rgb(218, 253, 60)";
 const completedColor = "rgb(116, 196, 118)";
 const expiredColor = "rgb(251, 106, 74)";
 
-// 1 Start Vote
 // 2 Waiting Vote
-// 3 Start Reveal
 // 4 Waiting Reveal
-// 5 Claim
 // 6 Completed
-// 7 Expired
 
 var videoDB = [
-    {
+    /* {
         hashId: "95Bbjmwlnss",
         company: "Youtube",
         title: "Bitcoin: Watching the Weekly Close",
@@ -106,7 +102,7 @@ var videoDB = [
             [12, 15.12],
             [11, 55.25],
         ]
-    }
+    } */
 ];
 
 const validTags = [
@@ -803,11 +799,11 @@ function generateDiv(videoId, status, results, leftVote) {
     switch (status) {
         case 2:
             //Waiting Vote  
-            setTitleDesc("Poll results", `Waiting for ${leftVote} vote`);
+            setTitleDesc("Poll results", `Waiting for ${leftVote} votes`);
             break;
         case 4:
             //Waiting Reveal
-            setTitleDesc("Temporary results", `Waiting for ${leftVote} reveal`);
+            setTitleDesc("Temporary results", `Waiting for ${leftVote} reveals`);
             generatePoll(results);   
             break;
         default:

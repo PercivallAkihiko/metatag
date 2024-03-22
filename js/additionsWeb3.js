@@ -186,12 +186,26 @@ function calculateTagPercentages(votes, totalValidators) {
     return result;
 }
 
-// Function to update in real time the vote page
+// Function to update in real time the vote page for validators
 function updateVotePage() {
     loadVoteList(1);
     var all = document.querySelector(".filter_all"); 
     var pending = document.querySelector(".filter_pending"); 
     var action = document.querySelector(".filter_action"); 
+    var completed = document.querySelector(".filter_completed");
+    all.classList.remove("filter_element_active");
+    pending.classList.remove("filter_element_active");
+    action.classList.remove("filter_element_active");
+    completed.classList.remove("filter_element_active");
+    all.classList.add("filter_element_active");
+}
+
+// Function to update in real time the vote page for companies
+function updateVotePage2() {
+    loadVoteList(1);
+    var all = document.querySelector(".filter_all"); 
+    var pending = document.querySelector(".filter_vote"); 
+    var action = document.querySelector(".filter_reveal"); 
     var completed = document.querySelector(".filter_completed");
     all.classList.remove("filter_element_active");
     pending.classList.remove("filter_element_active");
@@ -227,3 +241,23 @@ function removeDuplicatesEventDB(list) {
     });
     return result;
   }
+
+// Function to get the tags voted by the validators
+async function retrieveTagsVoted(video, company) {
+    // Return the promise chain
+    const events = await dAppContract.getPastEvents('eventRevealHash', {
+        filter: {
+            company: company,
+            videoId: video
+        },
+        fromBlock: 0,
+        toBlock: 'latest'
+    })
+    if (events.length != 0) {
+        let combined = [];
+        for (let i = 0; i < events.length; i++) {
+            combined = combined.concat(events[i].returnValues[3]);
+        }
+        return calculateTagPercentages(combined, numberOfValidators);
+    }
+}

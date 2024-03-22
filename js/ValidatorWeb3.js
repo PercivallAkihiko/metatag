@@ -446,26 +446,6 @@ async function calculateTotalClaimedTokens() {
     return [value, value2];
 }
 
-// Function to get the tags voted by the validators
-async function retrieveTagsVoted(video, company) {
-    // Return the promise chain
-    const events = await dAppContract.getPastEvents('eventRevealHash', {
-        filter: {
-            company: company,
-            videoId: video
-        },
-        fromBlock: 0,
-        toBlock: 'latest'
-    })
-    if (events.length != 0) {
-        let combined = [];
-        for (let i = 0; i < events.length; i++) {
-            combined = combined.concat(events[i].returnValues[3]);
-        }
-        return calculateTagPercentages(combined, numberOfValidators);
-    }
-}
-
 // Listen for the eventAddVideo event
 async function eventAddVideo() {
     dAppContract.events.eventAddVideo({

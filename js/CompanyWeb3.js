@@ -185,7 +185,7 @@ async function eventPastAddVideo() {
     for (let i = 0; i < events.length; i++) {
         let videoId = events[i].returnValues[1];
         let asciiString = decimalToString(videoId);
-        fetchYouTubeVideoTitle(asciiString)
+        await fetchYouTubeVideoTitle(asciiString)
             .then(title => {
                 const newVideoEntry = {
                     hashId: asciiString,
@@ -199,21 +199,190 @@ async function eventPastAddVideo() {
                 };
                 videoDB.push(newVideoEntry);
                 loadVoteList(1);
-                //eventPastSubmitHash(events[i].returnValues[0], videoId);
             })
+        await eventPastSubmitHash(events[i].returnValues[0], videoId);
     }
 }
+
+// Listen for the eventAddVideo event
+async function eventAddVideo() {
+    dAppContract.events.eventAddVideo({
+        fromBlock: 'latest',
+        filter: {
+            company: account
+        }
+    }).on('data', async function(event) {
+        let videoId = event.returnValues[1];
+        let asciiString = decimalToString(videoId);
+        await fetchYouTubeVideoTitle(asciiString)
+            .then(title => {
+                const newVideoEntry = {
+                    hashId: asciiString,
+                    title: title,
+                    company: companies[event.returnValues[0]],
+                    link: "",
+                    status: 2,
+                    leftvote: numberOfValidators,
+                    reward: "-",
+                    results: []
+                };
+                videoDB.push(newVideoEntry);
+                videoDB = Array.from(videoDB.reduce((acc, item) => acc.set(`${item.hashId}-${item.company}`, item), new Map()).values());
+                updateVotePage2();
+                loadMainPage();
+            })
+    })
+}
+
+// Function to retrieve past SubmitHash events
+async function eventPastSubmitHash(company, video) {
+    const events = await dAppContract.getPastEvents('eventSubmitHash', {
+        fromBlock: 0,
+        toBlock: 'latest',
+        filter: {
+            company: company,
+            videoId: video
+        }
+    });
+    if (events.length != 0) {
+        for (let event = 0; event < events.length; event++) {
+            for (let i = 0; i < videoDB.length; i++) {
+                if (videoDB[i].company === companies[company] && videoDB[i].hashId === decimalToString(video)) {
+                    videoDB[i].leftvote = videoDB[i].leftvote - 1;
+                    loadVoteList(1);
+                    if (videoDB[i].leftvote == 0) {
+                        videoDB[i].status = 4;
+                        videoDB[i].leftvote = numberOfValidators;
+                        loadVoteList(1);
+                    }
+                    break;
+                }
+            }
+        }
+        await eventPastRevealHash(events[0].returnValues[1], events[0].returnValues[2]);
+    }
+}
+
+// Listen for the eventSubmitHash event
+async function eventSubmitHash() {
+    dAppContract.events.eventSubmitHash({
+        fromBlock: 'latest',
+        filter: {
+            company: account
+        }
+    }).on('data', async function(event) {
+        for (let i = 0; i < videoDB.length; i++) {
+            if (videoDB[i].company === companies[event.returnValues[1]] && videoDB[i].hashId === decimalToString(event.returnValues[2])) {
+                getHashedCounter(event.returnValues[1], decimalToString(event.returnValues[2])).then(hashedCounter => {
+                    videoDB[i].leftvote = numberOfValidators - Number(hashedCounter);
+                    updateVotePage2();
+                    if (numberOfValidators - Number(hashedCounter) == 0) {
+                        videoDB[i].status = 4;
+                        videoDB[i].leftvote = numberOfValidators;
+                        updateVotePage2();
+                        loadMainPage();
+                    }
+                });
+                break;
+            }
+        }
+    })
+}
+
+// Function to retrieve past RevealHash events
+async function eventPastRevealHash(company, video) {
+    const events = await dAppContract.getPastEvents('eventRevealHash', {
+        filter: {
+            company: company,
+            videoId: video
+        },
+        fromBlock: 0,
+        toBlock: 'latest'
+    })
+    if (events.length != 0) {
+        for (let event = 0; event < events.length; event++) {
+            for (let i = 0; i < videoDB.length; i++) {
+                if (videoDB[i].company === companies[company] && videoDB[i].hashId === decimalToString(video)) {
+                    videoDB[i].leftvote = videoDB[i].leftvote - 1;
+                    loadVoteList(1);
+                    if (videoDB[i].leftvote == 0) {
+                        videoDB[i].status = 6;
+                        await retrieveTagsVoted(video, company).then(output => {
+                            videoDB[i].results = output;
+                        })
+                        .catch(error => console.error(error));
+                    }
+                loadVoteList(1);
+                break;
+                }
+            }
+        }
+    }
+}
+
+// Listen for the eventRevealHash event
+async function eventRevealHash() {
+    dAppContract.events.eventRevealHash({
+        fromBlock: 'latest',
+        filter: {
+            company: account
+        }
+    }).on('data', async function(event) {
+        for (let i = 0; i < videoDB.length; i++) {
+            if (videoDB[i].company === companies[event.returnValues[1]] && videoDB[i].hashId === decimalToString(event.returnValues[2])) {
+                getRevealedCounter(event.returnValues[1], decimalToString(event.returnValues[2])).then(RevealedCounter => {
+                    videoDB[i].leftvote = numberOfValidators - Number(RevealedCounter);
+                    if (numberOfValidators - Number(RevealedCounter) == 0) {
+                        videoDB[i].status = 6;
+                        loadMainPage();
+                    }
+                });
+                await retrieveTagsVoted(event.returnValues[2], event.returnValues[1]).then(output => {
+                    videoDB[i].results = output;
+                });
+                updateVotePage2();
+                break;
+            }
+        }
+    })
+}
+
+// Funtion used to load the dashboard information based on videos
+async function loadMainPage() {
+    let action = 0;
+    let pending = 0;
+    let completed = 0;
+    for (let i = 0; i < videoDB.length; i++) {
+        if (videoDB[i].status == 2) {
+            action +=1;
+        }
+        else if (videoDB[i].status == 4) {
+            pending +=1;
+        }
+        else {
+            completed +=1;
+        }
+    }
+    document.getElementById('actionDisplay').textContent = action;
+    document.getElementById('pendingDisplay').textContent = pending;
+    document.getElementById('completedDisplay').textContent = completed;
+}
+
 // It waits the event from "bothWeb3.js" generated as last and it calls functions related to the validator
 document.addEventListener('sharedDataReady', async () => {
     numberOfValidators = Number(await dAppContract.methods.validatorsQuantity().call());
-    await loadTotalTokensAndLockedTokens()
+    await loadTotalTokensAndLockedTokens();
     await loadLockDateAndDays();
     await eventPastAddVideo();
+    loadMainPage();
+    eventAddVideo();
+    eventSubmitHash();
+    eventRevealHash();
     listenerLockTokensButton();
     listenerAddVideoButton();
     listenerWithdrawCompanyButton();
     eventBuyTokens();
-    eventMTGforVoucher()
+    eventMTGforVoucher();
     eventReceiveTokensFromCompany();
     eventWithdrawTokensCompany();
 });
