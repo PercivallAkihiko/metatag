@@ -799,7 +799,7 @@ function generateDiv(videoId, status, results, leftVote) {
     switch (status) {
         case 2:
             //Waiting Vote  
-            setTitleDesc("Poll results", `Waiting for ${leftVote} votes`);
+            setTitleDesc("Information", `Waiting for ${leftVote} votes`);
             break;
         case 4:
             //Waiting Reveal
