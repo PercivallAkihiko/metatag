@@ -436,6 +436,7 @@ function initVoteSection(){
     var completed = document.querySelector(".filter_completed");
 
     var overlay = document.querySelector(".overlay");
+    var youtubeVideo = document.querySelector(".youtubeVideo");
     var addVideoButton = document.querySelector(".add_video_button_cointainer");
     var insertWrapper = document.querySelector(".insert_wrapper");
 
@@ -449,6 +450,7 @@ function initVoteSection(){
     overlay.addEventListener("click" , () => {
         if (event.target === overlay) {
             overlay.classList.toggle("active");
+            youtubeVideo.src = "";
         }
     });
 
