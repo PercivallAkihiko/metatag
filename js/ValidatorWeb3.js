@@ -401,7 +401,6 @@ async function loadMainPage() {
 
 }
 
-
 // Function to calculate total claimed tokens
 async function calculateTotalClaimedTokens() {
     // Return the promise chain
@@ -527,12 +526,13 @@ async function eventRevealHash() {
 async function eventGetRewards() {
     dAppContract.events.eventGetRewards({
         fromBlock: 'latest',
+        filter: {
+            validator: account,
+        }
     }).on('data', async function(event) {
         for (let i = 0; i < videoDB.length; i++) {
             if (videoDB[i].company === companies[event.returnValues[1]] && videoDB[i].hashId === decimalToString(event.returnValues[2])) {
-                if (event.returnValues[0].toLowerCase() == account) {
-                    videoDB[i].status = 6;
-                }
+                videoDB[i].status = 6;
                 retrieveTagsVoted(event.returnValues[2], event.returnValues[1]).then(output => {
                     videoDB[i].results = output;
                 })
@@ -544,6 +544,11 @@ async function eventGetRewards() {
                     videoDB[i].reward = "- " + web3.utils.fromWei(event.returnValues[3], 'ether')
                 }
                 updateVotePage();
+                const lockedTokens = parseFloat(web3.utils.fromWei(await dAppContract.methods.balanceValidators(account).call(), 'ether'));
+                const liquidTokens = parseFloat(web3.utils.fromWei(await tokenContract.methods.balanceOf(account).call(), 'ether'));
+                document.getElementById('totalTokens').textContent = lockedTokens + liquidTokens;
+                document.getElementById('totalTokens2').textContent = lockedTokens + liquidTokens;
+                document.getElementById('lockedTokens').textContent = lockedTokens;
                 break;
             }
         }
