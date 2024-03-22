@@ -1,16 +1,3 @@
-// START_VOTE
-// WAITING_VOTE
-
-// START_REVEAL
-// WAITING_REVEAL
-
-// CLAIM
-// COMPLETED
-
-// EXPIRED
-
-
-
 //1 MTG = 0.001 ETH
 var ethxmtg = 0.001;
 
@@ -486,7 +473,6 @@ var eventsDB = [
 
 var ethereumPrice = 1;
 
-// OKEH
 document.addEventListener("DOMContentLoaded", function() {    
 
     initMenu();
@@ -502,8 +488,10 @@ document.addEventListener("DOMContentLoaded", function() {
         generateChart(monthxprice[0], monthxprice[1], [2.4, 2.5, 2.4, 2.7, 1,3,10,5,2.3,4.2, 15, 20, 13.4, 15,5.5, 19, 20, 21.2, 30, 24, 45, 45, 70]);
     });   
     
+    InitImage();
 });
 
+//Initialization of menu functionality listeners
 function initMenu(){
     var menuButton = document.querySelector(".menu_button");    
     var titles = document.querySelectorAll(".title"); 
@@ -545,6 +533,7 @@ function initMenu(){
     setItemMenuListener(voucher, voucherWrapper, "Voucher")
 }
 
+//Initialization of vote functionality listeners
 function initVoteList(){
     var all = document.querySelector('.filter_all');    
     var pending = document.querySelector(".filter_pending");    
@@ -569,6 +558,7 @@ function initVoteList(){
     });
 }
 
+//Retrieve current ethereum price using CoinGeckoAPI
 function initEthPrice(){    
     var ethPriceCookie = getCookie("ethPrice")
     if(ethPriceCookie){
@@ -590,6 +580,7 @@ function initEthPrice(){
     });
 }
 
+//Initialization of profile functionality listeners
 function initProfile(){
     var profileButton = document.querySelector('.profile_button');
     var profileContent = document.querySelector('.profile_content_wrapper');
@@ -604,6 +595,7 @@ function initProfile(){
     });
 }
 
+//Init to populate the event list
 function initEventList(){
     var events_list = document.querySelector('.events_list');        
 
@@ -646,6 +638,7 @@ function initEventList(){
     setGridRows(eventCounter, events_list, 100);
 }
 
+//Initialization of voucher functionlity listeners
 function initVoucherListener(){
     var voucherCopy = document.querySelector('.voucher_copy'); 
     var voucherGenerate = document.querySelector('.voucher_generate'); 
@@ -656,6 +649,7 @@ function initVoucherListener(){
     });
 }
 
+//Creation of the single event div
 function createMacroEventDiv(div, name, value, chosenValidator = false){
     if(value.length == 0){ return;}
     var macroElement = document.createElement('div');
@@ -689,6 +683,7 @@ function createMacroEventDiv(div, name, value, chosenValidator = false){
     div.appendChild(macroElement);        
 }
 
+//Setting up menu listeners and div change
 function setItemMenuListener(button, wrapper, title){
     var dashboard = document.querySelector(".dashboard"); 
     var vote = document.querySelector(".vote"); 
@@ -727,6 +722,7 @@ function setItemMenuListener(button, wrapper, title){
     });    
 }
 
+//Populate the voting list based on the filter clicked
 function loadVoteList(option){
     var videolistDiv = document.querySelector('.video_list');    
     var overlay = document.querySelector(".overlay");    
@@ -827,6 +823,7 @@ function loadVoteList(option){
     setGridRows(videoCounter, videolistDiv, 80);
 }
 
+//Setting up filter listeners
 function setFilterListener(selectedFilter, option){
     var all = document.querySelector(".filter_all"); 
     var pending = document.querySelector(".filter_pending"); 
@@ -844,10 +841,12 @@ function setFilterListener(selectedFilter, option){
     });    
 }
 
+//Set grid height based on the number of rows
 function setGridRows(number, listDiv, height) {                  
     listDiv.style.gridTemplateRows = 'repeat(' + number + ', ' + height + 'px)';
 }
 
+//Generate an alphanumeric seed
 function generateAlphanumericSeed() {
     const alphanumericChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     const seedLength = 11;
@@ -861,6 +860,7 @@ function generateAlphanumericSeed() {
     return seed;
 }
 
+//Set cookie on the user browser
 function setCookie(name, dataObject, daysToExpire) {
     var expirationDate = new Date();
     if(daysToExpire == 0.5){
@@ -877,6 +877,7 @@ function setCookie(name, dataObject, daysToExpire) {
     document.cookie = cookieValue;
 }
   
+//Get cookie from the user browser
 function getCookie(name) {
     const decodedCookie = decodeURIComponent(document.cookie);
     const cookieArray = decodedCookie.split(';');
@@ -894,6 +895,7 @@ function getCookie(name) {
     return null;
 }
 
+//Convert the tag from text to index
 function getTagPositions() {
     const tagNames = document.querySelectorAll('.tags_container .tag_name');
     const tagPositions = [];
@@ -905,12 +907,14 @@ function getTagPositions() {
     return tagPositions;
 }
 
+//Reset every listener set on the element
 function resetListeners(element){
     var element = document.querySelector(element);
     var new_element = element.cloneNode(true);
     element.parentNode.replaceChild(new_element, element);
 }
 
+//Popup of the video's div
 function generateDiv(videoId, status, results, leftVote, company) {   
     resetListeners(".tag_button");
 
@@ -987,11 +991,12 @@ function generateDiv(videoId, status, results, leftVote, company) {
     overlay.classList.toggle("active");  
 }
 
-function changeVideoID(id){
-    //document.getElementById('youtubeVideo').src = "https://www.youtube.com/embed/" + id + "?si=EwWUd-wd4mxodglK"
+//Change the video ID in the youtube iframe
+function changeVideoID(id){    
     document.getElementById('youtubeVideo').src = "https://www.youtube.com/embed/" + id;    
 }
 
+//Disable the button on the video
 function disableDiv(videoId, confirm=false){
     var tagsContainer = document.querySelector(".tags_container");
     var tag_button = document.querySelector(".tag_button");
@@ -1007,6 +1012,7 @@ function disableDiv(videoId, confirm=false){
     }
 }
 
+//Switch div between poll and tags wrapper
 function hideShowVote(element){
     var pollWrapper = document.querySelector(".poll_wrapper");  
     var tagsWrapper = document.querySelector(".tags_wrapper");  
@@ -1017,6 +1023,7 @@ function hideShowVote(element){
     element.classList.remove("hide");
 }
 
+//Generate the poll results on the div
 function generatePoll(results){
     var pollContainer = document.querySelector(".poll_container");
     pollContainer.innerHTML = "<div class=\"poll_title\">Poll results</div>";
@@ -1076,12 +1083,12 @@ function generatePoll(results){
     }
 }
 
+//Append tag into the div
 function tagInserted(event) {
     var tagsContainer = document.querySelector(".tags_container");
     var inputElement = document.querySelector(".tags_insert");
     var inputValue = inputElement.value.trim();
-
-    // Check if the entered tag is valid
+    
     if (event.key === "Enter" && inputValue !== "" && validTags.includes(inputValue)) {
         var tag = document.createElement("div");
         var tagName = document.createElement("div");
@@ -1104,6 +1111,7 @@ function tagInserted(event) {
     }
 }
 
+//Generate div for the suggested tag
 function suggestTag(event) {
     var inputElement = document.querySelector(".tags_insert");
     var inputValue = inputElement.value.trim().toLowerCase();
@@ -1132,8 +1140,7 @@ function createSuggestion(container, tag) {
     var tagsInsert = document.querySelector(".tags_insert");    
     suggestionDiv.className = "suggestion";
     suggestionDiv.textContent = tag;
-
-    // Add click event listener to add the clicked tag to tags
+    
     suggestionDiv.addEventListener("click", function () {
         addTagFromSuggestion(tag);
         clearSuggestions(container);
@@ -1143,12 +1150,12 @@ function createSuggestion(container, tag) {
     container.appendChild(suggestionDiv);
 }
 
+//Get tags from cookie
 function addTagFromCookie(videoId, disabled = false, first = false){
     var cookieValue = getCookie(videoId);
     var suggestionsContainer = document.querySelector(".suggestions_container");  
     var tagsContainer = document.querySelector(".tags_container");  
-
-    //console.log("First: " + first);
+    
     if (cookieValue === null && first){
         suggestionsContainer.innerHTML = "<grey>Seed: </grey> <cursive>submit to generate.</cursive>";        
         return
@@ -1169,6 +1176,7 @@ function addTagFromCookie(videoId, disabled = false, first = false){
       });    
 }
 
+//Add tag from the clicked suggestion
 function addTagFromSuggestion(tag, disabled=false) {
     var tagsContainer = document.querySelector(".tags_container");
     var tagElement = document.createElement("div");
@@ -1192,8 +1200,9 @@ function addTagFromSuggestion(tag, disabled=false) {
     tagsContainer.appendChild(tagElement);
 }
 
+//Clear existing suggestion
 function clearSuggestions(container) {
-    container.innerHTML = ""; // Clear existing suggestions
+    container.innerHTML = ""; 
 }
 
 function calculateTextWidth(text) {
@@ -1207,6 +1216,7 @@ function calculateTextWidth(text) {
     return width;
 }
 
+//Convert index to tag
 function getTagByIndex(index) {    
     index = index - 1;    
     if (index >= 0 && index < validTags.length) {
@@ -1222,9 +1232,6 @@ function validateInput(input, crypto) {
     var dollarValue = document.querySelectorAll(".dollar_value");
     var ethInput = document.querySelectorAll(".eth_input");
     var mtgInput = document.querySelectorAll(".mtg_input");
-
-    //var ethSell = document.querySelector(".eth_sell");
-    //var mtgSell = document.querySelector(".mtg_sell");
 
     input.value = input.value.replace(/[^0-9.,]/g, '');
 
@@ -1341,10 +1348,10 @@ function generateChart(days, ethprice, tokens){
     });
 }
 
+//Retrieve every ethereum price day by day
 var fetchEthereumPrices = async () => {
     var ethPrices = getCookie("ethPrices");
     if(ethPrices){
-        //console.log("Prices fetched from cookies.");
         return ethPrices;
     }
 
@@ -1381,7 +1388,6 @@ var fetchEthereumPrices = async () => {
             var months = datePricePairs.map(entry => entry.date);
             var prices = datePricePairs.map(entry => entry.price);
             setCookie("ethPrices", [months, prices], 0.5);
-            //console.log("Prices fetched from API.");
             return [months, prices];
 
         } else {
@@ -1392,10 +1398,10 @@ var fetchEthereumPrices = async () => {
     }
 };
 
-document.addEventListener('DOMContentLoaded', function() {
+function InitImage(){
     document.getElementById('showImageBtn').addEventListener('click', function() {
         const container = document.getElementById('fullscreenImageContainer');
-        container.style.display = 'flex'; // Show the container with the image
+        container.style.display = 'flex';
 
         setTimeout(function() {
             container.style.display = 'none';
@@ -1404,4 +1410,4 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('metaIcon').addEventListener('click', function() {
         location.reload();
     })
-})
+}

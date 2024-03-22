@@ -386,9 +386,10 @@ document.addEventListener("DOMContentLoaded", function() {
      */
     
     generateChart();
-    
+    InitImage();    
 });
 
+//Initialization of menu functionality listeners
 function initMenu(){
     var menuButton = document.querySelector(".menu_button");    
     var titles = document.querySelectorAll(".title"); 
@@ -427,6 +428,7 @@ function initMenu(){
     setItemMenuListener(voucher, voucherWrapper, "Voucher")
 }
 
+//Initialization of vote functionality listeners
 function initVoteSection(){
     var all = document.querySelector('.filter_all');    
     var vote = document.querySelector(".filter_vote");    
@@ -459,11 +461,11 @@ function initVoteSection(){
     }); 
 }
 
+//Retrieve current ethereum price using CoinGeckoAPI
 function initEthPrice(){    
     var ethPriceCookie = getCookie("ethPrice")
     if(ethPriceCookie){
-        ethereumPrice = ethPriceCookie;
-        //console.log("ETH price fetched from cookies: " + ethPriceCookie);
+        ethereumPrice = ethPriceCookie;        
         return;
     }
 
@@ -472,14 +474,14 @@ function initEthPrice(){
     .then(response => response.json())
     .then(data => {
         ethereumPrice = data["ethereum"].usd;
-        setCookie("ethPrice", ethereumPrice, 0.5);
-        //console.log("Actual ETH price: " + ethereumPrice);
+        setCookie("ethPrice", ethereumPrice, 0.5);        
     })
     .catch(error => {
         console.error('Error fetching cryptocurrency price:', error);
     });
 }
 
+//Initialization of profile functionality listeners
 function initProfile(){
     var profileButton = document.querySelector('.profile_button');
     var profileContent = document.querySelector('.profile_content_wrapper');
@@ -494,6 +496,7 @@ function initProfile(){
     });
 }
 
+//Init to populate the event list
 function initEventList(){
     var events_list = document.querySelector('.events_list');        
 
@@ -537,6 +540,7 @@ function initEventList(){
     setGridRows(eventCounter, events_list, 100);
 }
 
+//Initialization of voucher functionlity listeners
 function initVoucherListener(){
     var voucherCopy = document.querySelector('.voucher_copy'); 
     var voucherGenerate = document.querySelector('.voucher_generate'); 
@@ -547,6 +551,7 @@ function initVoucherListener(){
     });   
 }
 
+//Generate a random voucher
 function generateVoucher() {
     let code = '';
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -561,6 +566,7 @@ function generateVoucher() {
     return code;
 }
 
+//Creation of the single event div
 function createMacroEventDiv(div, name, value, chosenValidator = false){
     if(value.length == 0){ return;}
     var macroElement = document.createElement('div');
@@ -594,6 +600,7 @@ function createMacroEventDiv(div, name, value, chosenValidator = false){
     div.appendChild(macroElement);        
 }
 
+//Setting up menu listeners and div change
 function setItemMenuListener(button, wrapper, title){
     var dashboard = document.querySelector(".dashboard"); 
     var vote = document.querySelector(".vote"); 
@@ -628,6 +635,7 @@ function setItemMenuListener(button, wrapper, title){
     });    
 }
 
+//Populate the voting list based on the filter clicked
 function loadVoteList(option){
     var videolistDiv = document.querySelector('.video_list');    
     var overlay = document.querySelector(".overlay");    
@@ -693,6 +701,7 @@ function loadVoteList(option){
     setGridRows(videoCounter, videolistDiv, 80);
 }
 
+//Setting up filter listeners
 function setFilterListener(selectedFilter, option){
     var all = document.querySelector(".filter_all"); 
     var vote = document.querySelector(".filter_vote"); 
@@ -710,10 +719,12 @@ function setFilterListener(selectedFilter, option){
     });    
 }
 
+//Set grid height based on the number of rows
 function setGridRows(number, listDiv, height) {                  
     listDiv.style.gridTemplateRows = 'repeat(' + number + ', ' + height + 'px)';
 }
 
+//Generate an alphanumeric seed
 function generateAlphanumericSeed() {
     const alphanumericChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     const seedLength = 11;
@@ -727,6 +738,7 @@ function generateAlphanumericSeed() {
     return seed;
 }
 
+//Set cookie on the user browser
 function setCookie(name, dataObject, daysToExpire) {
     var expirationDate = new Date();
     if(daysToExpire == 0.5){
@@ -743,6 +755,7 @@ function setCookie(name, dataObject, daysToExpire) {
     document.cookie = cookieValue;
 }
   
+//Get cookie from the user browser
 function getCookie(name) {
     const decodedCookie = decodeURIComponent(document.cookie);
     const cookieArray = decodedCookie.split(';');
@@ -760,6 +773,7 @@ function getCookie(name) {
     return null;
 }
 
+//Convert the tag from text to index
 function getTagPositions() {
     const tagNames = document.querySelectorAll('.tags_container .tag_name');
     const tagPositions = [];
@@ -771,12 +785,14 @@ function getTagPositions() {
     return tagPositions;
 }
 
+//Reset every listener set on the element
 function resetListeners(element){
     var element = document.querySelector(element);
     var new_element = element.cloneNode(true);
     element.parentNode.replaceChild(new_element, element);
 }
 
+//Popup of the video's div
 function generateDiv(videoId, status, results, leftVote) {       
     var overlay = document.querySelector(".overlay");
     var pollWrapper = document.querySelector(".poll_wrapper");
@@ -802,8 +818,8 @@ function generateDiv(videoId, status, results, leftVote) {
     overlay.classList.toggle("active");  
 }
 
+//Change the video ID in the youtube iframe
 function changeVideoID(id){
-    //document.getElementById('youtubeVideo').src = "https://www.youtube.com/embed/" + id + "?si=EwWUd-wd4mxodglK"
     document.getElementById('youtubeVideo').src = "https://www.youtube.com/embed/" + id;
     fetchYouTubeVideoLength(id)
         .then(lengthInSeconds => {
@@ -813,6 +829,7 @@ function changeVideoID(id){
         })
 }
 
+//Generate the poll results on the div
 function generatePoll(results){
     var pollContainer = document.querySelector(".poll_container");
 
@@ -871,6 +888,7 @@ function generatePoll(results){
     }
 }
 
+//Set the info on the poll container
 function setTitleDesc(title, desc){
     var pollContainer = document.querySelector(".poll_container");
     pollContainer.innerHTML = "";
@@ -888,6 +906,7 @@ function setTitleDesc(title, desc){
     pollDesc.innerHTML = desc;
 }
 
+//Convert index to tag
 function getTagByIndex(index) {    
     index = index - 1;    
     if (index >= 0 && index < validTags.length) {
@@ -898,6 +917,7 @@ function getTagByIndex(index) {
     }
 }
 
+//Switch div between poll and tags wrapper
 function hideShowVote(element){
     var pollWrapper = document.querySelector(".poll_wrapper");  
     var insertWrapper = document.querySelector(".insert_wrapper");  
@@ -913,9 +933,6 @@ function validateInput(input, crypto) {
     var dollarValue = document.querySelectorAll(".dollar_value");
     var ethInput = document.querySelectorAll(".eth_input");
     var mtgInput = document.querySelectorAll(".mtg_input");
-
-    //var ethSell = document.querySelector(".eth_sell");
-    //var mtgSell = document.querySelector(".mtg_sell");
 
     input.value = input.value.replace(/[^0-9.,]/g, '');
 
@@ -933,8 +950,6 @@ function validateInput(input, crypto) {
         formattedResult = result.toFixed(4);
         numericResult = parseFloat(formattedResult);
 
-        //ethSell.value = floatValue;
-
         mtgInput.forEach(element => {
             element.value = floatValue / ethxmtg;
         }); 
@@ -943,8 +958,6 @@ function validateInput(input, crypto) {
         result = floatValue * ethereumPrice  * ethxmtg;
         formattedResult = result.toFixed(4);
         numericResult = parseFloat(formattedResult);
-
-        //mtgSell.value = floatValue;
 
         ethInput.forEach(element => {
             element.value = floatValue * ethxmtg;
@@ -1038,6 +1051,7 @@ function validateInputLock(input) {
 
 let chartInstance;
 
+//Chart generation 
 function generateChart() {
     const ctx = document.getElementById("balance_chart").getContext('2d');
     const initialTotalTokensValue = parseFloat(document.getElementById('lockedTokens').innerText) || 0;
@@ -1164,13 +1178,13 @@ function generateChart() {
     }
 }; */
 
-document.addEventListener('DOMContentLoaded', function() {
+function InitImage(){
     document.getElementById('showImageBtn').addEventListener('click', function() {
         const container = document.getElementById('fullscreenImageContainer');
-        container.style.display = 'flex'; // Show the container with the image
+        container.style.display = 'flex'; 
 
         setTimeout(function() {
             container.style.display = 'none';
         }, 50);
     });
-});
+}
