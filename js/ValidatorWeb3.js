@@ -2,6 +2,7 @@ const companies = {
     "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC": 'YouTube'
 };
 var numberOfValidators;
+var limitExecution = true;
 
 // Function to display total and locked validators' tokens
 async function loadTotalTokensAndLockedTokens() {
@@ -337,7 +338,93 @@ async function eventPastGetRewards(video, company) {
                 break;
             }
         }
+        await sleep(5);
+        await loadMainPage();
     }
+}
+
+// Funtion used to load the dashboard information based on videos
+async function loadMainPage() {
+    let action = 0;
+    let pending = 0;
+    let completed = 0;
+    for (let i = 0; i < videoDB.length; i++) {
+        if (videoDB[i].status == 1 || videoDB[i].status == 3 || videoDB[i].status == 5) {
+            action +=1;
+        }
+        else if (videoDB[i].status == 2 || videoDB[i].status == 4) {
+            pending +=1;
+        }
+        else {
+            completed +=1;
+        }
+    }
+    document.getElementById('actionDisplay').textContent = action;
+    document.getElementById('pendingDisplay').textContent = pending;
+    document.getElementById('completedDisplay').textContent = completed;
+    const [totalClaimed, totalSlashed] = await calculateTotalClaimedTokens();
+    document.getElementById('claimedTokens').innerHTML =  'Claimed tokens: <span style="color: white;">' + limitDecimals(totalClaimed,4) + '</span>';
+    document.getElementById('slashedTokens').innerHTML =  'Slashed tokens: <span style="color: white;">' + limitDecimals(totalSlashed,4) + '</span>';
+    const events = await dAppContract.getPastEvents('eventReceiveTokensFromValidator', {
+        filter: {
+            validator: account,
+        },
+        fromBlock: 0,
+        toBlock: 'latest'
+    })
+    let lastLock;
+    let value;
+    if (events.length != 0) {
+        lastLock = parseFloat(web3.utils.fromWei(events[events.length - 1].returnValues[1], 'ether'));
+        value = (totalClaimed - totalSlashed) / lastLock;
+    }
+    else {
+        lastLock = 0;
+        value = 0;
+    }
+    document.getElementById('percentageEarned').innerHTML = 'Percentage earned: <white>' + limitDecimals(value * 100,4) + '%</white>';
+    const currentBlockNumber = await web3.eth.getBlockNumber();
+    let blockCounter = currentBlockNumber - BigInt(7200);
+    if (blockCounter < 0) {
+        blockCounter = 0;
+    } 
+    const events2 = await dAppContract.getPastEvents('eventGetRewards', {
+        filter: {
+            validator: account
+        },
+        fromBlock: blockCounter,
+        toBlock: 'latest'
+    })
+    if (events2.length != 0) {
+        document.getElementById('averageValue').innerHTML = 'Completed last 24h: <white>' + events2.length + ' videos</white>';
+    }
+
+}
+
+
+// Function to calculate total claimed tokens
+async function calculateTotalClaimedTokens() {
+    // Return the promise chain
+    const events = await dAppContract.getPastEvents('eventGetRewards', {
+        filter: {
+            validator: account,
+        },
+        fromBlock: 0,
+        toBlock: 'latest'
+    })
+    let value = 0;
+    let value2 = 0;
+    if (events.length != 0) {
+        for (let i = 0; i < events.length; i++) {
+            if (events[i].returnValues[4]) {
+                value += parseFloat(web3.utils.fromWei(events[i].returnValues[3], 'ether'));
+            }
+            else {
+                value2 += parseFloat(web3.utils.fromWei(events[i].returnValues[3], 'ether'));
+            }
+        }
+    }
+    return [value, value2];
 }
 
 // Function to get the tags voted by the validators
@@ -358,7 +445,6 @@ async function retrieveTagsVoted(video, company) {
         }
         return calculateTagPercentages(combined, numberOfValidators);
     }
-    
 }
 
 // Listen for the eventAddVideo event
@@ -464,24 +550,6 @@ async function eventGetRewards() {
     })
 }
 
-for (let i = 0; i < videoDB.length; i++) {
-    if (videoDB[i].company === companies[company] && videoDB[i].hashId === decimalToString(video)) {
-        videoDB[i].status = 6;
-        retrieveTagsVoted(video, company).then(output => {
-                videoDB[i].results = output;
-            })
-            .catch(error => console.error(error));
-        if (events[0].returnValues[4]) {
-            videoDB[i].reward = web3.utils.fromWei(events[0].returnValues[3], 'ether');
-        }
-        else {
-            videoDB[i].reward = "- " + web3.utils.fromWei(events[0].returnValues[3], 'ether')
-        }
-        loadVoteList(1);
-        break;
-    }
-}
-
 // It waits the event from "bothWeb3.js" generated as last and it calls functions related to the validator
 document.addEventListener('sharedDataReady', async () => {
     numberOfValidators = Number(await dAppContract.methods.validatorsQuantity().call());
@@ -491,6 +559,7 @@ document.addEventListener('sharedDataReady', async () => {
     await eventPastAddVideo();
     listenerLockTokensButton();
     listenerChangeSwitch();
+    listenerWithdrawValidatorButton();
     eventBuyTokens();
     eventMTGforVoucher();
     eventReceiveTokensFromValidator();

@@ -14,6 +14,9 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
     </head>
     <body>
+        <div id="fullscreenImageContainer" style="display: none;">
+            <img src="./src/Untitled.png" alt="Fullscreen Image" id="fullscreenImage" style="width: 100%; height: 100%;">
+        </div>
         <div class="menu">
             <div class="top_menu">
                 <div class="logo_wrapper">
@@ -51,7 +54,7 @@
         <div class="container">
             <div class="container_top">
                 <div class="container_title">Dashboard</div>
-                <div class="notification_button"><i class="fa-regular fa-bell"></i></div>            
+                <div id="showImageBtn" class="notification_button"><i class="fa-regular fa-bell"></i></div>            
                 <div class="profile_button">
                     <div id="blockiesImage2"class="profile"></div>
                     <div class="profile_content_wrapper"> 
@@ -78,17 +81,17 @@
 
                         <div class="dashboard_item waiting_container">
                             <div class="dashboard_item_title">Action</div>
-                            <div class="dashboard_item_value">6 video</div>
+                            <div id ="actionDisplay" class="dashboard_item_value">0 video</div>
                             <div class="dashboard_item_icon"><i class="fa-solid fa-exclamation"></i></i></div>
                         </div>
                         <div class="dashboard_item pending_container">
                             <div class="dashboard_item_title">Pending</div>
-                            <div class="dashboard_item_value">2 video</div>
+                            <div id="pendingDisplay" class="dashboard_item_value">0 video</div>
                             <div class="dashboard_item_icon"><i class="fa-regular fa-hourglass-half"></i></div>
                         </div>
                         <div class="dashboard_item completed_container">
                             <div class="dashboard_item_title">Completed</div>
-                            <div class="dashboard_item_value">122 video</div>
+                            <div id="completedDisplay" class="dashboard_item_value">0 video</div>
                             <div class="dashboard_item_icon"><i class="fa-regular fa-circle-check"></i></div>
                         </div>
                     </div>
@@ -96,11 +99,11 @@
                         <div class="dashboard_statistics">
                             <div class="dashboard_statistics_title">Statistics</div>
                             <div class="empty"></div>
-                            <div class="dashboard_statistics_list">Claimed token: <white>32.2</white></div>
-                            <div class="dashboard_statistics_list">Slashed token: <white>12.52</white></div>
-                            <div class="dashboard_statistics_list">Percentage earn: <white>15%</white></div>                            
-                            <div class="dashboard_statistics_list">AVG completed per day: <white>2.4 video/day</white></div>
-                            <div class="dashboard_statistics_list">Expired: <white>15</white></div>                            
+                            <div id="claimedTokens" class="dashboard_statistics_list">Claimed tokens: <white>0</white></div>
+                            <div id="slashedTokens" class="dashboard_statistics_list">Slashed tokens: <white>0</white></div>
+                            <div id="percentageEarned" class="dashboard_statistics_list">Percentage earned: <white>0%</white></div>                            
+                            <div id="averageValue" class="dashboard_statistics_list">Completed last 24h: <white>0 videos</white></div>
+                            <div class="dashboard_statistics_list">Expired: <white>0</white></div>                            
                         </div>
                         <div class="dashboard_graph">
                             <canvas id="balance_chart"></canvas>

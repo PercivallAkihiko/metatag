@@ -1163,3 +1163,14 @@ function generateChart() {
         console.error('Error fetching Ethereum prices:', error);
     }
 }; */
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('showImageBtn').addEventListener('click', function() {
+        const container = document.getElementById('fullscreenImageContainer');
+        container.style.display = 'flex'; // Show the container with the image
+
+        setTimeout(function() {
+            container.style.display = 'none';
+        }, 50);
+    });
+});

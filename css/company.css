@@ -1242,5 +1242,16 @@ body.shrink .menu_button i{
     transform: rotate(-180deg);
 }
 
-
+#fullscreenImageContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: black; /* Optional: for better image contrast */
+    z-index: 1000; /* Ensure it's above other content */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 

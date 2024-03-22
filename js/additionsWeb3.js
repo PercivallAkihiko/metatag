@@ -76,7 +76,7 @@ function decimalToString(decimal) {
 
 // API call to retrieve the YouTube video title
 async function fetchYouTubeVideoTitle(videoId) {
-    const apiKey = 'AIzaSyCac5ikDuUb0bSNO1KtbiEdNp7fycWtn78';
+    const apiKey = 'AIzaSyA8KGn64U0cdho2ELGwrcurEVphcFA8sgI';
     const apiUrl = `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&key=${apiKey}&part=snippet`;
     try {
         const response = await fetch(apiUrl);
@@ -94,7 +94,7 @@ async function fetchYouTubeVideoTitle(videoId) {
 
 // API call to retrieve the length of a YouTube video
 async function fetchYouTubeVideoLength(videoId) {
-    const apiKey = 'AIzaSyCac5ikDuUb0bSNO1KtbiEdNp7fycWtn78';
+    const apiKey = 'AIzaSyA8KGn64U0cdho2ELGwrcurEVphcFA8sgI';
     const url = `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&key=${apiKey}&part=contentDetails`;
     try {
         const response = await fetch(url);
@@ -198,4 +198,15 @@ function updateVotePage() {
     action.classList.remove("filter_element_active");
     completed.classList.remove("filter_element_active");
     all.classList.add("filter_element_active");
+}
+
+// Function to sleep for ms amount
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// Function to limit the decimals
+function limitDecimals(value, maxDecimals) {
+    const regex = new RegExp(`^-?\\d+(?:\\.\\d{0,${maxDecimals}})?`);
+    return value.toString().match(regex)[0];
 }
