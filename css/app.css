@@ -260,6 +260,11 @@ html{
     width: 21px;
     border-radius: 50%;
     border: 0.1px solid var(--text-color);
+    overflow: hidden; /* Ensure the canvas respects the border-radius */
+    display: flex; /* Center the canvas */
+    justify-content: center;
+    align-items: center;
+    border: 0.5px solid var(--text-color); /* Adjust based on your color variable */
 }
 
 .profile_content_wrapper{

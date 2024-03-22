@@ -12,6 +12,7 @@ function mainWeb3Loading() {
             try {
                 await loadAccountAndWeb3();
                 await loadSmartContracs();
+                await setBlockiesImage();
             } catch (error) {
                 console.error('An error occurred:', error);
                 document.getElementById('userAddress').textContent = 'Error fetching address!';
@@ -54,6 +55,22 @@ async function loadSmartContracs() {
     // Similarly, fetch and setup the dApp contract instance
     const dAppData = await fetch('../Solidity/out/MetaTag.sol/MetaTag.json').then(response => response.json());
     dAppContract = new web3.eth.Contract(dAppData.abi, dAppContractAddress);
+}
+
+// Function to set blockies image
+async function setBlockiesImage() {
+    const icon = blockies.create({ seed: account, size: 8, scale: 2 });
+    // Style the canvas for zooming
+    icon.style.transform = 'scale(1.5)'; // Adjust scaling factor for desired zoom level
+    icon.style.transformOrigin = 'center'; // Zoom in on the center
+    icon.style.borderRadius = '50%'; // Maintain circular shape
+    document.getElementById('blockiesImage').appendChild(icon);
+    const icon2 = blockies.create({ seed: account, size: 8, scale: 2 });
+    // Style the canvas for zooming
+    icon2.style.transform = 'scale(1.5)'; // Adjust scaling factor for desired zoom level
+    icon2.style.transformOrigin = 'center'; // Zoom in on the center
+    icon2.style.borderRadius = '50%'; // Maintain circular shape
+    document.getElementById('blockiesImage2').appendChild(icon2);
 }
 
 // Function to disconnect the account
