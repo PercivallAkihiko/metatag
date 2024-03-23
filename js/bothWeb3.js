@@ -1,3 +1,4 @@
+// Global variables so they can be called by all functions
 var account;
 var web3;
 var tokenContractAddress;
@@ -37,9 +38,7 @@ async function loadAccountAndWeb3() {
     const accounts = await window.ethereum.request({
         method: 'eth_requestAccounts'
     });
-    // Get first account loaded by Metamask
     account = accounts[0];
-    // Write the short address in the display
     document.getElementById('userAddress').textContent = `${account.substring(0, 6)}...${account.substring(account.length - 4)}`;
     web3 = new Web3(window.ethereum);
 }
@@ -59,14 +58,20 @@ async function loadSmartContracs() {
 
 // Function to set blockies image
 async function setBlockiesImage() {
-    const icon = blockies.create({ seed: account, size: 8, scale: 2 });
-    // Style the canvas for zooming
+    const icon = blockies.create({
+        seed: account,
+        size: 8,
+        scale: 2
+    });
     icon.style.transform = 'scale(1.5)'; // Adjust scaling factor for desired zoom level
     icon.style.transformOrigin = 'center'; // Zoom in on the center
     icon.style.borderRadius = '50%'; // Maintain circular shape
     document.getElementById('blockiesImage').appendChild(icon);
-    const icon2 = blockies.create({ seed: account, size: 8, scale: 2 });
-    // Style the canvas for zooming
+    const icon2 = blockies.create({
+        seed: account,
+        size: 8,
+        scale: 2
+    });
     icon2.style.transform = 'scale(1.5)'; // Adjust scaling factor for desired zoom level
     icon2.style.transformOrigin = 'center'; // Zoom in on the center
     icon2.style.borderRadius = '50%'; // Maintain circular shape

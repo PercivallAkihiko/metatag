@@ -1,6 +1,7 @@
+// Number of validators it will be loaded from the blockchain
 var numberOfValidators;
-var limitExecution = true;
 
+// Dictionary to keep track of the addresses of the companies
 const companies = {
     "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC": 'YouTube'
 };
@@ -14,7 +15,7 @@ async function loadTotalTokensAndLockedTokens() {
     document.getElementById('lockedTokens').textContent = lockedTokens;
 }
 
-// Listen for the eventBuyTokens event
+// Listen for the eventBuyTokens to update the UI
 async function eventBuyTokens() {
     tokenContract.events.eventBuyTokens({
         filter: {
@@ -32,7 +33,7 @@ async function eventBuyTokens() {
     })
 }
 
-// Listen for the eventMTGforVoucher event
+// Listen for the eventMTGforVoucher to update the UI
 async function eventMTGforVoucher() {
     dAppContract.events.eventMTGforVoucher({
         filter: {
@@ -48,8 +49,8 @@ async function eventMTGforVoucher() {
         document.getElementById('liquidTokens').textContent = liquidTokens;
         document.getElementById('maxMTG').textContent = "Balance " + liquidTokens;
         eventsDB.push({
-            name: "MTGforVoucher", 
-            validator: "",        
+            name: "MTGforVoucher",
+            validator: "",
             user: account,
             company: "",
             amount: "",
@@ -71,18 +72,14 @@ async function eventMTGforVoucher() {
 // Function for validators to lock their tokens (with approval)
 function listenerLockTokensButton() {
     document.getElementById('lockTokensButton').addEventListener('click', async () => {
-        // Convert amount to Wei for consistency with token decimals
         const tokensInWei = web3.utils.toWei(document.getElementById('MTGLockAmount').value, 'ether');
         try {
-            // Check current allowance
             const allowance = await tokenContract.methods.allowance(account, dAppContractAddress).call();
             if (web3.utils.toBigInt(allowance) < (web3.utils.toBigInt(tokensInWei))) {
-                // If allowance is less than the amount to be transferred, approve it
                 await tokenContract.methods.approve(dAppContractAddress, tokensInWei).send({
                     from: account
                 });
             }
-            // Proceed with the function call after ensuring sufficient allowance
             await dAppContract.methods.receiveTokensFromValidator(tokensInWei).send({
                 from: account
             });
@@ -92,7 +89,7 @@ function listenerLockTokensButton() {
     });
 }
 
-// Listen for the eventReceiveTokensFromValidator event
+// Listen for the eventReceiveTokensFromValidator to update the UI
 async function eventReceiveTokensFromValidator() {
     dAppContract.events.eventReceiveTokensFromValidator({
         filter: {
@@ -122,7 +119,7 @@ function listenerChangeSwitch() {
     });
 }
 
-// Function to set the switch of the validator on or off depending on the state in the blockchain
+// Function to set the switch of the validator on or off depending on the state from the blockchain
 async function loadSetVariable() {
     document.getElementById('changeSwitch').checked = await dAppContract.methods.variableValidators(account).call();
 }
@@ -150,7 +147,7 @@ async function loadLockDateAndDays() {
     }
 }
 
-// Listen for the eventSetVariable event
+// Listen for the eventSetVariable to update the UI
 async function eventSetVariable() {
     dAppContract.events.eventSetVariable({
         filter: {
@@ -171,7 +168,6 @@ async function eventSetVariable() {
     })
 }
 
-
 // Function for validators to withdraw their tokens from the smart contract
 function listenerWithdrawValidatorButton() {
     document.getElementById('withdrawValidatorButton').addEventListener('click', async () => {
@@ -185,7 +181,7 @@ function listenerWithdrawValidatorButton() {
     });
 }
 
-// Listen for the eventWithdrawTokensValidator event
+// Listen for the eventWithdrawTokensValidator to update the UI
 async function eventWithdrawTokensValidator() {
     dAppContract.events.eventWithdrawTokensValidator({
         filter: {
@@ -240,7 +236,7 @@ async function externalListenerGetRewards(videoId, company) {
     }
 }
 
-// Function to retrieve past addVideo events
+// Function to retrieve past addVideo events to update the UI
 async function eventPastAddVideo() {
     const events = await dAppContract.getPastEvents('eventAddVideo', {
         fromBlock: 0,
@@ -270,7 +266,7 @@ async function eventPastAddVideo() {
     }
 }
 
-// Function to retrieve past SubmitHash events
+// Function to retrieve past SubmitHash events to update the UI
 async function eventPastSubmitHash(company, video) {
     const events = await dAppContract.getPastEvents('eventSubmitHash', {
         fromBlock: 0,
@@ -300,7 +296,7 @@ async function eventPastSubmitHash(company, video) {
     }
 }
 
-// Function to retrieve past RevealHash events
+// Function to retrieve past RevealHash events to update the UI
 async function eventPastRevealHash(company, video) {
     const events = await dAppContract.getPastEvents('eventRevealHash', {
         filter: {
@@ -330,7 +326,7 @@ async function eventPastRevealHash(company, video) {
     }
 }
 
-// Function to retrieve past eventGetRewards events
+// Function to retrieve past eventGetRewards to update the UI
 async function eventPastGetRewards(video, company) {
     const events = await dAppContract.getPastEvents('eventGetRewards', {
         filter: {
@@ -351,8 +347,7 @@ async function eventPastGetRewards(video, company) {
                     .catch(error => console.error(error));
                 if (events[0].returnValues[4]) {
                     videoDB[i].reward = web3.utils.fromWei(events[0].returnValues[3], 'ether');
-                }
-                else {
+                } else {
                     videoDB[i].reward = "- " + web3.utils.fromWei(events[0].returnValues[3], 'ether')
                 }
                 loadVoteList(1);
@@ -371,21 +366,19 @@ async function loadMainPage() {
     let completed = 0;
     for (let i = 0; i < videoDB.length; i++) {
         if (videoDB[i].status == 1 || videoDB[i].status == 3 || videoDB[i].status == 5) {
-            action +=1;
-        }
-        else if (videoDB[i].status == 2 || videoDB[i].status == 4) {
-            pending +=1;
-        }
-        else {
-            completed +=1;
+            action += 1;
+        } else if (videoDB[i].status == 2 || videoDB[i].status == 4) {
+            pending += 1;
+        } else {
+            completed += 1;
         }
     }
     document.getElementById('actionDisplay').textContent = action;
     document.getElementById('pendingDisplay').textContent = pending;
     document.getElementById('completedDisplay').textContent = completed;
     const [totalClaimed, totalSlashed] = await calculateTotalClaimedTokens();
-    document.getElementById('claimedTokens').innerHTML =  'Claimed tokens: <span style="color: white;">' + limitDecimals(totalClaimed,4) + '</span>';
-    document.getElementById('slashedTokens').innerHTML =  'Slashed tokens: <span style="color: white;">' + limitDecimals(totalSlashed,4) + '</span>';
+    document.getElementById('claimedTokens').innerHTML = 'Claimed tokens: <span style="color: white;">' + limitDecimals(totalClaimed, 4) + '</span>';
+    document.getElementById('slashedTokens').innerHTML = 'Slashed tokens: <span style="color: white;">' + limitDecimals(totalSlashed, 4) + '</span>';
     const events = await dAppContract.getPastEvents('eventReceiveTokensFromValidator', {
         filter: {
             validator: account,
@@ -398,8 +391,7 @@ async function loadMainPage() {
     if (events.length != 0) {
         lastLock = parseFloat(web3.utils.fromWei(events[events.length - 1].returnValues[1], 'ether'));
         value = (totalClaimed - totalSlashed) / lastLock;
-    }
-    else {
+    } else {
         lastLock = 0;
         value = 0;
     }
@@ -408,7 +400,7 @@ async function loadMainPage() {
     let blockCounter = currentBlockNumber - BigInt(7200);
     if (blockCounter < 0) {
         blockCounter = 0;
-    } 
+    }
     const events2 = await dAppContract.getPastEvents('eventGetRewards', {
         filter: {
             validator: account
@@ -424,7 +416,6 @@ async function loadMainPage() {
 
 // Function to calculate total claimed tokens
 async function calculateTotalClaimedTokens() {
-    // Return the promise chain
     const events = await dAppContract.getPastEvents('eventGetRewards', {
         filter: {
             validator: account,
@@ -438,8 +429,7 @@ async function calculateTotalClaimedTokens() {
         for (let i = 0; i < events.length; i++) {
             if (events[i].returnValues[4]) {
                 value += parseFloat(web3.utils.fromWei(events[i].returnValues[3], 'ether'));
-            }
-            else {
+            } else {
                 value2 += parseFloat(web3.utils.fromWei(events[i].returnValues[3], 'ether'));
             }
         }
@@ -447,7 +437,7 @@ async function calculateTotalClaimedTokens() {
     return [value, value2];
 }
 
-// Listen for the eventAddVideo event
+// Listen for the eventAddVideo to update the UI
 async function eventAddVideo() {
     dAppContract.events.eventAddVideo({
         fromBlock: 'latest'
@@ -475,7 +465,7 @@ async function eventAddVideo() {
     })
 }
 
-// Listen for the eventSubmitHash event
+// Listen for the eventSubmitHash to update the UI
 async function eventSubmitHash() {
     dAppContract.events.eventSubmitHash({
         fromBlock: 'latest',
@@ -499,7 +489,7 @@ async function eventSubmitHash() {
     })
 }
 
-// Listen for the eventRevealHash event
+// Listen for the eventRevealHash to update the UI
 async function eventRevealHash() {
     dAppContract.events.eventRevealHash({
         fromBlock: 'latest',
@@ -523,7 +513,7 @@ async function eventRevealHash() {
     })
 }
 
-// Listen for the eventGetRewards event
+// Listen for the eventGetRewards to update the UI
 async function eventGetRewards() {
     dAppContract.events.eventGetRewards({
         fromBlock: 'latest',
@@ -535,13 +525,12 @@ async function eventGetRewards() {
             if (videoDB[i].company === companies[event.returnValues[1]] && videoDB[i].hashId === decimalToString(event.returnValues[2])) {
                 videoDB[i].status = 6;
                 retrieveTagsVoted(event.returnValues[2], event.returnValues[1]).then(output => {
-                    videoDB[i].results = output;
-                })
-                .catch(error => console.error(error));
+                        videoDB[i].results = output;
+                    })
+                    .catch(error => console.error(error));
                 if (event.returnValues[4]) {
                     videoDB[i].reward = web3.utils.fromWei(event.returnValues[3], 'ether');
-                }
-                else {
+                } else {
                     videoDB[i].reward = "- " + web3.utils.fromWei(event.returnValues[3], 'ether')
                 }
                 updateVotePage();
@@ -553,6 +542,7 @@ async function eventGetRewards() {
                 break;
             }
         }
+        loadMainPage();
     })
 }
 
@@ -588,7 +578,6 @@ function loadEventsSection() {
     }).catch(error => {
         console.error(error);
     });
-
     dAppContract.getPastEvents('allEvents', {
         fromBlock: 0,
         toBlock: 'latest',
@@ -618,7 +607,6 @@ function loadEventsSection() {
     }).catch(error => {
         console.error(error);
     });
-
     dAppContract.getPastEvents('allEvents', {
         fromBlock: 0,
         toBlock: 'latest',
@@ -645,8 +633,7 @@ function loadEventsSection() {
                     videoId: "",
                     status: 2
                 })
-            }
-            else if (events[i].event == "eventSetVariable") {
+            } else if (events[i].event == "eventSetVariable") {
                 eventsDB.push({
                     name: "SetVariable",
                     validator: account,
@@ -664,8 +651,7 @@ function loadEventsSection() {
                     videoId: "",
                     status: 3
                 })
-            }
-            else if (events[i].event == "eventSubmitHash") {
+            } else if (events[i].event == "eventSubmitHash") {
                 eventsDB.push({
                     name: "SubmitHash",
                     validator: account,
@@ -683,8 +669,7 @@ function loadEventsSection() {
                     videoId: decimalToString(events[i].returnValues[2]),
                     status: 4
                 })
-            }
-            else if (events[i].event == "eventRevealHash") {
+            } else if (events[i].event == "eventRevealHash") {
                 eventsDB.push({
                     name: "RevealHash",
                     validator: account,
@@ -702,8 +687,7 @@ function loadEventsSection() {
                     videoId: decimalToString(events[i].returnValues[2]),
                     status: 5
                 })
-            }
-            else if (events[i].event == "eventGetRewards") {
+            } else if (events[i].event == "eventGetRewards") {
                 eventsDB.push({
                     name: "GetRewards",
                     validator: account,
@@ -721,8 +705,7 @@ function loadEventsSection() {
                     videoId: decimalToString(events[i].returnValues[2]),
                     status: 6
                 })
-            }
-            else if (events[i].event == "eventWithdrawTokensValidator") {
+            } else if (events[i].event == "eventWithdrawTokensValidator") {
                 eventsDB.push({
                     name: "WithdrawTokensValidator",
                     validator: account,
@@ -742,15 +725,12 @@ function loadEventsSection() {
                 })
             }
         }
-        
         eventsDB.sort((a, b) => {
             if (a.timestamp > b.timestamp) return -1;
             if (a.timestamp < b.timestamp) return 1;
             return 0;
-          });
-          
+        });
         initEventList();
-        
     }).catch(error => {
         console.error(error);
     });

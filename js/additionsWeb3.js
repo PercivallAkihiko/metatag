@@ -23,14 +23,13 @@ const formatDate = (timestamp) => {
     return `${day}, ${month} ${year}`;
 };
 
-// Const used to format in a good way the date to be displayed
+// Const used to format in a good way the date to be displayed (second for another input)
 const formatDateFromObject = (date) => {
     const day = date.getDate();
     const month = date.toLocaleString('default', { month: 'short' });
     const year = date.getFullYear();
     return `${day}, ${month} ${year}`;
 };
-
 
 // Function used to retrieve date from the formatDate (above)
 function parseCustomDateFormat(dateString) {
@@ -81,7 +80,6 @@ function decimalToString(decimal) {
     }
     return asciiString;
 }
-
 
 // API call to retrieve the YouTube video title
 async function fetchYouTubeVideoTitle(videoId) {
@@ -165,49 +163,38 @@ function getRevealedCounter(address, videoId) {
 
 // Convert string into Bytes11
 function stringToBytes11(str) {
-    // Convert the string to a hex string
     let hex = '';
     for (let i = 0; i < str.length; i++) {
         hex += str.charCodeAt(i).toString(16);
     }
-    // Ensure the hex string is no longer than 22 characters (11 bytes)
     hex = hex.slice(0, 22);
-    // Pad the hex string to ensure it represents exactly 11 bytes
     while (hex.length < 22) {
-        hex += '0'; // Pad with trailing zeros (adjust if different padding is required)
+        hex += '0';
     }
-    return '0x' + hex; // Prefix with '0x' to denote a hex string
+    return '0x' + hex;
 }
 
 // Convert hex to ascii
 function hexToAscii(hexString) {
-    // Remove the "0x" prefix if present
     if (hexString.startsWith("0x")) {
         hexString = hexString.slice(2);
     }
 
     let asciiString = '';
     for (let i = 0; i < hexString.length; i += 2) {
-        // Extract two hexadecimal digits at a time
         const hexByte = hexString.substring(i, i + 2);
-        // Convert the hexadecimal byte to a decimal number
         const decimal = parseInt(hexByte, 16);
-        // Convert the decimal number to an ASCII character and append it to the result string
         asciiString += String.fromCharCode(decimal);
     }
-
     return asciiString;
 }
 
 // Funtion used to calcalte the percentages of tags voted
 function calculateTagPercentages(votes, totalValidators) {
-    // Object to keep track of tag counts
     const tagCounts = {};
-    // Count the occurrences of each tag in the votes list
     votes.forEach(tag => {
         tagCounts[tag] = (tagCounts[tag] || 0) + 1;
     });
-    // Map the tagCounts object to an array of [tag, percentage] pairs
     const result = Object.entries(tagCounts).map(([tag, count]) => {
         const percentage = (count / totalValidators) * 100;
         return [tag, percentage.toString()];
@@ -269,7 +256,7 @@ function removeDuplicatesEventDB(list) {
       return false;
     });
     return result;
-  }
+}
 
 // Function to get the tags voted by the validators
 async function retrieveTagsVoted(video, company) {

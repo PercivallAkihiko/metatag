@@ -1,5 +1,7 @@
+// Number of validators it will be loaded from the blockchain
 var numberOfValidators;
 
+// Dictionary to keep track of the addresses of the companies
 const companies = {
     "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC": 'YouTube'
 };
@@ -47,7 +49,7 @@ async function loadLockDateAndDays() {
     }
 }
 
-// Listen for the eventBuyTokens event
+// Listen for the eventBuyTokens to update the UI
 async function eventBuyTokens() {
     tokenContract.events.eventBuyTokens({
         filter: {
@@ -65,7 +67,7 @@ async function eventBuyTokens() {
     })
 }
 
-// Listen for the eventMTGforVoucher event
+// Listen for the eventMTGforVoucher to update the UI
 async function eventMTGforVoucher() {
     dAppContract.events.eventMTGforVoucher({
         filter: {
@@ -82,7 +84,7 @@ async function eventMTGforVoucher() {
     })
 }
 
-// Listen for the eventReceiveTokensFromCompany event
+// Listen for the eventReceiveTokensFromCompany to update the UI
 async function eventReceiveTokensFromCompany() {
     dAppContract.events.eventReceiveTokensFromCompany({
         filter: {
@@ -153,7 +155,7 @@ function listenerWithdrawCompanyButton() {
     });
 }
 
-// Listen for the eventWithdrawTokensCompany event
+// Listen for the eventWithdrawTokensCompany to update the UI
 async function eventWithdrawTokensCompany() {
     dAppContract.events.eventWithdrawTokensCompany({
         filter: {
@@ -173,7 +175,7 @@ async function eventWithdrawTokensCompany() {
     })
 }
 
-// Function to retrieve past addVideo events
+// Function to retrieve past addVideo events for UI
 async function eventPastAddVideo() {
     const events = await dAppContract.getPastEvents('eventAddVideo', {
         fromBlock: 0,
@@ -203,7 +205,7 @@ async function eventPastAddVideo() {
     }
 }
 
-// Listen for the eventAddVideo event
+// Listen for the AddVideo events for UI
 async function eventAddVideo() {
     dAppContract.events.eventAddVideo({
         fromBlock: 'latest',
@@ -233,7 +235,7 @@ async function eventAddVideo() {
     })
 }
 
-// Function to retrieve past SubmitHash events
+// Function to retrieve past SubmitHash events for UI
 async function eventPastSubmitHash(company, video) {
     const events = await dAppContract.getPastEvents('eventSubmitHash', {
         fromBlock: 0,
@@ -260,7 +262,7 @@ async function eventPastSubmitHash(company, video) {
     }
 }
 
-// Listen for the eventSubmitHash event
+// Listen for the eventSubmitHash to update UI
 async function eventSubmitHash() {
     dAppContract.events.eventSubmitHash({
         fromBlock: 'latest',
@@ -286,8 +288,9 @@ async function eventSubmitHash() {
     })
 }
 
-// Function to retrieve past RevealHash events
+// Function to retrieve past RevealHash events to update the UI
 async function eventPastRevealHash(company, video) {
+    let cache = 0;
     const events = await dAppContract.getPastEvents('eventRevealHash', {
         filter: {
             company: company,
@@ -303,19 +306,28 @@ async function eventPastRevealHash(company, video) {
                     videoDB[i].leftvote = videoDB[i].leftvote - 1;
                     if (videoDB[i].leftvote == 0) {
                         videoDB[i].status = 6;
+                        const currentBlockNumber = await web3.eth.getBlockNumber();
+                        let startBlockNumber = currentBlockNumber - BigInt(7200);
+                        if (startBlockNumber < 0) {
+                            startBlockNumber = 0;
+                        }
+                        if (events[event].blockNumber > startBlockNumber) {
+                            const numberOfVideos = parseInt(document.getElementById('completedLast24h').textContent.match(/(\d+) videos/)[1], 10) + 1;
+                            document.getElementById('completedLast24h').innerHTML = "Completed last 24h: <white>" + numberOfVideos + " videos </white>";
+                        }
                         await retrieveTagsVoted(video, company).then(output => {
-                            videoDB[i].results = output;
-                        })
-                        .catch(error => console.error(error));
+                                videoDB[i].results = output;
+                            })
+                            .catch(error => console.error(error));
                     }
-                break;
+                    break;
                 }
             }
         }
     }
 }
 
-// Listen for the eventRevealHash event
+// Listen for the eventRevealHash to update the UI
 async function eventRevealHash() {
     dAppContract.events.eventRevealHash({
         fromBlock: 'latest',
@@ -349,18 +361,23 @@ async function loadMainPage() {
     let completed = 0;
     for (let i = 0; i < videoDB.length; i++) {
         if (videoDB[i].status == 2) {
-            action +=1;
-        }
-        else if (videoDB[i].status == 4) {
-            pending +=1;
-        }
-        else {
-            completed +=1;
+            action += 1;
+        } else if (videoDB[i].status == 4) {
+            pending += 1;
+        } else {
+            completed += 1;
         }
     }
     document.getElementById('actionDisplay').textContent = action;
     document.getElementById('pendingDisplay').textContent = pending;
     document.getElementById('completedDisplay').textContent = completed;
+    dAppContract.methods.readyValidatorsLength().call()
+        .then(length => {
+            document.getElementById('readyValidatorsToWork').innerHTML = "Ready validators: <white>" + length + "</white>";
+        })
+        .catch(err => {
+            console.error(err);
+        });
 }
 
 // Loads the events to be displayed in the Events section
@@ -395,7 +412,6 @@ function loadEventsSection() {
     }).catch(error => {
         console.error(error);
     });
-
     dAppContract.getPastEvents('allEvents', {
         fromBlock: 0,
         toBlock: 'latest',
@@ -425,7 +441,6 @@ function loadEventsSection() {
     }).catch(error => {
         console.error(error);
     });
-
     dAppContract.getPastEvents('allEvents', {
         fromBlock: 0,
         toBlock: 'latest',
@@ -452,8 +467,7 @@ function loadEventsSection() {
                     videoId: "",
                     status: 2
                 })
-            }
-            else if (events[i].event == "eventAddVideo") {
+            } else if (events[i].event == "eventAddVideo") {
                 eventsDB.push({
                     name: "AddVideo",
                     validator: "",
@@ -471,8 +485,7 @@ function loadEventsSection() {
                     videoId: decimalToString(events[i].returnValues[1]),
                     status: 3
                 })
-            }
-            else if (events[i].event == "eventWithdrawTokensCompany") {
+            } else if (events[i].event == "eventWithdrawTokensCompany") {
                 eventsDB.push({
                     name: "WithdrawTokensCompany",
                     validator: "",
@@ -492,18 +505,31 @@ function loadEventsSection() {
                 })
             }
         }
-        
         eventsDB.sort((a, b) => {
             if (a.timestamp > b.timestamp) return -1;
             if (a.timestamp < b.timestamp) return 1;
             return 0;
-          });
-          
+        });
+
         initEventList();
-        
     }).catch(error => {
         console.error(error);
     });
+}
+
+// Listen for the eventSetVariable to udpate the UI
+async function eventSetVariable() {
+    dAppContract.events.eventSetVariable({
+        fromBlock: 'latest',
+    }).on('data', async function(event) {
+        dAppContract.methods.readyValidatorsLength().call()
+            .then(length => {
+                document.getElementById('readyValidatorsToWork').innerHTML = "Ready validators: <white>" + length + "</white>";
+            })
+            .catch(err => {
+                console.error(err);
+            });
+    })
 }
 
 // It waits the event from "bothWeb3.js" generated as last and it calls functions related to the validator
@@ -515,15 +541,16 @@ document.addEventListener('sharedDataReady', async () => {
     await loadEventsSection();
     loadVoteList(1);
     loadMainPage();
-    eventAddVideo();
-    eventSubmitHash();
-    eventRevealHash();
     listenerLockTokensButton();
     listenerAddVideoButton();
     listenerWithdrawCompanyButton();
+    eventAddVideo();
+    eventSubmitHash();
+    eventRevealHash();
     eventBuyTokens();
     eventMTGforVoucher();
     eventReceiveTokensFromCompany();
     eventWithdrawTokensCompany();
+    eventSetVariable();
     setInterval(loadEventsSection, 5000);
 });

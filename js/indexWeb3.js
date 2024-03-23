@@ -1,13 +1,12 @@
+// Wait until the DOM is loaded
 document.addEventListener('DOMContentLoaded', (event) => {
+    // Listener to jump to company' page
     document.getElementById('app_button').addEventListener('click', async () => {
-        // Check if MetaMask is installed
         if (window.ethereum) {
             try {
-                // Request account access
                 const accounts = await window.ethereum.request({
                     method: 'eth_requestAccounts'
                 });
-                // Assuming the user successfully connects, redirect to app.html
                 window.location.href = 'company.html';
             } catch (error) {
                 console.error('Error connecting to MetaMask:', error);
@@ -16,16 +15,13 @@ document.addEventListener('DOMContentLoaded', (event) => {
             console.log('MetaMask is not installed. Please consider installing it.');
         }
     });
-
+    // Listener to jump to validator' page
     document.getElementById('main_button').addEventListener('click', async () => {
-        // Check if MetaMask is installed
         if (window.ethereum) {
             try {
-                // Request account access
                 const accounts = await window.ethereum.request({
                     method: 'eth_requestAccounts'
                 });
-                // Assuming the user successfully connects, redirect to app.html
                 window.location.href = 'app.html';
             } catch (error) {
                 console.error('Error connecting to MetaMask:', error);

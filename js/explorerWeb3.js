@@ -1,4 +1,4 @@
-
+// Global variables so all the functions can use them
 var web3;
 var tokenContractAddress;
 var tokenContract;
@@ -7,13 +7,10 @@ var dAppContract;
 
 // Function to load the smart contracts
 async function loadSmartContracs() {
-    // Load the contract addresses
     tokenContractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
     dAppContractAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
-    // Fetch and setup the token contract instance
     const tokenData = await fetch('../Solidity/out/MetaTagToken.sol/MetaTagToken.json').then(response => response.json());
     tokenContract = new web3.eth.Contract(tokenData.abi, tokenContractAddress);
-    // Similarly, fetch and setup the dApp contract instance
     const dAppData = await fetch('../Solidity/out/MetaTag.sol/MetaTag.json').then(response => response.json());
     dAppContract = new web3.eth.Contract(dAppData.abi, dAppContractAddress);
 }
@@ -46,8 +43,7 @@ function loadEvents() {
                     videoId: "",
                     status: 1
                 })
-            }
-            else if (events[i].event == "Transfer") {
+            } else if (events[i].event == "Transfer") {
                 eventsDB.push({
                     name: "Transfer",
                     validator: "",
@@ -67,8 +63,7 @@ function loadEvents() {
                     videoId: "",
                     status: 14
                 })
-            }
-            else if (events[i].event == "Approval") {
+            } else if (events[i].event == "Approval") {
                 eventsDB.push({
                     name: "Approval",
                     validator: "",
@@ -93,8 +88,7 @@ function loadEvents() {
     }).catch(error => {
         console.error(error);
     });
-
-     dAppContract.getPastEvents('allEvents', {
+    dAppContract.getPastEvents('allEvents', {
         fromBlock: 0,
         toBlock: 'latest',
     }).then(events => {
@@ -119,8 +113,7 @@ function loadEvents() {
                     videoId: "",
                     status: 8
                 })
-            }
-            else if (events[i].event == "eventReceiveTokensFromValidator") {
+            } else if (events[i].event == "eventReceiveTokensFromValidator") {
                 eventsDB.push({
                     name: "ReceiveTokensFromValidator",
                     validator: events[i].returnValues[0],
@@ -140,8 +133,7 @@ function loadEvents() {
                     videoId: "",
                     status: 2
                 })
-            }
-            else if (events[i].event == "eventSetVariable") {
+            } else if (events[i].event == "eventSetVariable") {
                 eventsDB.push({
                     name: "SetVariable",
                     validator: events[i].returnValues[0],
@@ -161,8 +153,7 @@ function loadEvents() {
                     videoId: "",
                     status: 3
                 })
-            }
-            else if (events[i].event == "eventSubmitHash") {
+            } else if (events[i].event == "eventSubmitHash") {
                 eventsDB.push({
                     name: "SubmitHash",
                     validator: events[i].returnValues[0],
@@ -182,8 +173,7 @@ function loadEvents() {
                     videoId: decimalToString(events[i].returnValues[2]),
                     status: 4
                 })
-            }
-            else if (events[i].event == "eventRevealHash") {
+            } else if (events[i].event == "eventRevealHash") {
                 eventsDB.push({
                     name: "RevealHash",
                     validator: events[i].returnValues[0],
@@ -203,8 +193,7 @@ function loadEvents() {
                     videoId: decimalToString(events[i].returnValues[2]),
                     status: 5
                 })
-            }
-            else if (events[i].event == "eventGetRewards") {
+            } else if (events[i].event == "eventGetRewards") {
                 eventsDB.push({
                     name: "GetRewards",
                     validator: events[i].returnValues[0],
@@ -224,8 +213,7 @@ function loadEvents() {
                     videoId: decimalToString(events[i].returnValues[2]),
                     status: 6
                 })
-            }
-            else if (events[i].event == "eventWithdrawTokensValidator") {
+            } else if (events[i].event == "eventWithdrawTokensValidator") {
                 eventsDB.push({
                     name: "WithdrawTokensValidator",
                     validator: events[i].returnValues[0],
@@ -266,8 +254,7 @@ function loadEvents() {
                     videoId: "",
                     status: 2
                 })
-            }
-            else if (events[i].event == "eventAddVideo") {
+            } else if (events[i].event == "eventAddVideo") {
                 eventsDB.push({
                     name: "AddVideo",
                     validator: "",
@@ -287,8 +274,7 @@ function loadEvents() {
                     videoId: decimalToString(events[i].returnValues[1]),
                     status: 3
                 })
-            }
-            else if (events[i].event == "eventWithdrawTokensCompany") {
+            } else if (events[i].event == "eventWithdrawTokensCompany") {
                 eventsDB.push({
                     name: "WithdrawTokensCompany",
                     validator: "",
@@ -310,24 +296,19 @@ function loadEvents() {
                 })
             }
         }
-        
         eventsDB.sort((a, b) => {
             if (a.timestamp > b.timestamp) return -1;
             if (a.timestamp < b.timestamp) return 1;
             return 0;
-          });
-          
+        });
         initEventList();
-        
     }).catch(error => {
         console.error(error);
     });
 }
 
-
-
-
 web3 = new Web3(window.ethereum);
 loadSmartContracs().then(() => {
     loadEvents();
-    setInterval(loadEvents, 5000);})
+    setInterval(loadEvents, 5000);
+})

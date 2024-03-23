@@ -597,6 +597,13 @@ contract MetaTag {
         return true;
     }
 
+    /// @notice Allows to retrieve the lenght of the ready validators
+    /// @return Returns the number of ready validators
+    function readyValidatorsLength() public view returns (uint) {
+    // Returns the length of the array
+    return readyValidators.length;
+}
+
     /// @notice Allows MtgTeam to terminate the smart contract
     function terminate() public onlyTeam {
         // Deprecated but there is no alternative at this moment
