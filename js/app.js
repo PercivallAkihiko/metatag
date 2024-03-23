@@ -306,7 +306,7 @@ const validTags = [
 
 // 1 BuyTokens(                  address indexed user, 					        uint amount)
 // 2 ReceiveTokensFromValidator( address indexed validator, 					uint amount)
-// 3 SetVariable(                address indexed validator, 					bool indexed value
+// 3 SetVariable(                address indexed validator, 					bool indexed value)
 // 4 SubmitHash(                 address indexed validator, 	address indexed company, 	bytes32 hash, 				        uint indexed videoId)
 // 5 RevealHash(                 address indexed validator, 	address indexed company, 	uint[] tags, bytes11 seed uint, 	uint indexed videoId)
 // 6 GetRewards(                 address indexed validator, 	address indexed company, 	uint rewardAmount, bool positive, 	uint indexed videoId)
