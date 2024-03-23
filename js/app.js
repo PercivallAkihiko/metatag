@@ -906,7 +906,7 @@ function getTagPositions() {
     const tagPositions = [];
   
     tagNames.forEach(tagName => {
-        const tagIndex = validTags.indexOf(tagName.textContent.toLowerCase()) + 1;
+        const tagIndex = validTags.indexOf(tagName.textContent.toLowerCase());
         tagPositions.push(tagIndex);
     });    
     return tagPositions;
@@ -1175,7 +1175,7 @@ function addTagFromCookie(videoId, disabled = false, first = false){
     var seed = cookieValue.seed;        
 
     suggestionsContainer.innerHTML = "<grey>Seed: </grey>" + seed;
-    var tagList = integers.map(index => validTags[index - 1]);
+    var tagList = integers.map(index => validTags[index]);
     tagList.forEach(tag => {
         addTagFromSuggestion(tag, disabled);
       });    
@@ -1222,8 +1222,7 @@ function calculateTextWidth(text) {
 }
 
 //Convert index to tag
-function getTagByIndex(index) {    
-    index = index - 1;    
+function getTagByIndex(index) {       
     if (index >= 0 && index < validTags.length) {
         var tag = validTags[index];    
         return tag.charAt(0).toUpperCase() + tag.slice(1)

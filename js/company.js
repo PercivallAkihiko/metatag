@@ -106,6 +106,7 @@ var videoDB = [
 ];
 
 const validTags = [
+    "michele",
     "adventure",
     "comedy",
     "diy",
@@ -205,8 +206,7 @@ const validTags = [
     "journey",
     "discovery",
     "transformation",
-    "breakthrough",
-    "michele"
+    "breakthrough"
 ];
 
 // 1 BuyTokens(                     address indexed user, 					                uint amount)
@@ -771,7 +771,7 @@ function getTagPositions() {
     const tagPositions = [];
   
     tagNames.forEach(tagName => {
-        const tagIndex = validTags.indexOf(tagName.textContent.toLowerCase()) + 1;
+        const tagIndex = validTags.indexOf(tagName.textContent.toLowerCase());
         tagPositions.push(tagIndex);
     });    
     return tagPositions;
@@ -900,7 +900,6 @@ function setTitleDesc(title, desc){
 
 //Convert index to tag
 function getTagByIndex(index) {    
-    index = index - 1;    
     if (index >= 0 && index < validTags.length) {
         var tag = validTags[index];    
         return tag.charAt(0).toUpperCase() + tag.slice(1)

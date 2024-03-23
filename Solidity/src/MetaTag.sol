@@ -63,7 +63,7 @@ contract MetaTag {
 
     /// @notice These constants are here to facilitate in the future development of the DApp the preferences for the companies 
     /// @notice Number of possible tags
-    uint constant tagsNumber = 20;
+    uint constant tagsNumber = 101;
     /// @notice Percetage of acceptance for a tag
     uint constant confirmedTags = 80;
     /// @notice Percetage of ambiguity for a tag
@@ -495,6 +495,10 @@ contract MetaTag {
             uint randomIndex = uint(keccak256(abi.encodePacked(block.prevrandao, msg.sender, indexo))) % length;
             // Select a validator at the pseudo random index and store it in the output array
             selectedValidators[indexo] = readyFinal[randomIndex];
+            // Add the video to the validator's video array
+            validatorVideos[selectedValidators[indexo]].push(ValidatorVideo(msg.sender, videoId));
+            // Update the mapping to know when the validator can withdraw his founds
+            lastVideoValidator[selectedValidators[indexo]] = block.number;
             // Replace the selected validator with the last validator in the array
             readyFinal[randomIndex] = readyFinal[length-1];
             // Decrease the length of the array to exclude the selected validator (done with assembly because normally it is not possible to pop from a memory array)
@@ -505,11 +509,11 @@ contract MetaTag {
         }
         // ONLY FOR TESTING (need to add second action above!)
         // Normally need to put the push and lastVideoValidator inside the while above
-        for (uint i = 0; i < validatorsQuantity; i++) {
+        /* for (uint i = 0; i < validatorsQuantity; i++) {
             selectedValidators[i] = readyValidators[i];
             validatorVideos[selectedValidators[i]].push(ValidatorVideo(msg.sender, videoId));
             lastVideoValidator[msg.sender] = block.number;
-        }
+        } */
         // ONLY FOR TESTING
         // Return the array of selected validators
         return selectedValidators;

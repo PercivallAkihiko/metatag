@@ -273,7 +273,6 @@ function removeDuplicatesEventDB(list) {
 
 // Function to get the tags voted by the validators
 async function retrieveTagsVoted(video, company) {
-    // Return the promise chain
     const events = await dAppContract.getPastEvents('eventRevealHash', {
         filter: {
             company: company,
