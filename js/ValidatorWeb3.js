@@ -159,9 +159,9 @@ async function eventSetVariable() {
         fromBlock: 'latest'
     }).on('data', async function(event) {
         if (event.returnValues[1]) {
-            const block = await web3.eth.getBlock(events[events.length - 1].blockNumber);
-            const actualDate = formatDate(Math.floor(Date.now() / 1000));
-            const blockDate = formatDate(block.timestamp);
+            const block = await web3.eth.getBlock(event.blockNumber);
+            const actualDate = formatDate(Math.floor(Date.now() / 1000)); //  formatDate expects a timestamp in seconds
+            const blockDate = formatDateFromObject(new Date(Number(block.timestamp) * 1000));
             document.getElementById('lockDate').textContent = blockDate;
             document.getElementById('daysLocked').textContent = calculateDaysDifference(actualDate, blockDate) + " Days";
         } else {
@@ -170,6 +170,7 @@ async function eventSetVariable() {
         }
     })
 }
+
 
 // Function for validators to withdraw their tokens from the smart contract
 function listenerWithdrawValidatorButton() {
@@ -358,9 +359,9 @@ async function eventPastGetRewards(video, company) {
                 break;
             }
         }
-        await sleep(50);
-        await loadMainPage();
     }
+    await sleep(50);
+    await loadMainPage();
 }
 
 // Funtion used to load the dashboard information based on videos
@@ -527,7 +528,7 @@ async function eventGetRewards() {
     dAppContract.events.eventGetRewards({
         fromBlock: 'latest',
         filter: {
-            validator: account,
+            validator: account
         }
     }).on('data', async function(event) {
         for (let i = 0; i < videoDB.length; i++) {
@@ -555,6 +556,206 @@ async function eventGetRewards() {
     })
 }
 
+// Loads the events to be displayed in the Events section
+function loadEventsSection() {
+    eventsDB = [];
+    tokenContract.getPastEvents('allEvents', {
+        fromBlock: 0,
+        toBlock: 'latest',
+        filter: {
+            user: account,
+        }
+    }).then(events => {
+        for (let i = 0; i < events.length; i++) {
+            eventsDB.push({
+                name: "BuyTokens",
+                validator: "",
+                user: account,
+                company: "",
+                amount: web3.utils.fromWei(events[i].returnValues[1], 'ether'),
+                value: "",
+                positive: "",
+                hash: "",
+                tags: [],
+                seed: "",
+                rewardAmount: "",
+                timestamp: events[i].blockNumber,
+                chosenValidator: [],
+                videoId: "",
+                status: 1
+            })
+        }
+    }).catch(error => {
+        console.error(error);
+    });
+
+    dAppContract.getPastEvents('allEvents', {
+        fromBlock: 0,
+        toBlock: 'latest',
+        filter: {
+            user: account,
+        }
+    }).then(events => {
+        for (let i = 0; i < events.length; i++) {
+            eventsDB.push({
+                name: "MTGforVoucher",
+                validator: "",
+                user: account,
+                company: "",
+                amount: "",
+                value: "",
+                positive: "",
+                hash: "",
+                tags: [],
+                seed: "",
+                rewardAmount: "",
+                timestamp: events[i].blockNumber,
+                chosenValidator: [],
+                videoId: "",
+                status: 8
+            })
+        }
+    }).catch(error => {
+        console.error(error);
+    });
+
+    dAppContract.getPastEvents('allEvents', {
+        fromBlock: 0,
+        toBlock: 'latest',
+        filter: {
+            validator: account,
+        }
+    }).then(events => {
+        for (let i = 0; i < events.length; i++) {
+            if (events[i].event == "eventReceiveTokensFromValidator") {
+                eventsDB.push({
+                    name: "ReceiveTokensFromValidator",
+                    validator: account,
+                    user: "",
+                    company: "",
+                    amount: web3.utils.fromWei(events[i].returnValues[1], 'ether'),
+                    value: "",
+                    positive: "",
+                    hash: "",
+                    tags: [],
+                    seed: "",
+                    rewardAmount: "",
+                    timestamp: events[i].blockNumber,
+                    chosenValidator: [],
+                    videoId: "",
+                    status: 2
+                })
+            }
+            else if (events[i].event == "eventSetVariable") {
+                eventsDB.push({
+                    name: "SetVariable",
+                    validator: account,
+                    user: "",
+                    company: "",
+                    amount: "",
+                    value: events[i].returnValues[1],
+                    positive: "",
+                    hash: "",
+                    tags: [],
+                    seed: "",
+                    rewardAmount: "",
+                    timestamp: events[i].blockNumber,
+                    chosenValidator: [],
+                    videoId: "",
+                    status: 3
+                })
+            }
+            else if (events[i].event == "eventSubmitHash") {
+                eventsDB.push({
+                    name: "SubmitHash",
+                    validator: account,
+                    user: "",
+                    company: events[i].returnValues[1],
+                    amount: "",
+                    value: "",
+                    positive: "",
+                    hash: events[i].returnValues[3],
+                    tags: [],
+                    seed: "",
+                    rewardAmount: "",
+                    timestamp: events[i].blockNumber,
+                    chosenValidator: [],
+                    videoId: decimalToString(events[i].returnValues[2]),
+                    status: 4
+                })
+            }
+            else if (events[i].event == "eventRevealHash") {
+                eventsDB.push({
+                    name: "RevealHash",
+                    validator: account,
+                    user: "",
+                    company: events[i].returnValues[1],
+                    amount: "",
+                    value: "",
+                    positive: "",
+                    hash: "",
+                    tags: events[i].returnValues[3],
+                    seed: hexToAscii(events[i].returnValues[4]),
+                    rewardAmount: "",
+                    timestamp: events[i].blockNumber,
+                    chosenValidator: [],
+                    videoId: decimalToString(events[i].returnValues[2]),
+                    status: 5
+                })
+            }
+            else if (events[i].event == "eventGetRewards") {
+                eventsDB.push({
+                    name: "GetRewards",
+                    validator: account,
+                    user: "",
+                    company: events[i].returnValues[1],
+                    amount: "",
+                    value: "",
+                    positive: events[i].returnValues[4],
+                    hash: "",
+                    tags: "",
+                    seed: "",
+                    rewardAmount: Web3.utils.fromWei(events[i].returnValues[3], 'ether'),
+                    timestamp: events[i].blockNumber,
+                    chosenValidator: [],
+                    videoId: decimalToString(events[i].returnValues[2]),
+                    status: 6
+                })
+            }
+            else if (events[i].event == "eventWithdrawTokensValidator") {
+                eventsDB.push({
+                    name: "WithdrawTokensValidator",
+                    validator: account,
+                    user: "",
+                    company: "",
+                    amount: Web3.utils.fromWei(events[i].returnValues[1], 'ether'),
+                    value: "",
+                    positive: "",
+                    hash: "",
+                    tags: "",
+                    seed: "",
+                    rewardAmount: "",
+                    timestamp: events[i].blockNumber,
+                    chosenValidator: [],
+                    videoId: "",
+                    status: 7
+                })
+            }
+        }
+        
+        eventsDB.sort((a, b) => {
+            if (a.timestamp > b.timestamp) return -1;
+            if (a.timestamp < b.timestamp) return 1;
+            return 0;
+          });
+          
+        initEventList();
+        
+    }).catch(error => {
+        console.error(error);
+    });
+}
+
 // It waits the event from "bothWeb3.js" generated as last and it calls functions related to the validator
 document.addEventListener('sharedDataReady', async () => {
     numberOfValidators = Number(await dAppContract.methods.validatorsQuantity().call());
@@ -562,6 +763,7 @@ document.addEventListener('sharedDataReady', async () => {
     await loadSetVariable();
     await loadLockDateAndDays();
     await eventPastAddVideo();
+    await loadEventsSection();
     listenerLockTokensButton();
     listenerChangeSwitch();
     listenerWithdrawValidatorButton();
@@ -574,4 +776,5 @@ document.addEventListener('sharedDataReady', async () => {
     eventSubmitHash();
     eventRevealHash();
     eventGetRewards();
+    setInterval(loadEventsSection, 5000);
 });

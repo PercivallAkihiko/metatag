@@ -23,6 +23,15 @@ const formatDate = (timestamp) => {
     return `${day}, ${month} ${year}`;
 };
 
+// Const used to format in a good way the date to be displayed
+const formatDateFromObject = (date) => {
+    const day = date.getDate();
+    const month = date.toLocaleString('default', { month: 'short' });
+    const year = date.getFullYear();
+    return `${day}, ${month} ${year}`;
+};
+
+
 // Function used to retrieve date from the formatDate (above)
 function parseCustomDateFormat(dateString) {
     // Split the string into components
@@ -168,6 +177,26 @@ function stringToBytes11(str) {
         hex += '0'; // Pad with trailing zeros (adjust if different padding is required)
     }
     return '0x' + hex; // Prefix with '0x' to denote a hex string
+}
+
+// Convert hex to ascii
+function hexToAscii(hexString) {
+    // Remove the "0x" prefix if present
+    if (hexString.startsWith("0x")) {
+        hexString = hexString.slice(2);
+    }
+
+    let asciiString = '';
+    for (let i = 0; i < hexString.length; i += 2) {
+        // Extract two hexadecimal digits at a time
+        const hexByte = hexString.substring(i, i + 2);
+        // Convert the hexadecimal byte to a decimal number
+        const decimal = parseInt(hexByte, 16);
+        // Convert the decimal number to an ASCII character and append it to the result string
+        asciiString += String.fromCharCode(decimal);
+    }
+
+    return asciiString;
 }
 
 // Funtion used to calcalte the percentages of tags voted
