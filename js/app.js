@@ -665,7 +665,7 @@ function createMacroEventDiv(div, name, value, chosenValidator = false){
     if(chosenValidator){
         valueDiv.innerHTML = value[0].substring(0, 6) + "...";
         var chosenValidatorDiv = document.createElement('div');          
-        
+
         value.forEach(function(validator) {   
             var validatorDiv = document.createElement('div');    
             validatorDiv.innerHTML = validator;

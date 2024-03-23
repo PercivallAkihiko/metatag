@@ -363,12 +363,156 @@ async function loadMainPage() {
     document.getElementById('completedDisplay').textContent = completed;
 }
 
+// Loads the events to be displayed in the Events section
+function loadEventsSection() {
+    eventsDB = [];
+    tokenContract.getPastEvents('allEvents', {
+        fromBlock: 0,
+        toBlock: 'latest',
+        filter: {
+            user: account,
+        }
+    }).then(events => {
+        for (let i = 0; i < events.length; i++) {
+            eventsDB.push({
+                name: "BuyTokens",
+                validator: "",
+                user: account,
+                company: "",
+                amount: web3.utils.fromWei(events[i].returnValues[1], 'ether'),
+                additional: "",
+                positive: "",
+                hash: "",
+                tags: [],
+                seed: "",
+                rewardAmount: "",
+                timestamp: events[i].blockNumber,
+                chosenValidator: [],
+                videoId: "",
+                status: 1
+            })
+        }
+    }).catch(error => {
+        console.error(error);
+    });
+
+    dAppContract.getPastEvents('allEvents', {
+        fromBlock: 0,
+        toBlock: 'latest',
+        filter: {
+            user: account,
+        }
+    }).then(events => {
+        for (let i = 0; i < events.length; i++) {
+            eventsDB.push({
+                name: "MTGforVoucher",
+                validator: "",
+                user: account,
+                company: "",
+                amount: "",
+                additional: "",
+                positive: "",
+                hash: "",
+                tags: [],
+                seed: "",
+                rewardAmount: "",
+                timestamp: events[i].blockNumber,
+                chosenValidator: [],
+                videoId: "",
+                status: 5
+            })
+        }
+    }).catch(error => {
+        console.error(error);
+    });
+
+    dAppContract.getPastEvents('allEvents', {
+        fromBlock: 0,
+        toBlock: 'latest',
+        filter: {
+            company: account,
+        }
+    }).then(events => {
+        for (let i = 0; i < events.length; i++) {
+            if (events[i].event == "eventReceiveTokensFromCompany") {
+                eventsDB.push({
+                    name: "ReceiveTokensFromCompany",
+                    validator: "",
+                    user: "",
+                    company: account,
+                    amount: web3.utils.fromWei(events[i].returnValues[1], 'ether'),
+                    additional: "",
+                    positive: "",
+                    hash: "",
+                    tags: [],
+                    seed: "",
+                    rewardAmount: "",
+                    timestamp: events[i].blockNumber,
+                    chosenValidator: [],
+                    videoId: "",
+                    status: 2
+                })
+            }
+            else if (events[i].event == "eventAddVideo") {
+                eventsDB.push({
+                    name: "AddVideo",
+                    validator: "",
+                    user: "",
+                    company: account,
+                    amount: "",
+                    additional: "",
+                    positive: "",
+                    hash: "",
+                    tags: [],
+                    seed: "",
+                    rewardAmount: "",
+                    timestamp: events[i].blockNumber,
+                    chosenValidator: events[i].returnValues[2],
+                    videoId: decimalToString(events[i].returnValues[1]),
+                    status: 3
+                })
+            }
+            else if (events[i].event == "eventWithdrawTokensCompany") {
+                eventsDB.push({
+                    name: "WithdrawTokensCompany",
+                    validator: "",
+                    user: "",
+                    company: account,
+                    amount: web3.utils.fromWei(events[i].returnValues[1], 'ether'),
+                    additional: "",
+                    positive: "",
+                    hash: "",
+                    tags: [],
+                    seed: "",
+                    rewardAmount: "",
+                    timestamp: events[i].blockNumber,
+                    chosenValidator: [],
+                    videoId: "",
+                    status: 4
+                })
+            }
+        }
+        
+        eventsDB.sort((a, b) => {
+            if (a.timestamp > b.timestamp) return -1;
+            if (a.timestamp < b.timestamp) return 1;
+            return 0;
+          });
+          
+        initEventList();
+        
+    }).catch(error => {
+        console.error(error);
+    });
+}
+
 // It waits the event from "bothWeb3.js" generated as last and it calls functions related to the validator
 document.addEventListener('sharedDataReady', async () => {
     numberOfValidators = Number(await dAppContract.methods.validatorsQuantity().call());
     await loadTotalTokensAndLockedTokens();
     await loadLockDateAndDays();
     await eventPastAddVideo();
+    await loadEventsSection();
     loadVoteList(1);
     loadMainPage();
     eventAddVideo();
@@ -381,4 +525,5 @@ document.addEventListener('sharedDataReady', async () => {
     eventMTGforVoucher();
     eventReceiveTokensFromCompany();
     eventWithdrawTokensCompany();
+    setInterval(loadEventsSection, 5000);
 });
