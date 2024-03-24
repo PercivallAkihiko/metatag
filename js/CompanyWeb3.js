@@ -532,6 +532,10 @@ async function eventSetVariable() {
     })
 }
 
+function generateChart() {
+    
+}
+
 // It waits the event from "bothWeb3.js" generated as last and it calls functions related to the validator
 document.addEventListener('sharedDataReady', async () => {
     numberOfValidators = Number(await dAppContract.methods.validatorsQuantity().call());
@@ -539,6 +543,7 @@ document.addEventListener('sharedDataReady', async () => {
     await loadLockDateAndDays();
     await eventPastAddVideo();
     await loadEventsSection();
+    await generateChart();
     loadVoteList(1);
     loadMainPage();
     listenerLockTokensButton();
@@ -553,4 +558,5 @@ document.addEventListener('sharedDataReady', async () => {
     eventWithdrawTokensCompany();
     eventSetVariable();
     setInterval(loadEventsSection, 5000);
+    setInterval(generateChart, 10000);
 });
