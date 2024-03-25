@@ -109,7 +109,7 @@ html{
 
 .container{
     display: grid;
-    grid-template-columns: auto 992px auto;
+    grid-template-columns: auto 992px auto;    
 }
 
 .wrapper{    
@@ -135,8 +135,27 @@ html{
     grid-template-rows: auto min-content min-content min-content ;
 }
 
+.image_column{
+    display: flex;    
+    align-items: center;
+    justify-content: center;
+}
+
 .column{
     padding: 10px;
+    box-sizing: border-box;
+}
+
+.main_image{
+    width: auto; /* Adjusted to fill the grid cell */
+    height: 460px; /* Adjusted to fill the grid cell */
+    object-fit: contain;
+}
+
+.image2 {
+    width: auto; /* Adjusted to fill the grid cell */
+    height: 260px; /* Adjusted to fill the grid cell */
+    object-fit: contain;
 }
 
 .main_title,
@@ -224,7 +243,7 @@ html{
 }
 
 .second_container{
-    height: 375px;
+    height: 390px;
 }
 
 .main_column2 {
