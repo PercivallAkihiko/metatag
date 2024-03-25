@@ -6,6 +6,12 @@ const companies = {
     "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC": 'YouTube'
 };
 
+// Temporary values of liquid and locked tokens used to generate the graph
+var balances4Graph = [];
+
+// Temporary amount of blocks displayed in the graph
+var blocksDisplayed = 5000;
+
 // Function to display total and locked validators' tokens
 async function loadTotalTokensAndLockedTokens() {
     const lockedTokens = parseFloat(web3.utils.fromWei(await dAppContract.methods.balanceCompanies(account).call(), 'ether'));
@@ -532,18 +538,84 @@ async function eventSetVariable() {
     })
 }
 
-function generateChart() {
-    
+// Fetches companies' liquid and locked tokens
+async function fetchTokenBalances(startBlockNumber, currentBlockNumber) {
+    const lockedTokensWei = await dAppContract.methods.balanceCompanies(account).call();
+    const liquidTokensWei = await tokenContract.methods.balanceOf(account).call();
+    const lockedTokens = parseFloat(web3.utils.fromWei(lockedTokensWei, 'ether'));
+    const liquidTokens = parseFloat(web3.utils.fromWei(liquidTokensWei, 'ether'));
+    for (let blockNumber = startBlockNumber; blockNumber <= currentBlockNumber; blockNumber++) {
+        balances4Graph.push({ blockNumber, lockedTokens, liquidTokens });
+    }
+    return balances4Graph;
+}
+
+// Generates chart
+async function generateChart() {
+    const currentBlockNumber = await web3.eth.getBlockNumber();
+    let startBlockNumber = currentBlockNumber - BigInt(blocksDisplayed);
+    startBlockNumber = startBlockNumber < 0 ? 0 : startBlockNumber;
+    const tokenBalances = await fetchTokenBalances(startBlockNumber, currentBlockNumber);
+    const chartData = {
+        labels: tokenBalances.map(entry => entry.blockNumber.toString()),
+        datasets: [
+            {
+                label: 'Locked Tokens',
+                backgroundColor: 'rgb(255, 99, 132, 0.25)',
+                borderColor: 'rgb(255, 99, 132)',
+                data: tokenBalances.map(entry => entry.lockedTokens),
+            },
+            {
+                label: 'Liquid Tokens',
+                backgroundColor: 'rgb(54, 162, 235, 0.25)',
+                borderColor: 'rgb(54, 162, 235)',
+                data: tokenBalances.map(entry => entry.liquidTokens),
+            }
+        ]
+    };
+    const ctx = document.getElementById('balance_chart').getContext('2d');
+    if (window.myChart) {
+        window.myChart.data = chartData;
+        window.myChart.options.animation = false;
+        window.myChart.update();
+    } else {
+        window.myChart = new Chart(ctx, {
+            type: 'line',
+            data: chartData,
+            options: {
+                responsive: true,
+                animation: false, 
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Block Number'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Tokens'
+                        }
+                    }
+                }
+            }
+        });
+    }
+    blocksDisplayed = 1;
+    for (let i = 0; i<blocksDisplayed; i++){
+        balances4Graph.pop();
+    }
 }
 
 // It waits the event from "bothWeb3.js" generated as last and it calls functions related to the validator
 document.addEventListener('sharedDataReady', async () => {
     numberOfValidators = Number(await dAppContract.methods.validatorsQuantity().call());
+    await generateChart();
     await loadTotalTokensAndLockedTokens();
     await loadLockDateAndDays();
     await eventPastAddVideo();
     await loadEventsSection();
-    await generateChart();
     loadVoteList(1);
     loadMainPage();
     listenerLockTokensButton();
@@ -558,5 +630,5 @@ document.addEventListener('sharedDataReady', async () => {
     eventWithdrawTokensCompany();
     eventSetVariable();
     setInterval(loadEventsSection, 5000);
-    setInterval(generateChart, 10000);
+    setInterval(generateChart, 3000);
 });
