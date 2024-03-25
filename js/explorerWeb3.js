@@ -294,6 +294,46 @@ function loadEvents() {
                     videoId: "",
                     status: 4
                 })
+            } else if (events[i].event == "eventWhitelistCompany") {
+                eventsDB.push({
+                    name: "eventWhitelistCompany",
+                    validator: "",
+                    user: "",
+                    company: events[i].returnValues[0],
+                    from: "",
+                    to: "",
+                    amount: "",
+                    value: "",
+                    positive: "",
+                    hash: "",
+                    tags: [],
+                    seed: "",
+                    rewardAmount: "",
+                    timestamp: events[i].blockNumber,
+                    chosenValidators: [],
+                    videoId: "",
+                    status: 4
+                })
+            } else if (events[i].event == "eventRemoveWhitelistCompany") {
+                eventsDB.push({
+                    name: "eventRemoveWhitelistCompany",
+                    validator: "",
+                    user: "",
+                    company: events[i].returnValues[0],
+                    from: "",
+                    to: "",
+                    amount: "",
+                    value: "",
+                    positive: "",
+                    hash: "",
+                    tags: [],
+                    seed: "",
+                    rewardAmount: "",
+                    timestamp: events[i].blockNumber,
+                    chosenValidators: [],
+                    videoId: "",
+                    status: 4
+                })
             }
         }
         eventsDB.sort((a, b) => {

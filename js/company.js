@@ -841,7 +841,7 @@ function generatePoll(results){
         resultName.innerHTML = getTagByIndex(tag);
         resultFull.innerHTML = " ";
         resultEmpty.innerHTML = " ";
-        resultVoteValue.innerHTML = percentage + "%";
+        resultVoteValue.innerHTML = Number(percentage).toFixed(2) + "%";
 
         resultElement.appendChild(resultName);
         resultVote.appendChild(resultFull);

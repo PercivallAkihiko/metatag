@@ -608,6 +608,15 @@ async function generateChart() {
     }
 }
 
+// Listen for the eventGetRewards to udpate the UI
+function eventGetRewards() {
+    dAppContract.events.eventGetRewards({
+        fromBlock: 'latest',
+    }).on('data', async function(event) {
+        loadTotalTokensAndLockedTokens();
+    })
+}
+
 // It waits the event from "bothWeb3.js" generated as last and it calls functions related to the validator
 document.addEventListener('sharedDataReady', async () => {
     numberOfValidators = Number(await dAppContract.methods.validatorsQuantity().call());
@@ -624,6 +633,7 @@ document.addEventListener('sharedDataReady', async () => {
     eventAddVideo();
     eventSubmitHash();
     eventRevealHash();
+    eventGetRewards();
     eventBuyTokens();
     eventMTGforVoucher();
     eventReceiveTokensFromCompany();
