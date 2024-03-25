@@ -48,7 +48,7 @@ html{
     grid-column: 2;
 
     display: grid;
-    grid-template-columns: 37px auto 100px 100px 100px 100px 120px;
+    grid-template-columns: 37px auto 100px 100px 100px 100px 140px;
     grid-template-rows: 46px;
     grid-column-gap: 15px;
 
