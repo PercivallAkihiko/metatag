@@ -23,7 +23,7 @@ var videoDB = [
         leftvote: 0,
         reward: "-",
         results: []
-    },    
+    },
     {
         hashId: "xxxr4J1fzvc",
         company: "Youtube",
@@ -929,7 +929,9 @@ function getTagPositions() {
   
     tagNames.forEach(tagName => {
         const tagIndex = validTags.indexOf(tagName.textContent.toLowerCase());
-        tagPositions.push(tagIndex);
+        if(!tagPositions.includes(tagIndex)){
+            tagPositions.push(tagIndex);
+        }        
     });    
     return tagPositions;
 }
