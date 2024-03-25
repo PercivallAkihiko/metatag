@@ -216,7 +216,7 @@ const validTags = [
 // 5 MTGforVoucher(                 address indexed user)
 
 var eventsDB = [
-    // 1 BuyTokens(                     address indexed user, 					                uint amount)
+    /*// 1 BuyTokens(                     address indexed user, 					                uint amount)
     {
         name: "BuyTokens", 
         validator: "",
@@ -246,7 +246,7 @@ var eventsDB = [
 
         videoId: "",
         status: 1
-    },    /*
+    },    
     
     // 2 ReceiveTokensFromCompany(      address indexed company, 					            uint amount)
     {
