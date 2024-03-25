@@ -466,6 +466,7 @@ async function eventAddVideo() {
                     videoDB.push(newVideoEntry);
                     videoDB = Array.from(videoDB.reduce((acc, item) => acc.set(`${item.hashId}-${item.company}`, item), new Map()).values());
                     updateVotePage();
+                    loadMainPage();
                 })
         }
     })
@@ -492,6 +493,7 @@ async function eventSubmitHash() {
                 break;
             }
         }
+        loadMainPage();
     })
 }
 
@@ -516,6 +518,7 @@ async function eventRevealHash() {
                 break;
             }
         }
+        loadMainPage();
     })
 }
 
