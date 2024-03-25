@@ -23,7 +23,7 @@ var videoDB = [
         leftvote: 0,
         reward: "-",
         results: []
-    },
+    },    
     {
         hashId: "xxxr4J1fzvc",
         company: "Youtube",
@@ -582,8 +582,6 @@ function initEthPrice(){
         //console.log("ETH price fetched from cookies: " + ethPriceCookie);
         return;
     }
-
-
     fetch(`https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd`)
     .then(response => response.json())
     .then(data => {
@@ -962,6 +960,11 @@ function generateDiv(videoId, status, results, leftVote, company) {
     switch (status) {
         case 1:
             tagButton.addEventListener('click', function () {   
+                var tagsContainerLocal = document.querySelector(".tags_container");                
+                if(tagsContainerLocal.innerHTML == ""){
+                    alert("You cannot vote without tags!");
+                    return;
+                }
                 var seed = generateAlphanumericSeed() 
                 var tagList = getTagPositions();
                 externalListenerSubmitHash(seed, tagList, videoId, company);
