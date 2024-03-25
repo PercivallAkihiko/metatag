@@ -394,6 +394,12 @@ var eventsDB = [
 ]
 
 document.addEventListener("DOMContentLoaded", function() {    
+    var logo = document.querySelector(".logo_container")
+    var logoName = document.querySelector(".logo_name_container")
+    
+    logo.addEventListener("click" , () => {window.location.href = "index.html";});
+    logoName.addEventListener("click" , () => {window.location.href = "index.html";});
+
     initEventList();
 });
 
