@@ -13,7 +13,8 @@ const expiredColor = "rgb(251, 106, 74)";
 // 6 Completed
 // 7 Expired
 
-var videoDB = [    
+var videoDB = [
+    // This are here to show the input type
     /*{
         hashId: "xxxr4J1fzvc",            
         title: "Bitcoin On-Chain Analysis: Value Days Destroyed Multiple",
@@ -314,6 +315,7 @@ const validTags = [
 // 8 MTGforVoucher(              address indexed user)
 
 var eventsDB = [
+    // This are here to show the input type
     // 1 BuyTokens(                  address indexed user, 					        uint amount)
     /*{
         name: "BuyTokens", 

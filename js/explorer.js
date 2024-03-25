@@ -18,6 +18,7 @@
 // status: 0
 
 var eventsDB = [
+    // This are here to show the input type
     // {
     //     name: "BuyTokens", 
     //     validator: "",

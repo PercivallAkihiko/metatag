@@ -23,6 +23,7 @@ const expiredColor = "rgb(251, 106, 74)";
 // 6 Completed
 
 var videoDB = [
+    // This are here to show the input type
     /* {
         hashId: "95Bbjmwlnss",
         company: "Youtube",
@@ -216,6 +217,7 @@ const validTags = [
 // 5 MTGforVoucher(                 address indexed user)
 
 var eventsDB = [
+    // This are here to show the input type
     /*// 1 BuyTokens(                     address indexed user, 					                uint amount)
     {
         name: "BuyTokens", 
