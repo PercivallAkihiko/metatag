@@ -1122,18 +1122,25 @@ cursive{
   
 .hidden-div {
     position: absolute;
-    top: 50%; /* Move the top of the div to the middle */
-    right: 100%; /* Position to the left of the container */
+    top: 50%; 
+    right: 100%; 
     background-color: var(--second-color);    
     visibility: hidden;
     opacity: 0;
     transition: visibility 0s, opacity 0.5s linear;
     border-radius: 5px;
-    box-shadow: 0px 0px 15px 0px rgba(0,0,0,0.5);
+    box-shadow: 0px 0px 15px 0px rgba(0,0,0,1);
+    z-index: 1;
+    transform: translateY(-50%); 
+}
+
+.hidden_vaidator_div{
     display: grid;
     grid-template-rows: repeat(10, auto);
-    z-index: 1;
-    transform: translateY(-50%); /* Move the div up by half its height to center vertically */
+}
+
+.hidden_hash_div{
+    padding: 10px;
 }
 
 .container-event {

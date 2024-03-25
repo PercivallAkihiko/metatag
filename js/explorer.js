@@ -18,6 +18,39 @@
 // status: 0
 
 var eventsDB = [
+    // {
+    //     name: "BuyTokens", 
+    //     validator: "",
+    //     user: "0x07FAc54A901409Fe10E56c899Be3dCF2471ae321",     
+    //     company: "",
+
+    //     amount: "5 MTG",
+    //     additional: "",
+    //     positive: "",
+    //     hash: "0x07FAc54A901409Fe10E56c899Be3dCF2471ae321F2471ae321F2471ae32122222",
+    //     tags: [],
+    //     seed: "",
+    //     rewardAmount: "",
+    //     timestamp: "23",
+    //     chosenValidators: [
+    //         "0xDef1C0ded9bec7F1a1670819833240f027b25EfF", 
+    //         "0xc7386DeE48a71c4F83d6E980454C678f632E6231",
+    //         "0xfa044DB7c24da4efa1327d3847078f1fE1eB3EB3",
+    //         "0x411099C0b413f4fedDb10Edf6a8be63BD321311C",
+    //         "0x993864E43Caa7F7F12953AD6fEb1d1Ca635B875F",
+    //         "0x644192291cc835A93d6330b24EA5f5FEdD0eEF9e",
+    //         "0xbE5571197C83FC3D9FD362eD04f846a85C8028EF",
+    //         "0xDef1C0ded9bec7F1a1670819833240f027b25EfF",
+    //         "0xDef1C0ded9bec7F1a1670819833240f027b25EfF",
+    //         "0x388C818CA8B9251b393131C08a736A67ccB19297",
+    //     ],
+
+    //     videoId: "",
+    //     status: 1,
+    //     from: "",
+    //     to: "",
+    //     value: "",        
+    // },
     /* //1 BuyTokens(address indexed user, uint amount);
     {
         name: "BuyTokens", 
@@ -391,10 +424,10 @@ function initEventList(){
         createMacroEventDiv(valuesDiv, "Amount:", event.amount);                    
         createMacroEventDiv(valuesDiv, "Value:", event.value);
         createMacroEventDiv(valuesDiv, "Positive:", event.positive);
-        createMacroEventDiv(valuesDiv, "Hash:", event.hash);                             
+        createMacroEventDiv(valuesDiv, "Hash:", event.hash, 2);                             
         createMacroEventDiv(valuesDiv, "Seed:", event.seed);
         createMacroEventDiv(valuesDiv, "Reward:", event.rewardAmount);                   
-        createMacroEventDiv(valuesDiv, "Validators:", event.chosenValidators, true); 
+        createMacroEventDiv(valuesDiv, "Validators:", event.chosenValidators, 1); 
         createMacroEventDiv(valuesDiv, "Block:", event.timestamp); 
         createMacroEventDiv(valuesDiv, "Video ID:", event.videoId); 
 
@@ -410,30 +443,43 @@ function initEventList(){
     setGridRows(eventCounter, events_list, 100);
 }
 
-function createMacroEventDiv(div, name, value, chosenValidator = false){
+function createMacroEventDiv(div, name, value, status = 0){
     if(value.length == 0){ return;}
     var macroElement = document.createElement('div');
     var nameDiv = document.createElement('div');
     var valueDiv = document.createElement('div');       
 
     nameDiv.innerHTML = "<grey>" + name + "</grey>";        
-    if(chosenValidator){
-        valueDiv.innerHTML = value[0].substring(0, 6) + "...";
-        var chosenValidatorDiv = document.createElement('div');          
-        
-        value.forEach(function(validator) {   
-            var validatorDiv = document.createElement('div');    
-            validatorDiv.innerHTML = validator;
-            validatorDiv.classList.add("validator");
-            chosenValidatorDiv.appendChild(validatorDiv);        
-        });
-
-        valueDiv.classList.add("container-event");
-        chosenValidatorDiv.classList.add("hidden-div");
-        valueDiv.appendChild(chosenValidatorDiv);        
-    }
-    else{
-        valueDiv.innerHTML = value; 
+    switch(status) {
+        case 1:
+            valueDiv.innerHTML = value[0].substring(0, 6) + "...";
+            var chosenValidatorDiv = document.createElement('div');          
+            
+            value.forEach(function(validator) {   
+                var validatorDiv = document.createElement('div');    
+                validatorDiv.innerHTML = validator;
+                validatorDiv.classList.add("validator");
+                chosenValidatorDiv.appendChild(validatorDiv);        
+            });
+    
+            valueDiv.classList.add("container-event");
+            chosenValidatorDiv.classList.add("hidden-div");
+            chosenValidatorDiv.classList.add("hidden_vaidator_div");
+            valueDiv.appendChild(chosenValidatorDiv); 
+            break;    
+        case 2:
+            valueDiv.innerHTML = value.substring(0, 6) + "...";            
+            var hashDiv = document.createElement('div');          
+            
+            hashDiv.innerHTML = value
+    
+            valueDiv.classList.add("container-event");
+            hashDiv.classList.add("hidden-div");
+            hashDiv.classList.add("hidden_hash_div");
+            valueDiv.appendChild(hashDiv);             
+            break
+        default:
+            valueDiv.innerHTML = value;
     }
 
     macroElement.appendChild(nameDiv);

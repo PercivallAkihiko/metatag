@@ -1238,6 +1238,50 @@ cursive{
     grid-template-columns: 100px auto;
 }
 
+.container-event:hover .hidden-div {
+    visibility: visible;
+    opacity: 1;
+}
+  
+.hidden-div {
+    position: absolute;
+    top: 50%; 
+    right: 100%; 
+    background-color: var(--second-color);    
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s, opacity 0.5s linear;
+    border-radius: 5px;
+    box-shadow: 0px 0px 15px 0px rgba(0,0,0,1);
+    z-index: 1;
+    transform: translateY(-50%); 
+}
+
+.hidden_vaidator_div{
+    display: grid;
+    grid-template-rows: repeat(10, auto);
+}
+
+.hidden_hash_div{
+    padding: 10px;
+}
+
+.container-event {
+    position: relative;
+}
+
+
+.validator{
+    height: 35px;
+    align-items: center;
+    display: flex;
+    padding: 0px 10px;
+}
+
+.validator:hover{
+    background-color: var(--second-color-hovered);
+}
+
 /* //////////////////VOUCHER */
 
 .voucher_container{
