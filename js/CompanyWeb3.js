@@ -142,6 +142,8 @@ function listenerAddVideoButton() {
             await dAppContract.methods.addVideo(asciiToDecimal(document.getElementById('videoIdInput').value), document.getElementById('videoLengthInput').value).send({
                 from: account
             });
+            var overlay = document.querySelector(".overlay");
+            overlay.classList.toggle("active");
         } catch (error) {
             console.error('Failed to send addVideo transaction:', error);
         }
