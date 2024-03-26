@@ -502,9 +502,9 @@ document.addEventListener("DOMContentLoaded", function() {
     initVoucherListener();
     
     //Generating chart
-    fetchEthereumPrices().then(monthxprice => {
-        generateChart(monthxprice[0], monthxprice[1], [2.4, 2.5, 2.4, 2.7, 1,3,10,5,2.3,4.2, 15, 20, 13.4, 15,5.5, 19, 20, 21.2, 30, 24, 45, 45, 70]);
-    });   
+    // fetchEthereumPrices().then(monthxprice => {
+    //     generateChart(monthxprice[0], monthxprice[1], [2.4, 2.5, 2.4, 2.7, 1,3,10,5,2.3,4.2, 15, 20, 13.4, 15,5.5, 19, 20, 21.2, 30, 24, 45, 45, 70]);
+    // });   
     
     InitImage();
 });
