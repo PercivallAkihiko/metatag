@@ -569,7 +569,7 @@ function initVoteList(){
     setFilterListener(completed, 4);
 
     overlay.addEventListener("click" , () => {
-        if (event.target === overlay) {
+        if (event.target === overlay) {            
             overlay.classList.toggle("active");
             youtubeVideo.src = "";
         }

@@ -211,6 +211,8 @@ async function externalListenerSubmitHash(seed, tagList, videoId, company) {
         await dAppContract.methods.submitHash(getKeyByValue(companies, company), asciiToDecimal(videoId), hashTagListAndSeed(tagList, seed)).send({
             from: account
         });
+        var overlay = document.querySelector(".overlay");
+        overlay.classList.toggle("active");
     } catch (error) {
         console.error('Failed to send submitHash transaction:', error);
     }
@@ -225,6 +227,8 @@ async function externalListenerRevealHash(videoId, company) {
         await dAppContract.methods.revealHash(getKeyByValue(companies, company), asciiToDecimal(videoId), tagList, seed).send({
             from: account
         });
+        var overlay = document.querySelector(".overlay");
+        overlay.classList.toggle("active");
     } catch (error) {
         console.error('Failed to send submitHash transaction:', error);
     }
@@ -236,7 +240,8 @@ async function externalListenerGetRewards(videoId, company) {
         const receipt = await dAppContract.methods.getRewards(getKeyByValue(companies, company), asciiToDecimal(videoId)).send({
             from: account
         });
-
+        var overlay = document.querySelector(".overlay");
+        overlay.classList.toggle("active");
     } catch (error) {
         console.error('Failed to send submitHash transaction:', error);
     }
