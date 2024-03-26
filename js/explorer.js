@@ -1,6 +1,6 @@
-// name: "", 
+// name: "",
 // emitter: "",
-// validator: "",        
+// validator: "",
 // purchaser: "",
 // company: "",
 
@@ -18,41 +18,39 @@
 // status: 0
 
 var eventsDB = [
-    // This are here to show the input type
-    // {
-    //     name: "BuyTokens", 
-    //     validator: "",
-    //     user: "0x07FAc54A901409Fe10E56c899Be3dCF2471ae321",     
-    //     company: "",
-
-    //     amount: "5 MTG",
-    //     additional: "",
-    //     positive: "",
-    //     hash: "0x07FAc54A901409Fe10E56c899Be3dCF2471ae321F2471ae321F2471ae32122222",
-    //     tags: [],
-    //     seed: "",
-    //     rewardAmount: "",
-    //     timestamp: "23",
-    //     chosenValidators: [
-    //         "0xDef1C0ded9bec7F1a1670819833240f027b25EfF", 
-    //         "0xc7386DeE48a71c4F83d6E980454C678f632E6231",
-    //         "0xfa044DB7c24da4efa1327d3847078f1fE1eB3EB3",
-    //         "0x411099C0b413f4fedDb10Edf6a8be63BD321311C",
-    //         "0x993864E43Caa7F7F12953AD6fEb1d1Ca635B875F",
-    //         "0x644192291cc835A93d6330b24EA5f5FEdD0eEF9e",
-    //         "0xbE5571197C83FC3D9FD362eD04f846a85C8028EF",
-    //         "0xDef1C0ded9bec7F1a1670819833240f027b25EfF",
-    //         "0xDef1C0ded9bec7F1a1670819833240f027b25EfF",
-    //         "0x388C818CA8B9251b393131C08a736A67ccB19297",
-    //     ],
-
-    //     videoId: "",
-    //     status: 1,
-    //     from: "",
-    //     to: "",
-    //     value: "",        
-    // },
-    /* //1 BuyTokens(address indexed user, uint amount);
+  // This are here to show the input type
+  // {
+  //     name: "BuyTokens",
+  //     validator: "",
+  //     user: "0x07FAc54A901409Fe10E56c899Be3dCF2471ae321",
+  //     company: "",
+  //     amount: "5 MTG",
+  //     additional: "",
+  //     positive: "",
+  //     hash: "0x07FAc54A901409Fe10E56c899Be3dCF2471ae321F2471ae321F2471ae32122222",
+  //     tags: [],
+  //     seed: "",
+  //     rewardAmount: "",
+  //     timestamp: "23",
+  //     chosenValidators: [
+  //         "0xDef1C0ded9bec7F1a1670819833240f027b25EfF",
+  //         "0xc7386DeE48a71c4F83d6E980454C678f632E6231",
+  //         "0xfa044DB7c24da4efa1327d3847078f1fE1eB3EB3",
+  //         "0x411099C0b413f4fedDb10Edf6a8be63BD321311C",
+  //         "0x993864E43Caa7F7F12953AD6fEb1d1Ca635B875F",
+  //         "0x644192291cc835A93d6330b24EA5f5FEdD0eEF9e",
+  //         "0xbE5571197C83FC3D9FD362eD04f846a85C8028EF",
+  //         "0xDef1C0ded9bec7F1a1670819833240f027b25EfF",
+  //         "0xDef1C0ded9bec7F1a1670819833240f027b25EfF",
+  //         "0x388C818CA8B9251b393131C08a736A67ccB19297",
+  //     ],
+  //     videoId: "",
+  //     status: 1,
+  //     from: "",
+  //     to: "",
+  //     value: "",
+  // },
+  /* //1 BuyTokens(address indexed user, uint amount);
     {
         name: "BuyTokens", 
         validator: "",        
@@ -392,110 +390,117 @@ var eventsDB = [
         videoId: "",
         status: 13
     } */
-]
+];
 
-document.addEventListener("DOMContentLoaded", function() {    
-    var logo = document.querySelector(".logo_container")
-    var logoName = document.querySelector(".logo_name_container")
-    
-    logo.addEventListener("click" , () => {window.location.href = "index.html";});
-    logoName.addEventListener("click" , () => {window.location.href = "index.html";});
+document.addEventListener("DOMContentLoaded", function () {
+  var logo = document.querySelector(".logo_container");
+  var logoName = document.querySelector(".logo_name_container");
 
-    initEventList();
+  logo.addEventListener("click", () => {
+    window.location.href = "index.html";
+  });
+  logoName.addEventListener("click", () => {
+    window.location.href = "index.html";
+  });
+
+  initEventList([]);
 });
 
-function initEventList(){
-    var events_list = document.querySelector('.events_list');        
+function initEventList(eventsDB) {
+  var events_list = document.querySelector(".events_list");
 
-    events_list.innerHTML = '';    
+  events_list.innerHTML = "";
 
-    var eventCounter = 0;
+  var eventCounter = 0;
 
-    eventsDB.forEach(function(event) {                
-        var elementDiv = document.createElement('div');  
-        elementDiv.classList.add('event_element');
+  eventsDB.forEach(function (event) {
+    var elementDiv = document.createElement("div");
+    initEventList;
+    elementDiv.classList.add("event_element");
 
-        var nameDiv = document.createElement('div');
-        var addressDiv = document.createElement('div');
-        var valuesDiv = document.createElement('div'); 
-        
-        //console.log(`Analyzing: ${event.name}, emitter: ${event.emitter}`)
-        
-        nameDiv.innerHTML = event.name;                   
-        createMacroEventDiv(addressDiv, "Validator:", event.validator);
-        createMacroEventDiv(addressDiv, "User:", event.user);
-        createMacroEventDiv(addressDiv, "Company:", event.company);
-        createMacroEventDiv(addressDiv, "From:", event.from);    
-        createMacroEventDiv(addressDiv, "To:", event.to);             
+    var nameDiv = document.createElement("div");
+    var addressDiv = document.createElement("div");
+    var valuesDiv = document.createElement("div");
 
-        createMacroEventDiv(valuesDiv, "Amount:", event.amount);                    
-        createMacroEventDiv(valuesDiv, "Value:", event.value);
-        createMacroEventDiv(valuesDiv, "Positive:", event.positive);
-        createMacroEventDiv(valuesDiv, "Hash:", event.hash, 2);                             
-        createMacroEventDiv(valuesDiv, "Seed:", event.seed);
-        createMacroEventDiv(valuesDiv, "Reward:", event.rewardAmount);                   
-        createMacroEventDiv(valuesDiv, "Validators:", event.chosenValidators, 1); 
-        createMacroEventDiv(valuesDiv, "Block:", event.timestamp); 
-        createMacroEventDiv(valuesDiv, "Video ID:", event.videoId); 
+    //console.log(`Analyzing: ${event.name}, emitter: ${event.emitter}`)
 
-        createMacroEventDiv(valuesDiv, "Tags:", event.tags); 
-        
-        elementDiv.appendChild(nameDiv); 
-        elementDiv.appendChild(addressDiv); 
-        elementDiv.appendChild(valuesDiv); 
-        events_list.appendChild(elementDiv);       
-        
-        eventCounter += 1;
-    });    
-    setGridRows(eventCounter, events_list, 100);
+    nameDiv.innerHTML = event.name;
+    createMacroEventDiv(addressDiv, "Validator:", event.validator);
+    createMacroEventDiv(addressDiv, "User:", event.user);
+    createMacroEventDiv(addressDiv, "Company:", event.company);
+    createMacroEventDiv(addressDiv, "From:", event.from);
+    createMacroEventDiv(addressDiv, "To:", event.to);
+
+    createMacroEventDiv(valuesDiv, "Amount:", event.amount);
+    createMacroEventDiv(valuesDiv, "Value:", event.value);
+    createMacroEventDiv(valuesDiv, "Positive:", event.positive);
+    createMacroEventDiv(valuesDiv, "Hash:", event.hash, 2);
+    createMacroEventDiv(valuesDiv, "Seed:", event.seed);
+    createMacroEventDiv(valuesDiv, "Reward:", event.rewardAmount);
+    createMacroEventDiv(valuesDiv, "Validators:", event.chosenValidators, 1);
+    createMacroEventDiv(valuesDiv, "Block:", event.timestamp);
+    createMacroEventDiv(valuesDiv, "Video ID:", event.videoId);
+
+    createMacroEventDiv(valuesDiv, "Tags:", event.tags);
+
+    elementDiv.appendChild(nameDiv);
+    elementDiv.appendChild(addressDiv);
+    elementDiv.appendChild(valuesDiv);
+    events_list.appendChild(elementDiv);
+
+    eventCounter += 1;
+  });
+  setGridRows(eventCounter, events_list, 100);
 }
 
-function createMacroEventDiv(div, name, value, status = 0){
-    if(value.length == 0){ return;}
-    var macroElement = document.createElement('div');
-    var nameDiv = document.createElement('div');
-    var valueDiv = document.createElement('div');       
+function createMacroEventDiv(div, name, value, status = 0) {
+  if (value.length == 0) {
+    return;
+  }
+  var macroElement = document.createElement("div");
+  var nameDiv = document.createElement("div");
+  var valueDiv = document.createElement("div");
 
-    nameDiv.innerHTML = "<grey>" + name + "</grey>";        
-    switch(status) {
-        case 1:
-            valueDiv.innerHTML = value[0].substring(0, 6) + "...";
-            var chosenValidatorDiv = document.createElement('div');          
-            
-            value.forEach(function(validator) {   
-                var validatorDiv = document.createElement('div');    
-                validatorDiv.innerHTML = validator;
-                validatorDiv.classList.add("validator");
-                chosenValidatorDiv.appendChild(validatorDiv);        
-            });
-    
-            valueDiv.classList.add("container-event");
-            chosenValidatorDiv.classList.add("hidden-div");
-            chosenValidatorDiv.classList.add("hidden_vaidator_div");
-            valueDiv.appendChild(chosenValidatorDiv); 
-            break;    
-        case 2:
-            valueDiv.innerHTML = value.substring(0, 6) + "...";            
-            var hashDiv = document.createElement('div');          
-            
-            hashDiv.innerHTML = value
-    
-            valueDiv.classList.add("container-event");
-            hashDiv.classList.add("hidden-div");
-            hashDiv.classList.add("hidden_hash_div");
-            valueDiv.appendChild(hashDiv);             
-            break
-        default:
-            valueDiv.innerHTML = value;
-    }
+  nameDiv.innerHTML = "<grey>" + name + "</grey>";
+  switch (status) {
+    case 1:
+      valueDiv.innerHTML = value[0].substring(0, 6) + "...";
+      var chosenValidatorDiv = document.createElement("div");
 
-    macroElement.appendChild(nameDiv);
-    macroElement.appendChild(valueDiv);
-    macroElement.classList.add('event_macro_element');
+      value.forEach(function (validator) {
+        var validatorDiv = document.createElement("div");
+        validatorDiv.innerHTML = validator;
+        validatorDiv.classList.add("validator");
+        chosenValidatorDiv.appendChild(validatorDiv);
+      });
 
-    div.appendChild(macroElement);        
+      valueDiv.classList.add("container-event");
+      chosenValidatorDiv.classList.add("hidden-div");
+      chosenValidatorDiv.classList.add("hidden_vaidator_div");
+      valueDiv.appendChild(chosenValidatorDiv);
+      break;
+    case 2:
+      valueDiv.innerHTML = value.substring(0, 6) + "...";
+      var hashDiv = document.createElement("div");
+
+      hashDiv.innerHTML = value;
+
+      valueDiv.classList.add("container-event");
+      hashDiv.classList.add("hidden-div");
+      hashDiv.classList.add("hidden_hash_div");
+      valueDiv.appendChild(hashDiv);
+      break;
+    default:
+      valueDiv.innerHTML = value;
+  }
+
+  macroElement.appendChild(nameDiv);
+  macroElement.appendChild(valueDiv);
+  macroElement.classList.add("event_macro_element");
+
+  div.appendChild(macroElement);
 }
 
-function setGridRows(number, listDiv, height) {                  
-    listDiv.style.gridTemplateRows = 'repeat(' + number + ', ' + height + 'px)';
+function setGridRows(number, listDiv, height) {
+  listDiv.style.gridTemplateRows = "repeat(" + number + ", " + height + "px)";
 }

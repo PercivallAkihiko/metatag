@@ -23,10 +23,12 @@ async function loadSmartContracs() {
 async function loadEvents() {
   try {
     const localEvents = [];
+    console.log(localEvents);
     const tokenContractEvents = await tokenContract.getPastEvents("allEvents", {
       fromBlock: 0,
       toBlock: "latest",
     });
+    console.log(tokenContractEvents);
     for (let i = 0; i < tokenContractEvents.length; i++) {
       if (tokenContractEvents[i].event == "eventBuyTokens") {
         localEvents.push({
@@ -106,6 +108,7 @@ async function loadEvents() {
       fromBlock: 0,
       toBlock: "latest",
     });
+    console.log(events);
     for (let i = 0; i < events.length; i++) {
       if (events[i].event == "eventMTGforVoucher") {
         localEvents.push({
@@ -362,15 +365,18 @@ async function loadEvents() {
       return 0;
     });
 
-    eventsDB = localEvents;
-    initEventList();
+    initEventList(localEvents);
   } catch (err) {
     console.error(error);
   }
 }
 
 web3 = new Web3(window.ethereum);
-loadSmartContracs().then(() => {
-  loadEvents();
-  setInterval(loadEvents, 5000);
-});
+loadSmartContracs()
+  .then(() => {
+    loadEvents();
+    setInterval(loadEvents, 5000);
+  })
+  .catch((err) => {
+    console.log("error loading smart contract", err);
+  });

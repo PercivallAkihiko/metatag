@@ -1,60 +1,167 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>MetaTag</title>
-    <link rel="stylesheet" href="css/explorer.css">
-    <link href="https://fonts.cdnfonts.com/css/euclid-circular-b" rel="stylesheet">    
-    <script src="https://kit.fontawesome.com/0a2c0a85f0.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="css/explorer.css" />
+    <link
+      href="https://fonts.cdnfonts.com/css/euclid-circular-b"
+      rel="stylesheet"
+    />
+    <script
+      src="https://kit.fontawesome.com/0a2c0a85f0.js"
+      crossorigin="anonymous"
+    ></script>
     <script src="https://cdn.jsdelivr.net/npm/web3@4.6.0/dist/web3.min.js"></script>
     <script src="js/explorer.js"></script>
     <script src="js/additionsWeb3.js"></script>
-    <script src="js/explorerWeb3.js"></script>        
-</head>
-<body>
+    <script src="js/explorerWeb3.js"></script>
+  </head>
+  <body>
     <div class="header_container">
-        <div class="header_wrapper">
-            <div class="logo_container">
-                <img src="src\logo.png" class="logo">
-            </div>            
-            <div class="logo_name_container">
-                <img src="src\logo_name.png" class="logo_name">
-            </div>            
-
-            <a class="explanation" href="index.html#explanation_target">Explanation</a>
-            <a class="team" href="index.html#team_target">Team</a>
-            <a class="contact" href="index.html#contact_target">Contact</a>
-            <a class="explorer" href="explorer.html">Explorer</a>
-            <div class="app_button" id="app_button">
-                <span>Companies App</span>
-            </div>   
+      <div class="header_wrapper">
+        <div class="logo_container">
+          <img src="src\logo.png" class="logo" />
         </div>
+        <div class="logo_name_container">
+          <img src="src\logo_name.png" class="logo_name" />
+        </div>
+
+        <a class="explanation" href="index.html#explanation_target"
+          >Explanation</a
+        >
+        <a class="team" href="index.html#team_target">Team</a>
+        <a class="contact" href="index.html#contact_target">Contact</a>
+        <a class="explorer" href="explorer.html">Explorer</a>
+        <div class="app_button" id="app_button">
+          <span>Companies App</span>
+        </div>
+      </div>
     </div>
 
     <div class="container">
-        <div class="title">
-            <div class="title_explorer">Explorer</div>
-            <div class="app_button" id="app_button">
-                <span>Add Testnet</span>
-            </div>  
-        </div> 
-        <div class="events_container">                    
-            <div class="events_header">
-                <div class="events_container_title">
-                    Transactions
-                </div>
-            </div>
-            <div class="events_headers">
-                <div>Name</div>
-                <div>Addresses</div>                        
-                <div>Values</div>
-            </div>
-            <div class="events_list">
-                
-            </div>
+      <div class="title">
+        <div class="title_explorer">Explorer</div>
+        <!-- <div
+          class="app_button"
+          id="add_mtg_testnet_button"
+          onclick="connectToTestNet()"
+        >
+          <span>Add MTG Testnet</span>
+        </div> -->
+      </div>
+      <div
+        id="events_container_explorer_id"
+        class="events_container"
+        style="display: none"
+      >
+        <div class="events_header">
+          <div class="events_container_title">Transactions</div>
         </div>
-    </div>    
-</body>
+        <div class="events_headers">
+          <div>Name</div>
+          <div>Addresses</div>
+          <div>Values</div>
+        </div>
+        <div class="events_list"></div>
+      </div>
+      <div
+        id="events_container_testnet_not_connected"
+        class="events_container"
+        style="display: none; height: 400px; grid-template-rows: auto auto auto"
+      >
+        <h2 style="text-align: center; padding-top: 40px">
+          It looks like you didn't connect Metamask to the testnet 😓
+        </h2>
 
+        <div style="display: flex; justify-content: center">
+          <img
+            src="https://www.uu.nl/medewerkers/RestApi/Public/GetImage?Employee=74794&t="
+            alt="di_ciccio_pp"
+          />
+        </div>
+        <div style="margin-left: auto; margin-right: auto">
+          <div
+            class="app_button"
+            id="add_mtg_testnet_button"
+            onclick="connectToTestNet()"
+            style="width: 200px; margin: 25px; margin-top: 75px"
+          >
+            <span>Add MTG Testnet</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      web3.eth.net
+        .getId()
+        .then((networkId) => {
+          console.log("Network ID:", networkId.toString() === "31337");
+          if (networkId.toString() === "31337") {
+            document.getElementById(
+              "events_container_explorer_id"
+            ).style.display = "grid";
+            document.getElementById(
+              "events_container_testnet_not_connected"
+            ).style.display = "none";
+          } else {
+            document.getElementById(
+              "events_container_explorer_id"
+            ).style.display = "none";
+            document.getElementById(
+              "events_container_testnet_not_connected"
+            ).style.display = "grid";
+          }
+        })
+        .catch((err) => {
+          console.error("Error getting network ID:", err);
+        });
+      async function connectToTestNet() {
+        console.log(document.getElementById("add_mtg_testnet_button"));
+        // document
+        //   .getElementById("add_mtg_testnet_button")
+        //   .addEventListener("click", async () => {
+
+        if (window.ethereum) {
+          const web3 = new Web3(window.ethereum);
+
+          // Network details for the testnet
+          const testnetNetwork = {
+            chainId: "0x7a69",
+            chainName: "MetaTag Testnet",
+            rpcUrls: ["https://metamask.blockchain.ervincit.com"],
+            nativeCurrency: {
+              name: "ETHFAKE",
+              symbol: "CDC",
+              decimals: 18,
+            },
+          };
+
+          //   // Add the testnet to MetaMask
+          //   const networkType = await web3.eth.net.getNetworkType();
+
+          try {
+            await window.ethereum.request({
+              method: "wallet_addEthereumChain",
+              params: [testnetNetwork],
+            });
+            console.log("Testnet added to MetaMask");
+            document.getElementById(
+              "events_container_explorer_id"
+            ).style.display = "grid";
+            document.getElementById(
+              "events_container_testnet_not_connected"
+            ).style.display = "none";
+          } catch (error) {
+            console.error("Error adding testnet to MetaMask:", error);
+          }
+        } else {
+          console.log(
+            "MetaMask is not installed. Please consider installing it."
+          );
+        }
+        //   });
+      }
+    </script>
+  </body>
 </html>
