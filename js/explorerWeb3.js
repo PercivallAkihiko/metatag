@@ -371,12 +371,16 @@ async function loadEvents() {
   }
 }
 
-web3 = new Web3(window.ethereum);
-loadSmartContracs()
-  .then(() => {
-    loadEvents();
-    setInterval(loadEvents, 5000);
-  })
-  .catch((err) => {
-    console.log("error loading smart contract", err);
-  });
+if (window.ethereum) {
+  web3 = new Web3(window.ethereum);
+  loadSmartContracs()
+    .then(() => {
+      loadEvents();
+      setInterval(loadEvents, 5000);
+    })
+    .catch((err) => {
+      console.log("error loading smart contract", err);
+    });
+} else {
+  console.log("No web 3 client. Not possible to load smart contracts");
+}

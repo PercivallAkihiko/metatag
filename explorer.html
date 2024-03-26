@@ -91,74 +91,133 @@
           </div>
         </div>
       </div>
+      <div
+        id="events_container_no_web_3"
+        class="events_container"
+        style="display: none; height: 400px; grid-template-rows: auto auto auto"
+      >
+        <h2 style="text-align: center; padding-top: 40px">
+          It looks like you do not have a web3 client 😓
+        </h2>
+
+        <div style="display: flex; justify-content: center">
+          <img
+            src="https://www.uu.nl/medewerkers/RestApi/Public/GetImage?Employee=74794&t="
+            alt="di_ciccio_pp"
+          />
+        </div>
+        <div style="margin-left: auto; margin-right: auto">
+          <div
+            class="app_button"
+            id="add_mtg_testnet_button"
+            onclick="connectMetamsk()"
+            style="width: 200px; margin: 25px; margin-top: 75px"
+          >
+            <span>Use Metamask!</span>
+          </div>
+        </div>
+      </div>
     </div>
     <script>
-      web3.eth.net
-        .getId()
-        .then((networkId) => {
-          console.log("Network ID:", networkId.toString() === "31337");
-          if (networkId.toString() === "31337") {
+      if (web3) {
+        web3.eth.net
+          .getId()
+          .then((networkId) => {
+            console.log("Network ID:", networkId.toString() === "31337");
+            if (networkId.toString() === "31337") {
+              document.getElementById(
+                "events_container_explorer_id"
+              ).style.display = "grid";
+              document.getElementById(
+                "events_container_testnet_not_connected"
+              ).style.display = "none";
+              document.getElementById(
+                "events_container_no_web_3"
+              ).style.display = "none";
+            } else {
+              document.getElementById(
+                "events_container_explorer_id"
+              ).style.display = "none";
+              document.getElementById(
+                "events_container_testnet_not_connected"
+              ).style.display = "grid";
+              document.getElementById(
+                "events_container_no_web_3"
+              ).style.display = "none";
+            }
+          })
+          .catch((err) => {
+            console.error("Error getting network ID:", err);
             document.getElementById(
               "events_container_explorer_id"
-            ).style.display = "grid";
-            document.getElementById(
-              "events_container_testnet_not_connected"
-            ).style.display = "none";
-          } else {
-            document.getElementById(
-              "events_container_explorer_id"
             ).style.display = "none";
             document.getElementById(
               "events_container_testnet_not_connected"
             ).style.display = "grid";
-          }
-        })
-        .catch((err) => {
-          console.error("Error getting network ID:", err);
-        });
+            document.getElementById("events_container_no_web_3").style.display =
+              "none";
+          });
+      } else {
+        document.getElementById("events_container_explorer_id").style.display =
+          "none";
+        document.getElementById(
+          "events_container_testnet_not_connected"
+        ).style.display = "none";
+        document.getElementById("events_container_no_web_3").style.display =
+          "grid";
+      }
+      async function connectMetamsk() {
+        window.open("https://metamask.io/download/");
+      }
       async function connectToTestNet() {
-        console.log(document.getElementById("add_mtg_testnet_button"));
-        // document
-        //   .getElementById("add_mtg_testnet_button")
-        //   .addEventListener("click", async () => {
+        if (web3) {
+          if (window.ethereum) {
+            const web3 = new Web3(window.ethereum);
 
-        if (window.ethereum) {
-          const web3 = new Web3(window.ethereum);
+            // Network details for the testnet
+            const testnetNetwork = {
+              chainId: "0x7a69",
+              chainName: "MetaTag Testnet",
+              rpcUrls: ["https://metamask.blockchain.ervincit.com"],
+              nativeCurrency: {
+                name: "ETHFAKE",
+                symbol: "CDC",
+                decimals: 18,
+              },
+            };
 
-          // Network details for the testnet
-          const testnetNetwork = {
-            chainId: "0x7a69",
-            chainName: "MetaTag Testnet",
-            rpcUrls: ["https://metamask.blockchain.ervincit.com"],
-            nativeCurrency: {
-              name: "ETHFAKE",
-              symbol: "CDC",
-              decimals: 18,
-            },
-          };
+            //   // Add the testnet to MetaMask
+            //   const networkType = await web3.eth.net.getNetworkType();
 
-          //   // Add the testnet to MetaMask
-          //   const networkType = await web3.eth.net.getNetworkType();
-
-          try {
-            await window.ethereum.request({
-              method: "wallet_addEthereumChain",
-              params: [testnetNetwork],
-            });
-            console.log("Testnet added to MetaMask");
-            document.getElementById(
-              "events_container_explorer_id"
-            ).style.display = "grid";
-            document.getElementById(
-              "events_container_testnet_not_connected"
-            ).style.display = "none";
-          } catch (error) {
-            console.error("Error adding testnet to MetaMask:", error);
+            try {
+              await window.ethereum.request({
+                method: "wallet_addEthereumChain",
+                params: [testnetNetwork],
+              });
+              console.log("Testnet added to MetaMask");
+              document.getElementById(
+                "events_container_explorer_id"
+              ).style.display = "grid";
+              document.getElementById(
+                "events_container_testnet_not_connected"
+              ).style.display = "none";
+            } catch (error) {
+              console.error("Error adding testnet to MetaMask:", error);
+            }
+          } else {
+            console.log(
+              "MetaMask is not installed. Please consider installing it."
+            );
           }
         } else {
-          console.log(
-            "MetaMask is not installed. Please consider installing it."
-          );
+          document.getElementById(
+            "events_container_explorer_id"
+          ).style.display = "none";
+          document.getElementById(
+            "events_container_testnet_not_connected"
+          ).style.display = "none";
+          document.getElementById("events_container_no_web_3").style.display =
+            "grid";
         }
         //   });
       }
